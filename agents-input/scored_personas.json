@@ -1,0 +1,230 @@
+[
+  {
+    "user_id": "u01",
+    "name": "Meera (pure loyalist)",
+    "label": "loyalist (2a)",
+    "behavior_scores": {
+      "repeat": 0.83,
+      "restaurant_loyal_variety": 0.1,
+      "exploration": 0.07
+    },
+    "raw_scores_before_normalizing": {
+      "repeat": 0.89,
+      "variety_at_place": 0.11,
+      "exploration": 0.07
+    },
+    "total_orders": 28,
+    "distinct_restaurants": 2,
+    "favorite_restaurant": "Punjab Grill Express",
+    "usual_dish": "Butter Chicken + Naan",
+    "diet": {
+      "inferred_tendency": "mixed veg + non-veg",
+      "declared_hard_constraint": "none"
+    },
+    "price_affinity": {
+      "band": "mid",
+      "avg_order_value": 251
+    },
+    "location": {
+      "area": "Powai, Mumbai",
+      "context": "work"
+    }
+  },
+  {
+    "user_id": "u02",
+    "name": "Arjun (restaurant-loyal explorer)",
+    "label": "restaurant-loyal explorer (2b)",
+    "behavior_scores": {
+      "repeat": 0.0,
+      "restaurant_loyal_variety": 0.87,
+      "exploration": 0.13
+    },
+    "raw_scores_before_normalizing": {
+      "repeat": 0.0,
+      "variety_at_place": 1.0,
+      "exploration": 0.15
+    },
+    "total_orders": 13,
+    "distinct_restaurants": 2,
+    "favorite_restaurant": "Green Theory",
+    "usual_dish": [
+      "Buddha Bowl",
+      "Falafel Wrap",
+      "Quinoa Salad",
+      "Pesto Pasta",
+      "Hummus Platter",
+      "Mezze Box",
+      "Grilled Paneer"
+    ],
+    "diet": {
+      "inferred_tendency": "veg-only (inferred)",
+      "declared_hard_constraint": "pure-veg"
+    },
+    "price_affinity": {
+      "band": "mid",
+      "avg_order_value": 445
+    },
+    "location": {
+      "area": "Indiranagar, Bengaluru",
+      "context": "home"
+    }
+  },
+  {
+    "user_id": "u03",
+    "name": "Neha (variety-seeker)",
+    "label": "variety-seeker (2c)",
+    "behavior_scores": {
+      "repeat": 0.0,
+      "restaurant_loyal_variety": 0.0,
+      "exploration": 1.0
+    },
+    "raw_scores_before_normalizing": {
+      "repeat": 0.0,
+      "variety_at_place": 0.0,
+      "exploration": 1.0
+    },
+    "total_orders": 12,
+    "distinct_restaurants": 12,
+    "favorite_restaurant": "Mamagoto",
+    "usual_dish": "Pad Thai",
+    "diet": {
+      "inferred_tendency": "mixed veg + non-veg",
+      "declared_hard_constraint": "none"
+    },
+    "price_affinity": {
+      "band": "mid",
+      "avg_order_value": 378
+    },
+    "location": {
+      "area": "Bandra, Mumbai",
+      "context": "home"
+    }
+  },
+  {
+    "user_id": "u04",
+    "name": "Rahul (BLEND: heavy repeat + real exploration)",
+    "label": "loyalist (2a)",
+    "behavior_scores": {
+      "repeat": 0.64,
+      "restaurant_loyal_variety": 0.05,
+      "exploration": 0.3
+    },
+    "raw_scores_before_normalizing": {
+      "repeat": 0.68,
+      "variety_at_place": 0.06,
+      "exploration": 0.32
+    },
+    "total_orders": 25,
+    "distinct_restaurants": 8,
+    "favorite_restaurant": "Meghana Foods",
+    "usual_dish": "Chicken Biryani",
+    "diet": {
+      "inferred_tendency": "mostly non-veg",
+      "declared_hard_constraint": "none"
+    },
+    "price_affinity": {
+      "band": "mid",
+      "avg_order_value": 321
+    },
+    "location": {
+      "area": "Koramangala, Bengaluru",
+      "context": "work"
+    }
+  },
+  {
+    "user_id": "u05",
+    "name": "Priya (budget veg, tie-case demo)",
+    "label": "loyalist (2a)",
+    "behavior_scores": {
+      "repeat": 0.78,
+      "restaurant_loyal_variety": 0.11,
+      "exploration": 0.11
+    },
+    "raw_scores_before_normalizing": {
+      "repeat": 0.88,
+      "variety_at_place": 0.12,
+      "exploration": 0.12
+    },
+    "total_orders": 16,
+    "distinct_restaurants": 2,
+    "favorite_restaurant": "Wadeshwar",
+    "usual_dish": "Misal Pav",
+    "diet": {
+      "inferred_tendency": "veg-only (inferred)",
+      "declared_hard_constraint": "pure-veg"
+    },
+    "price_affinity": {
+      "band": "low",
+      "avg_order_value": 115
+    },
+    "location": {
+      "area": "Kothrud, Pune",
+      "context": "home"
+    }
+  },
+  {
+    "user_id": "u06",
+    "name": "Sameer (lapsed-ish, low frequency)",
+    "label": "restaurant-loyal explorer (2b)",
+    "behavior_scores": {
+      "repeat": 0.0,
+      "restaurant_loyal_variety": 0.57,
+      "exploration": 0.43
+    },
+    "raw_scores_before_normalizing": {
+      "repeat": 0.0,
+      "variety_at_place": 1.0,
+      "exploration": 0.75
+    },
+    "total_orders": 4,
+    "distinct_restaurants": 3,
+    "favorite_restaurant": "Arsalan",
+    "usual_dish": [
+      "Mutton Biryani",
+      "Chicken Roll"
+    ],
+    "diet": {
+      "inferred_tendency": "mostly non-veg",
+      "declared_hard_constraint": "none"
+    },
+    "price_affinity": {
+      "band": "mid",
+      "avg_order_value": 350
+    },
+    "location": {
+      "area": "Salt Lake, Kolkata",
+      "context": "home"
+    }
+  },
+  {
+    "user_id": "u07",
+    "name": "Divya (health-leaning, mixed)",
+    "label": "restaurant-loyal explorer (2b)",
+    "behavior_scores": {
+      "repeat": 0.23,
+      "restaurant_loyal_variety": 0.53,
+      "exploration": 0.23
+    },
+    "raw_scores_before_normalizing": {
+      "repeat": 0.29,
+      "variety_at_place": 0.65,
+      "exploration": 0.29
+    },
+    "total_orders": 7,
+    "distinct_restaurants": 2,
+    "favorite_restaurant": "Eat Fit",
+    "usual_dish": "Salad Bowl",
+    "diet": {
+      "inferred_tendency": "veg-leaning",
+      "declared_hard_constraint": "none"
+    },
+    "price_affinity": {
+      "band": "mid",
+      "avg_order_value": 343
+    },
+    "location": {
+      "area": "HSR, Bengaluru",
+      "context": "work"
+    }
+  }
+]
