@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 
 interface Props {
@@ -9,16 +9,71 @@ interface Props {
 
 const STEPS = ['Confirmed', 'Being prepared', 'On the way'] as const
 
+function fireConfetti(canvas: HTMLCanvasElement) {
+  const rawCtx = canvas.getContext('2d')
+  if (!rawCtx) return
+  const ctx = rawCtx
+  canvas.width = canvas.offsetWidth
+  canvas.height = canvas.offsetHeight
+
+  const COLORS = ['#FC8019', '#ff3a6e', '#28c99a', '#8b7fff', '#ffd700', '#ffffff']
+  const cx = canvas.width / 2
+  const cy = canvas.height * 0.35
+
+  const particles = Array.from({ length: 110 }, () => ({
+    x: cx, y: cy,
+    vx: (Math.random() - 0.5) * 12,
+    vy: Math.random() * -11 - 4,
+    r: Math.random() * 5 + 3,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    rot: Math.random() * 360,
+    rotV: (Math.random() - 0.5) * 9,
+    rect: Math.random() > 0.45,
+    alpha: 1,
+  }))
+
+  let frame = 0
+  const MAX = 95
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    for (const p of particles) {
+      p.vy += 0.3
+      p.x  += p.vx
+      p.y  += p.vy
+      p.rot += p.rotV
+      p.alpha = Math.max(0, 1 - frame / MAX)
+      ctx.globalAlpha = p.alpha
+      ctx.fillStyle = p.color
+      ctx.save()
+      ctx.translate(p.x, p.y)
+      ctx.rotate((p.rot * Math.PI) / 180)
+      if (p.rect) { ctx.fillRect(-p.r, -p.r * 0.45, p.r * 2, p.r * 0.9) }
+      else { ctx.beginPath(); ctx.arc(0, 0, p.r * 0.7, 0, Math.PI * 2); ctx.fill() }
+      ctx.restore()
+    }
+    ctx.globalAlpha = 1
+    frame++
+    if (frame < MAX) requestAnimationFrame(draw)
+    else ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+  draw()
+}
+
 export default function OrderSuccess({ restaurantName, onBackToHome }: Props) {
   const [activeStep, setActiveStep] = useState(0)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const t1 = setTimeout(() => setActiveStep(1), 2000)
     const t2 = setTimeout(() => setActiveStep(2), 4000)
-    return () => {
-      clearTimeout(t1)
-      clearTimeout(t2)
-    }
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [])
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (canvasRef.current) fireConfetti(canvasRef.current)
+    }, 550)
+    return () => clearTimeout(t)
   }, [])
 
   return (
@@ -27,8 +82,12 @@ export default function OrderSuccess({ restaurantName, onBackToHome }: Props) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
       className="min-h-screen flex flex-col items-center justify-between px-6 py-12"
-      style={{ background: '#fff' }}
+      style={{ background: '#fff', position: 'relative', overflow: 'hidden' }}
     >
+      <canvas
+        ref={canvasRef}
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 20 }}
+      />
       <div className="flex-1 flex flex-col items-center justify-center gap-6 w-full">
         {/* Animated green checkmark */}
         <motion.div

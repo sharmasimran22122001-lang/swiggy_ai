@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import FoodCategoryRow from './FoodCategoryRow'
 import PromoBanner from './PromoBanner'
@@ -97,6 +97,47 @@ function HomeToast({ dish, restaurant, onViewCart }: { dish: string; restaurant:
   )
 }
 
+// ─── Spring Add Button ───────────────────────────────────────────────────────
+
+function SpringAddButton({ onAdd, size = 26, fontSize = 18, bottom = 5, right = 5 }: {
+  onAdd: () => void
+  size?: number
+  fontSize?: number
+  bottom?: number
+  right?: number
+}) {
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const ringRef = useRef<HTMLSpanElement>(null)
+
+  function handleClick(e: React.MouseEvent) {
+    e.stopPropagation()
+    onAdd()
+    const btn = btnRef.current
+    const ring = ringRef.current
+    if (btn) { btn.classList.remove('cart-spring'); void btn.offsetWidth; btn.classList.add('cart-spring') }
+    if (ring) { ring.classList.remove('cart-ring');  void ring.offsetWidth;  ring.classList.add('cart-ring') }
+  }
+
+  return (
+    <div style={{ position: 'absolute', bottom, right, width: size, height: size, zIndex: 10 }}>
+      <button
+        ref={btnRef}
+        onClick={handleClick}
+        style={{
+          width: '100%', height: '100%',
+          background: '#FC8019', border: 'none', borderRadius: '50%',
+          color: '#fff', fontSize, fontWeight: 700, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 2px 6px rgba(252,128,25,0.4)',
+          lineHeight: 1, transformOrigin: 'center',
+        }}
+        aria-label="Add to cart"
+      >+</button>
+      <span ref={ringRef} style={{ position: 'absolute', inset: -3, borderRadius: '50%', pointerEvents: 'none' }} />
+    </div>
+  )
+}
+
 // ─── 2A Loyalist Hero ────────────────────────────────────────────────────────
 
 function LoyalistHero({ homepage, profile, onRestaurantSelect, onAdd }: {
@@ -128,12 +169,7 @@ function LoyalistHero({ homepage, profile, onRestaurantSelect, onAdd }: {
             >
               <div className="relative" style={{ width: 94 }}>
                 <FoodPlate3D emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} size="md" float />
-                <button
-                  onClick={e => { e.stopPropagation(); onAdd?.(item) }}
-                  className="absolute flex items-center justify-center rounded-full active:scale-90 transition-transform"
-                  style={{ bottom: 5, right: 5, width: 26, height: 26, background: '#FC8019', color: '#fff', fontSize: 18, fontWeight: 700, boxShadow: '0 2px 6px rgba(252,128,25,0.4)', zIndex: 10 }}
-                  aria-label="Add to cart"
-                >+</button>
+                <SpringAddButton onAdd={() => onAdd?.(item)} size={26} fontSize={18} bottom={5} right={5} />
               </div>
               <p className="mt-1.5 leading-tight" style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
               {item.price && <p style={{ fontSize: 11, fontWeight: 700, color: '#FC8019', marginTop: 1 }}>₹{item.price}</p>}
@@ -195,12 +231,7 @@ function ExplorerHero({ homepage, profile, onRestaurantSelect, onAdd }: {
                 style={{ height: 88, background: `linear-gradient(145deg, ${vis.gradA}, ${vis.gradB})` }}
               >
                 <FoodPlate3D emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} size="md" float />
-                <button
-                  onClick={e => { e.stopPropagation(); onAdd?.(item) }}
-                  className="absolute flex items-center justify-center rounded-full active:scale-90 transition-transform"
-                  style={{ bottom: 6, right: 6, width: 26, height: 26, background: '#FC8019', color: '#fff', fontSize: 18, fontWeight: 700, boxShadow: '0 2px 6px rgba(252,128,25,0.4)', zIndex: 10 }}
-                  aria-label="Add to cart"
-                >+</button>
+                <SpringAddButton onAdd={() => onAdd?.(item)} size={26} fontSize={18} bottom={6} right={6} />
               </div>
               <div style={{ padding: '7px 8px 8px' }}>
                 <p style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.restaurant}</p>
@@ -356,12 +387,7 @@ function TopRatedSection({ block, profile, onRestaurantSelect, onAdd }: {
                 style={{ height: 84, background: `linear-gradient(145deg, ${vis.gradA}, ${vis.gradB})` }}
               >
                 <FoodPlate3D emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} size="sm" float />
-                <button
-                  onClick={e => { e.stopPropagation(); onAdd?.(item) }}
-                  className="absolute flex items-center justify-center rounded-full active:scale-90 transition-transform"
-                  style={{ bottom: 5, right: 5, width: 24, height: 24, background: '#FC8019', color: '#fff', fontSize: 16, fontWeight: 700, boxShadow: '0 2px 6px rgba(252,128,25,0.4)', zIndex: 10 }}
-                  aria-label="Add to cart"
-                >+</button>
+                <SpringAddButton onAdd={() => onAdd?.(item)} size={24} fontSize={16} bottom={5} right={5} />
               </div>
               <div style={{ padding: '7px 8px 8px' }}>
                 <p style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.restaurant}</p>

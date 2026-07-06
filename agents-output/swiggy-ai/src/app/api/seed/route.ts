@@ -66,6 +66,7 @@ async function seedRestaurants() {
 
 async function seedUsers() {
   const usersMap: Record<string, any> = loadJSON('synthetic_users.json')
+  const userIds = Object.keys(usersMap)
   const userRows = Object.entries(usersMap).map(([id, u]: [string, any]) => ({
     id,
     name: u.name,
@@ -78,8 +79,12 @@ async function seedUsers() {
     .upsert(userRows, { onConflict: 'id' })
   if (uErr) throw new Error(`users: ${uErr.message}`)
 
-  for (const [id, u] of Object.entries(usersMap)) {
-    const orderRows = (u as any).orders.map((o: any) => ({
+  // Delete-then-insert so reseeding never duplicates orders
+  const { error: dErr } = await supabaseAdmin.from('orders').delete().in('user_id', userIds)
+  if (dErr) throw new Error(`orders delete: ${dErr.message}`)
+
+  const orderRows = Object.entries(usersMap).flatMap(([id, u]: [string, any]) =>
+    u.orders.map((o: any) => ({
       user_id: id,
       restaurant_id: o.restaurant_id,
       restaurant_name: o.restaurant,
@@ -89,13 +94,13 @@ async function seedUsers() {
       cuisine: o.cuisine,
       days_ago: o.days_ago,
     }))
-    const { error: oErr } = await supabaseAdmin
-      .from('orders')
-      .insert(orderRows)
-    if (oErr && !oErr.message.includes('duplicate')) {
-      throw new Error(`orders for ${id}: ${oErr.message}`)
-    }
-  }
+  )
+  const { error: oErr } = await supabaseAdmin.from('orders').insert(orderRows)
+  if (oErr) throw new Error(`orders insert: ${oErr.message}`)
+
+  // Flush stale cached homepages built from the corrupted order history
+  await supabaseAdmin.from('homepage_cache').delete().in('user_id', userIds)
+
   return userRows.length
 }
 
@@ -107,6 +112,13 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // ?only=users skips restaurant seeding (safe to re-run for order-history repairs)
+    const onlyUsers = req.nextUrl.searchParams.get('only') === 'users'
+    if (onlyUsers) {
+      const userCount = await seedUsers()
+      return NextResponse.json({ ok: true, users_seeded: userCount })
+    }
+
     const [restaurantCount, userCount] = await Promise.all([
       seedRestaurants(),
       seedUsers(),
