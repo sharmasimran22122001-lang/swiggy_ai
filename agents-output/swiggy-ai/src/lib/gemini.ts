@@ -93,14 +93,13 @@ export function buildPrompt(
   return RULES + '\n\nCONTEXT:\n' + JSON.stringify({ profile, slot, mood, candidates: candidates.map(slimRestaurant) })
 }
 
-// ─── Model waterfall — stable models only, no preview/lite ───────────────────
-// gemini-2.5-flash-lite removed: unstable / frequent 503
-// Order: fastest → most available
+// ─── Model waterfall ──────────────────────────────────────────────────────────
+// gemini-2.0-flash / 1.5 family removed: free-tier quota withdrawn by Google (429 limit:0)
+// Order: fastest → most available. 503s on lite are handled by the retry loop.
 
 const MODELS = [
-  'gemini-2.0-flash',
-  'gemini-1.5-flash',
-  'gemini-1.5-flash-8b',
+  'gemini-2.5-flash',
+  'gemini-2.5-flash-lite',
 ]
 
 // ─── Error helpers ────────────────────────────────────────────────────────────
@@ -159,7 +158,10 @@ export async function callGemini(prompt: string): Promise<HomepageJSON> {
             // Cap token usage — our JSON rarely exceeds 2k tokens
             maxOutputTokens: 3000,
             temperature: 0.4,
-          },
+            // 2.5 models "think" by default, eating into maxOutputTokens —
+            // disable so the full budget goes to the JSON (cast: SDK types lag)
+            thinkingConfig: { thinkingBudget: 0 },
+          } as any,
         })
 
         const result = await model.generateContent(prompt)

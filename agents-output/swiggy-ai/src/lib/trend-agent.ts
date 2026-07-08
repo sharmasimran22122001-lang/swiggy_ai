@@ -27,7 +27,8 @@ export async function fetchTrendingFoods(): Promise<TrendingItem[]> {
 
   const genAI = new GoogleGenerativeAI(key)
   const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash',
+    // 2.5-flash: 2.0-flash free tier was withdrawn; 2.5 supports googleSearch grounding
+    model: 'gemini-2.5-flash',
     // googleSearch grounding — type cast needed as SDK types lag behind the API
     tools: [{ googleSearch: {} }] as any,
   })
