@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Swiggy AI â€” Persona-Driven Food Delivery Homepage</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f6f3;
+    --surface-2: #f0ede8;
+    --ink: #22232a;
+    --muted: #6d707c;
+    --faint: #9a9da8;
+    --accent: #e86f0e;
+    --accent-ink: #ffffff;
+    --accent-soft: #fdf0e2;
+    --accent-wash: #fdf6ee;
+    --line: #e8e5df;
+    --bezel: #1d1e23;
+    --bar-neutral: #ddd9d1;
+    --card-grad-a: linear-gradient(135deg, #f6c48e, #e88b4e);
+    --card-grad-b: linear-gradient(135deg, #e8b04e, #d97b2a);
+    --card-grad-c: linear-gradient(135deg, #f0a97c, #c96a35);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141519; --surface: #1d1f24; --surface-2: #262830; --ink: #edece8;
+      --muted: #a4a7b1; --faint: #7d808b; --accent: #ff8f33; --accent-ink: #1a1104;
+      --accent-soft: #2d2115; --accent-wash: #1c1a17; --line: #2b2d34; --bezel: #000000;
+      --bar-neutral: #3a3d45;
+      --card-grad-a: linear-gradient(135deg, #7a4a22, #a3591f);
+      --card-grad-b: linear-gradient(135deg, #6e5420, #a06a1e);
+      --card-grad-c: linear-gradient(135deg, #7c4526, #9c5522);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #ffffff; --surface: #f8f6f3; --surface-2: #f0ede8; --ink: #22232a;
+    --muted: #6d707c; --faint: #9a9da8; --accent: #e86f0e; --accent-ink: #ffffff;
+    --accent-soft: #fdf0e2; --accent-wash: #fdf6ee; --line: #e8e5df; --bezel: #1d1e23;
+    --bar-neutral: #ddd9d1;
+    --card-grad-a: linear-gradient(135deg, #f6c48e, #e88b4e);
+    --card-grad-b: linear-gradient(135deg, #e8b04e, #d97b2a);
+    --card-grad-c: linear-gradient(135deg, #f0a97c, #c96a35);
+  }
+  :root[data-theme="dark"] {
+    --bg: #141519; --surface: #1d1f24; --surface-2: #262830; --ink: #edece8;
+    --muted: #a4a7b1; --faint: #7d808b; --accent: #ff8f33; --accent-ink: #1a1104;
+    --accent-soft: #2d2115; --accent-wash: #1c1a17; --line: #2b2d34; --bezel: #000000;
+    --bar-neutral: #3a3d45;
+    --card-grad-a: linear-gradient(135deg, #7a4a22, #a3591f);
+    --card-grad-b: linear-gradient(135deg, #6e5420, #a06a1e);
+    --card-grad-c: linear-gradient(135deg, #7c4526, #9c5522);
+  }
+
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    line-height: 1.6; margin: 0; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .rise { animation: rise .6s cubic-bezier(.22,1,.36,1) both; }
+    .rise.d1 { animation-delay: .08s; } .rise.d2 { animation-delay: .16s; } .rise.d3 { animation-delay: .24s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  }
+
+  /* â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  .hero {
+    margin: 26px -24px 0; padding: 74px 24px 66px;
+    background:
+      radial-gradient(900px 420px at 82% -10%, var(--accent-soft), transparent 65%),
+      radial-gradient(700px 380px at -8% 108%, var(--accent-wash), transparent 60%),
+      var(--bg);
+    border-bottom: 1px solid var(--line);
+    text-align: center;
+  }
+  .wordmark {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--accent); background: var(--accent-soft);
+    padding: 7px 16px; border-radius: 999px; margin-bottom: 26px;
+  }
+  h1 {
+    font-size: clamp(38px, 7vw, 66px); font-weight: 850; letter-spacing: -.04em;
+    line-height: 1.02; margin: 0 auto 20px; max-width: 15ch; text-wrap: balance;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  .lede {
+    font-size: 17.5px; color: var(--muted); max-width: 52ch; margin: 0 auto 34px; text-wrap: balance;
+  }
+  .lede strong { color: var(--ink); font-weight: 650; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 26px; border-radius: 999px; font-size: 15px; font-weight: 750;
+    border: 1.5px solid transparent; cursor: pointer;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--accent) 55%, transparent); }
+  .btn-primary:hover { text-decoration: none; filter: brightness(1.06); }
+  .btn-ghost { border-color: var(--line); color: var(--ink); background: var(--bg); }
+  .btn-ghost:hover { text-decoration: none; border-color: var(--accent); }
+  .cta-note { font-size: 12.5px; color: var(--faint); margin-top: 16px; }
+
+  /* â”€â”€ Sections â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  section { padding: 62px 0 0; }
+  .kicker {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 12px;
+  }
+  .kicker::before { content: ""; width: 26px; height: 3px; border-radius: 2px; background: var(--accent); }
+  h2 {
+    font-size: clamp(25px, 4vw, 34px); font-weight: 820; letter-spacing: -.028em;
+    line-height: 1.12; margin: 0 0 14px; text-wrap: balance;
+  }
+  section > p { max-width: 64ch; color: var(--muted); margin: 0 0 14px; font-size: 16px; }
+  section > p strong { color: var(--ink); font-weight: 650; }
+
+  /* â”€â”€ Why: bars + ladder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  .why-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: start; margin-top: 8px; }
+  @media (max-width: 760px) { .why-grid { grid-template-columns: 1fr; gap: 26px; } }
+  .bars { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: grid; grid-template-columns: 150px 1fr 42px; gap: 12px; align-items: center; }
+  .bar-row .lbl { font-size: 13px; color: var(--muted); text-align: right; }
+  .bar-row.hot .lbl { color: var(--ink); font-weight: 700; }
+  .bar-fill { height: 20px; border-radius: 0 4px 4px 0; background: var(--bar-neutral); min-width: 2px; }
+  .bar-row.hot .bar-fill { background: var(--accent); }
+  .bar-row .val { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .bar-row.hot .val { color: var(--ink); font-weight: 750; }
+  .chart-cap { font-size: 12px; color: var(--faint); margin-top: 12px; max-width: 46ch; }
+  @media (max-width: 560px) {
+    .bar-row { grid-template-columns: 108px 1fr 40px; }
+    .bar-row .lbl { font-size: 11.5px; }
+  }
+  .why-side h3 { font-size: 16px; font-weight: 750; margin: 0 0 8px; }
+  .why-side p { font-size: 14.5px; color: var(--muted); margin: 0 0 18px; }
+  .ladder { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .ladder .rung {
+    font-size: 12.5px; font-weight: 700; padding: 7px 14px; border-radius: 999px;
+    background: var(--surface); border: 1.5px solid var(--line);
+  }
+  .ladder .rung.end { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+  .ladder .arrow { color: var(--faint); font-weight: 800; }
+
+  /* â”€â”€ Persona tabs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  .tabs { display: flex; gap: 10px; margin: 26px 0 0; flex-wrap: wrap; }
+  .tab {
+    flex: 1; min-width: 150px; text-align: left; cursor: pointer;
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px;
+    padding: 14px 18px; font-family: inherit; color: var(--ink);
+    transition: border-color .15s, background .15s;
+  }
+  .tab .t-code { font-size: 11px; font-weight: 800; letter-spacing: .1em; color: var(--faint); display: block; }
+  .tab .t-name { font-size: 16px; font-weight: 800; letter-spacing: -.01em; display: block; margin-top: 2px; }
+  .tab .t-sub { font-size: 12px; color: var(--muted); display: block; margin-top: 2px; }
+  .tab:hover { border-color: var(--accent); }
+  .tab[aria-selected="true"] { background: var(--accent-soft); border-color: var(--accent); }
+  .tab[aria-selected="true"] .t-code { color: var(--accent); }
+
+  .panel { display: none; margin-top: 26px; }
+  .panel.on { display: grid; grid-template-columns: 1fr 320px; gap: 42px; align-items: start; }
+  @media (max-width: 820px) { .panel.on { grid-template-columns: 1fr; } .phone-wrap { margin: 0 auto; } }
+
+  .p-info h3 { font-size: 21px; font-weight: 800; letter-spacing: -.02em; margin: 4px 0 10px; }
+  .p-info > p { font-size: 15px; color: var(--muted); margin: 0 0 20px; max-width: 52ch; }
+  .p-block { margin-bottom: 20px; }
+  .p-block h4 {
+    font-size: 11.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--faint); margin: 0 0 8px;
+  }
+  .p-block p { font-size: 14.5px; color: var(--muted); margin: 0; max-width: 52ch; }
+  .p-block p strong { color: var(--ink); font-weight: 650; }
+
+  .dials { display: flex; flex-direction: column; gap: 8px; max-width: 380px; }
+  .dial { display: grid; grid-template-columns: 64px 1fr 40px; gap: 10px; align-items: center; }
+  .dial span { font-size: 12px; color: var(--muted); }
+  .dial .d-track { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+  .dial .d-fill { height: 100%; border-radius: 4px; background: var(--bar-neutral); }
+  .dial.hot span { color: var(--ink); font-weight: 700; }
+  .dial.hot .d-fill { background: var(--accent); }
+  .dial .d-val { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--faint); }
+  .dial.hot .d-val { color: var(--ink); font-weight: 700; }
+
+  .try-live {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 4px;
+    font-size: 13.5px; font-weight: 700; color: var(--accent);
+    background: var(--accent-soft); padding: 9px 16px; border-radius: 999px;
+  }
+  .try-live:hover { text-decoration: none; filter: brightness(.97); }
+
+  /* â”€â”€ Phone prototype â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  .phone-wrap { width: 300px; max-width: 100%; }
+  .phone {
+    background: var(--bezel); border-radius: 38px; padding: 10px;
+    box-shadow: 0 24px 48px -20px rgba(0,0,0,.35);
+  }
+  .screen {
+    background: var(--bg); border-radius: 30px; height: 540px; overflow-y: auto;
+    scrollbar-width: none; position: relative;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .notch {
+    position: sticky; top: 0; z-index: 5; display: flex; justify-content: center;
+    padding-top: 8px; background: var(--bg);
+  }
+  .notch i { width: 86px; height: 18px; background: var(--bezel); border-radius: 999px; }
+  .scr-pad { padding: 12px 14px 66px; }
+  .scr-addr { display: flex; align-items: center; gap: 7px; margin: 6px 0 10px; }
+  .scr-addr .pin { color: var(--accent); font-size: 13px; }
+  .scr-addr b { font-size: 12px; font-weight: 800; }
+  .scr-addr span { font-size: 10px; color: var(--faint); }
+  .scr-search {
+    display: flex; align-items: center; gap: 7px; background: var(--surface);
+    border: 1px solid var(--line); border-radius: 11px; padding: 9px 11px; margin-bottom: 14px;
+  }
+  .scr-search span { font-size: 11px; color: var(--faint); }
+  .scr-cats { display: flex; gap: 9px; overflow: hidden; margin-bottom: 16px; }
+  .scr-cat { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+  .scr-cat i { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2);
+    display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 20px; }
+  .scr-cat span { font-size: 9px; color: var(--muted); }
+  .scr-sec {
+    font-size: 12.5px; font-weight: 800; letter-spacing: -.01em; margin: 16px 0 9px; display: flex; gap: 6px; align-items: center;
+  }
+  .scr-sec small { font-size: 9px; font-weight: 700; color: var(--accent); background: var(--accent-soft);
+    padding: 2px 7px; border-radius: 999px; letter-spacing: .04em; }
+  .scr-hero {
+    border-radius: 14px; padding: 13px; background: linear-gradient(140deg, var(--accent-soft), var(--surface));
+    border: 1px solid var(--line); margin-bottom: 4px;
+  }
+  .scr-hero b { font-size: 13.5px; line-height: 1.3; display: block; letter-spacing: -.01em; }
+  .scr-hero p { font-size: 10.5px; color: var(--muted); margin: 5px 0 10px; }
+  .scr-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  .scr-card { border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--bg); }
+  .scr-img { height: 58px; position: relative; }
+  .scr-img.ga { background: var(--card-grad-a); } .scr-img.gb { background: var(--card-grad-b); } .scr-img.gc { background: var(--card-grad-c); }
+  .scr-img .rate {
+    position: absolute; left: 6px; bottom: 6px; font-size: 8.5px; font-weight: 800; color: #fff;
+    background: rgba(0,0,0,.45); padding: 2px 6px; border-radius: 999px;
+  }
+  .scr-card b { display: block; font-size: 10.5px; padding: 6px 8px 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .scr-card span { display: block; font-size: 9px; color: var(--faint); padding: 0 8px 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .scr-banner {
+    border-radius: 14px; padding: 13px; color: #fff; margin: 4px 0 2px;
+    background: linear-gradient(120deg, #b4561d, #d97b2a 55%, #e8964e);
+  }
+  .scr-banner b { font-size: 12.5px; display: block; }
+  .scr-banner span { font-size: 10px; opacity: .9; }
+  .scr-row { display: flex; gap: 9px; overflow: hidden; }
+  .scr-tile { flex-shrink: 0; width: 96px; border-radius: 11px; border: 1px solid var(--line); background: var(--surface); padding: 8px 9px; }
+  .scr-tile b { font-size: 10px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .scr-tile span { font-size: 8.5px; color: var(--faint); }
+  .scr-list { display: flex; flex-direction: column; gap: 8px; }
+  .scr-li { display: flex; gap: 9px; align-items: center; border: 1px solid var(--line); border-radius: 11px; padding: 7px; }
+  .scr-li i { width: 40px; height: 40px; border-radius: 9px; flex-shrink: 0; }
+  .scr-li i.ga { background: var(--card-grad-a); } .scr-li i.gb { background: var(--card-grad-b); } .scr-li i.gc { background: var(--card-grad-c); }
+  .scr-li b { font-size: 10.5px; display: block; }
+  .scr-li span { font-size: 9px; color: var(--faint); }
+  .scr-nav {
+    position: sticky; bottom: 0; display: flex; justify-content: space-around; align-items: center;
+    background: var(--bg); border-top: 1px solid var(--line); padding: 9px 0 12px; z-index: 5;
+  }
+  .scr-nav span { font-size: 9px; color: var(--faint); display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .scr-nav span i { font-style: normal; font-size: 15px; }
+  .scr-nav .on { color: var(--accent); font-weight: 700; }
+  .scroll-hint { text-align: center; font-size: 11.5px; color: var(--faint); margin-top: 10px; }
+
+  /* â”€â”€ Steps strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 26px; }
+  @media (max-width: 760px) { .steps { grid-template-columns: 1fr 1fr; } }
+  .stepc { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 16px; position: relative; }
+  .stepc .n { font-size: 26px; font-weight: 850; color: var(--accent); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .stepc h3 { font-size: 14.5px; font-weight: 750; margin: 6px 0 5px; }
+  .stepc p { font-size: 12.5px; color: var(--muted); margin: 0; }
+  .formula {
+    margin-top: 20px; background: var(--bezel); color: #f0eee9;
+    border-radius: 14px; padding: 16px 20px; font-size: 13px; line-height: 1.75;
+    overflow-x: auto; font-family: ui-monospace, Consolas, monospace;
+  }
+  .formula .c { color: #8d919d; } .formula .a { color: #ffab5e; }
+
+  /* â”€â”€ Decision cells â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
+  @media (max-width: 760px) { .grid3 { grid-template-columns: 1fr; } }
+  .cell { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .cell h3 { margin: 0 0 7px; font-size: 14.5px; font-weight: 750; }
+  .cell h3 b { color: var(--accent); font-weight: 800; }
+  .cell p { margin: 0; font-size: 13px; color: var(--muted); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .chip { font-size: 12.5px; font-weight: 650; padding: 6px 13px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+  .chip.hot { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+
+  footer {
+    margin-top: 74px; padding-top: 26px; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: baseline;
+    font-size: 13.5px; color: var(--muted);
+  }
+  footer b { color: var(--ink); }
+
+  /* â”€â”€ Small-phone polish â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* No overflow rules on html/body â€” they break scrolling inside the
+     artifact frame. Horizontal overflow is prevented at the layout level. */
+  @media (max-width: 560px) {
+    .wrap { padding: 0 18px 72px; }
+    .hero { margin: 18px -18px 0; padding: 52px 18px 46px; }
+    .lede { font-size: 15.5px; }
+    .btn { padding: 12px 20px; font-size: 14px; }
+    section { padding: 48px 0 0; }
+    .tabs { flex-direction: column; }
+    .tab { min-width: 0; display: flex; align-items: baseline; gap: 10px; padding: 12px 16px; }
+    .tab .t-name { font-size: 15px; margin-top: 0; }
+    .tab .t-sub { margin-left: auto; text-align: right; }
+    .panel.on { gap: 28px; }
+    .p-info h3 { font-size: 18px; }
+    .steps { grid-template-columns: 1fr; }
+    .stepc { display: grid; grid-template-columns: 40px 1fr; gap: 4px 14px; align-items: start; }
+    .stepc .n { font-size: 22px; grid-row: span 2; }
+    .stepc h3 { margin: 2px 0 3px; }
+    .formula { font-size: 11.5px; padding: 14px 16px; }
+    .why-grid { gap: 30px; }
+    .screen { height: 500px; }
+  }
+  @media (max-width: 380px) {
+    h1 { font-size: 32px; }
+    .bar-row { grid-template-columns: 96px 1fr 36px; gap: 8px; }
+    .bar-row .lbl { font-size: 10.5px; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+
+  <!-- â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <div class="hero">
+    <div class="wordmark rise">ðŸ› Swiggy AI Â· a concept by Simran Sharma</div>
+    <h1 class="rise d1">Three kinds of eaters.<br>Three <em>homepages</em>.</h1>
+    <p class="lede rise d2">
+      A live product I designed and shipped: the homepage is assembled by AI, differently for
+      each person â€” <strong>by reading how they actually order</strong>.
+    </p>
+    <div class="cta-row rise d3">
+      <a class="btn btn-primary" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Open the live demo â†—</a>
+      <a class="btn btn-ghost" href="https://github.com/sharmasimran22122001-lang/swiggy_ai" target="_blank" rel="noopener">Source on GitHub</a>
+    </div>
+    <p class="cta-note rise d3">Best on a phone or a narrow window Â· log in as any demo profile to feel the difference</p>
+  </div>
+
+  <!-- â”€â”€ WHY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <section>
+    <p class="kicker">Why this, and for whom</p>
+    <h2>Built for the user who matters most</h2>
+    <p>
+      I sized the audience by <strong>profit contribution</strong> before writing a single requirement.
+      One segment towers over the rest â€” the returning regular â€” and that's who this homepage serves.
+    </p>
+    <div class="why-grid">
+      <div>
+        <div class="bars" role="img" aria-label="Estimated profit contribution: returning regulars 80%, dietary-constrained 10%, lapsed 5%, budget-driven 5%, new users 0%">
+          <div class="bar-row hot"><span class="lbl">Returning regular</span><div><div class="bar-fill" style="width:80%"></div></div><span class="val">80%</span></div>
+          <div class="bar-row"><span class="lbl">Dietary-constrained</span><div><div class="bar-fill" style="width:10%"></div></div><span class="val">10%</span></div>
+          <div class="bar-row"><span class="lbl">Lapsed / dormant</span><div><div class="bar-fill" style="width:5%"></div></div><span class="val">5%</span></div>
+          <div class="bar-row"><span class="lbl">Budget-driven</span><div><div class="bar-fill" style="width:5%"></div></div><span class="val">5%</span></div>
+          <div class="bar-row"><span class="lbl">New user</span><div><div class="bar-fill" style="width:0%"></div></div><span class="val">0%</span></div>
+        </div>
+        <p class="chart-cap">Estimated profit contribution by segment â€” my sizing exercise during design, used as the decision input.</p>
+      </div>
+      <div class="why-side">
+        <h3>One segment, three personalities</h3>
+        <p>That 80% isn't one kind of user â€” order histories reveal three distinct eating personalities, and each deserves a different homepage. That's the whole product.</p>
+        <h3>The growth thesis</h3>
+        <p>Exploration drives incremental orders. So the north star is moving people up the exploration ladder:</p>
+        <div class="ladder" aria-label="North star: from Loyalist to Explorer to Variety Seeker">
+          <span class="rung">Loyalist</span><span class="arrow">â†’</span>
+          <span class="rung">Explorer</span><span class="arrow">â†’</span>
+          <span class="rung end">Variety Seeker</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- â”€â”€ PERSONA TABS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <section>
+    <p class="kicker">Meet the three eaters</p>
+    <h2>Pick a persona â€” see their homepage</h2>
+    <p>Each tab shows the behaviour, the logic, and a scrollable prototype of the homepage that persona gets. For the AI generating these live, open the demo.</p>
+
+    <div class="tabs" role="tablist" aria-label="Personas">
+      <button class="tab" id="tab-2a" role="tab" aria-selected="true" aria-controls="panel-2a">
+        <span class="t-code">2A</span><span class="t-name">The Loyalist</span><span class="t-sub">same dish, same place, always</span>
+      </button>
+      <button class="tab" id="tab-2b" role="tab" aria-selected="false" aria-controls="panel-2b">
+        <span class="t-code">2B</span><span class="t-name">The Explorer</span><span class="t-sub">trusted places, new dishes</span>
+      </button>
+      <button class="tab" id="tab-2c" role="tab" aria-selected="false" aria-controls="panel-2c">
+        <span class="t-code">2C</span><span class="t-name">The Variety Seeker</span><span class="t-sub">never the same place twice</span>
+      </button>
+    </div>
+
+    <!-- 2A -->
+    <div class="panel on" id="panel-2a" role="tabpanel" aria-labelledby="tab-2a">
+      <div class="p-info">
+        <h3>Kavitha orders chicken biryani from the same place, 8 times out of 10.</h3>
+        <p>She knows what she loves. The homepage's job is to deepen that trust â€” and gently widen her world <em>inside</em> the restaurant she already believes in.</p>
+        <div class="p-block">
+          <h4>Her behaviour dials</h4>
+          <div class="dials">
+            <div class="dial hot"><span>repeat</span><div class="d-track"><div class="d-fill" style="width:55%"></div></div><span class="d-val">0.55</span></div>
+            <div class="dial"><span>variety</span><div class="d-track"><div class="d-fill" style="width:29%"></div></div><span class="d-val">0.29</span></div>
+            <div class="dial"><span>explore</span><div class="d-track"><div class="d-fill" style="width:16%"></div></div><span class="d-val">0.16</span></div>
+          </div>
+        </div>
+        <div class="p-block">
+          <h4>Homepage strategy</h4>
+          <p><strong>Hero = her favourite restaurant, minus what she's tried.</strong> The AI leads with dishes she hasn't ordered at Ss Hyderabad Biryani â€” loyalty first, curiosity second. Her usual reorder stays one tap away.</p>
+        </div>
+        <a class="try-live" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Try it live â€” log in as Kavitha Rajan â†—</a>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen">
+          <div class="notch"><i></i></div>
+          <div class="scr-pad">
+            <div class="scr-addr"><span class="pin">ðŸ“</span><b>T Nagar</b><span>Chennai</span></div>
+            <div class="scr-search">ðŸ”<span>Search for biryaniâ€¦</span></div>
+            <div class="scr-cats">
+              <div class="scr-cat"><i>ðŸ›</i><span>Biryani</span></div>
+              <div class="scr-cat"><i>ðŸ¢</i><span>Kebabs</span></div>
+              <div class="scr-cat"><i>ðŸ¥¤</i><span>Drinks</span></div>
+              <div class="scr-cat"><i>ðŸ°</i><span>Desserts</span></div>
+              <div class="scr-cat"><i>ðŸ¥˜</i><span>Curries</span></div>
+            </div>
+            <div class="scr-sec">Order more from Ss Hyderabad Biryani <small>FOR YOU</small></div>
+            <div class="scr-hero">
+              <b>You always get the Chicken Biryaniâ€¦</b>
+              <p>â€¦these are loved here too â€” and you haven't tried them yet</p>
+              <div class="scr-cards">
+                <div class="scr-card"><div class="scr-img ga"><span class="rate">â˜… 4.3</span></div><b>Mutton Biryani</b><span>chef's signature</span></div>
+                <div class="scr-card"><div class="scr-img gb"><span class="rate">â˜… 4.5</span></div><b>Seekh Kebab</b><span>most reordered</span></div>
+              </div>
+            </div>
+            <div class="scr-sec">Your usual, one tap</div>
+            <div class="scr-list">
+              <div class="scr-li"><i class="gc"></i><div><b>Chicken Biryani Â· Ss Hyderabad Biryani</b><span>ordered 8 times Â· â‚¹220 Â· 25 min</span></div></div>
+            </div>
+            <div class="scr-banner"><b>Sweet Treats for a Refreshing Break</b><span>picked for a warm Chennai evening</span></div>
+            <div class="scr-sec">Top rated near you</div>
+            <div class="scr-cards">
+              <div class="scr-card"><div class="scr-img gb"><span class="rate">â˜… 4.6</span></div><b>Dr Bubbles</b><span>Beverages Â· 18 min</span></div>
+              <div class="scr-card"><div class="scr-img ga"><span class="rate">â˜… 4.4</span></div><b>Madras Tiffin Hall</b><span>South Indian Â· 22 min</span></div>
+            </div>
+            <div class="scr-nav">
+              <span class="on"><i>ðŸ </i>Home</span><span><i>ðŸ”</i>Search</span><span><i>ðŸ›’</i>Cart</span><span><i>â†»</i>Reorder</span>
+            </div>
+          </div>
+        </div></div>
+        <p class="scroll-hint">â†• scroll inside the phone</p>
+      </div>
+    </div>
+
+    <!-- 2B -->
+    <div class="panel" id="panel-2b" role="tabpanel" aria-labelledby="tab-2b" hidden>
+      <div class="p-info">
+        <h3>Priya sticks to three restaurants â€” but never orders the same dish twice.</h3>
+        <p>Her loyalty is to a taste, not a menu item. The homepage's job is taste-anchored exploration: new restaurants that feel like the ones she already trusts.</p>
+        <div class="p-block">
+          <h4>Her behaviour dials</h4>
+          <div class="dials">
+            <div class="dial"><span>repeat</span><div class="d-track"><div class="d-fill" style="width:0%"></div></div><span class="d-val">0.00</span></div>
+            <div class="dial hot"><span>variety</span><div class="d-track"><div class="d-fill" style="width:80%"></div></div><span class="d-val">0.80</span></div>
+            <div class="dial"><span>explore</span><div class="d-track"><div class="d-fill" style="width:20%"></div></div><span class="d-val">0.20</span></div>
+          </div>
+        </div>
+        <div class="p-block">
+          <h4>Homepage strategy</h4>
+          <p><strong>Hero = new restaurants, proven cuisines.</strong> The AI reads her top cuisines from history and surfaces highly-rated places she's never ordered from that match that taste profile.</p>
+        </div>
+        <a class="try-live" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Try it live â€” log in as Priya Nair â†—</a>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen">
+          <div class="notch"><i></i></div>
+          <div class="scr-pad">
+            <div class="scr-addr"><span class="pin">ðŸ“</span><b>Bandra West</b><span>Mumbai</span></div>
+            <div class="scr-search">ðŸ”<span>Search restaurantsâ€¦</span></div>
+            <div class="scr-cats">
+              <div class="scr-cat"><i>ðŸ”</i><span>Fast Food</span></div>
+              <div class="scr-cat"><i>ðŸ›</i><span>North Ind.</span></div>
+              <div class="scr-cat"><i>ðŸ¥¡</i><span>Chinese</span></div>
+              <div class="scr-cat"><i>ðŸ•</i><span>Pizza</span></div>
+              <div class="scr-cat"><i>ðŸŒ¯</i><span>Rolls</span></div>
+            </div>
+            <div class="scr-sec">Top-rated places matching your taste <small>NEW TO YOU</small></div>
+            <div class="scr-hero">
+              <b>Your kind of food, places you haven't met</b>
+              <p>matched to your top cuisines: Fast Food Â· North Indian Â· Chinese</p>
+              <div class="scr-cards">
+                <div class="scr-card"><div class="scr-img gb"><span class="rate">â˜… 4.5</span></div><b>Bandra Burger Room</b><span>Fast Food Â· new to you</span></div>
+                <div class="scr-card"><div class="scr-img gc"><span class="rate">â˜… 4.4</span></div><b>Punjabi Rasoi</b><span>North Indian Â· new to you</span></div>
+              </div>
+            </div>
+            <div class="scr-sec">Your trusted three</div>
+            <div class="scr-row">
+              <div class="scr-tile"><b>Mumbai Bites</b><span>6 orders Â· 6 dishes</span></div>
+              <div class="scr-tile"><b>Home Plate</b><span>4 orders Â· 4 dishes</span></div>
+              <div class="scr-tile"><b>Chinese Culture</b><span>2 orders Â· 2 dishes</span></div>
+            </div>
+            <div class="scr-banner"><b>Monsoon Comfort Food</b><span>hot, saucy, made for Mumbai rain</span></div>
+            <div class="scr-sec">Explore something new</div>
+            <div class="scr-list">
+              <div class="scr-li"><i class="ga"></i><div><b>Wok This Way</b><span>Chinese Â· â˜… 4.3 Â· 28 min</span></div></div>
+              <div class="scr-li"><i class="gb"></i><div><b>The Paratha Project</b><span>North Indian Â· â˜… 4.5 Â· 24 min</span></div></div>
+            </div>
+            <div class="scr-nav">
+              <span class="on"><i>ðŸ </i>Home</span><span><i>ðŸ”</i>Search</span><span><i>ðŸ›’</i>Cart</span><span><i>â†»</i>Reorder</span>
+            </div>
+          </div>
+        </div></div>
+        <p class="scroll-hint">â†• scroll inside the phone</p>
+      </div>
+    </div>
+
+    <!-- 2C -->
+    <div class="panel" id="panel-2c" role="tabpanel" aria-labelledby="tab-2c" hidden>
+      <div class="p-info">
+        <h3>Vikram has ordered 12 times â€” from 12 different restaurants.</h3>
+        <p>He's loyal to the platform, not to any kitchen. The homepage's job is pure discovery: what's excellent and what's trending right now, with his past taste only a minor factor.</p>
+        <div class="p-block">
+          <h4>His behaviour dials</h4>
+          <div class="dials">
+            <div class="dial"><span>repeat</span><div class="d-track"><div class="d-fill" style="width:0%"></div></div><span class="d-val">0.00</span></div>
+            <div class="dial"><span>variety</span><div class="d-track"><div class="d-fill" style="width:0%"></div></div><span class="d-val">0.00</span></div>
+            <div class="dial hot"><span>explore</span><div class="d-track"><div class="d-fill" style="width:100%"></div></div><span class="d-val">1.00</span></div>
+          </div>
+        </div>
+        <div class="p-block">
+          <h4>Homepage strategy</h4>
+          <p><strong>Hero = the best of right now.</strong> Slot-aware discovery (the best dinner options at dinner time) plus a trending section powered by a search-grounded agent â€” every trending dish verified as actually orderable in his city.</p>
+        </div>
+        <a class="try-live" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Try it live â€” log in as Vikram Bose â†—</a>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen">
+          <div class="notch"><i></i></div>
+          <div class="scr-pad">
+            <div class="scr-addr"><span class="pin">ðŸ“</span><b>Connaught Place</b><span>Delhi</span></div>
+            <div class="scr-search">ðŸ”<span>Search anythingâ€¦</span></div>
+            <div style="display:flex; gap:5px; margin:-6px 0 12px; flex-wrap:wrap;">
+              <span style="font-size:8.5px; color:var(--faint); padding:3px 8px; border:1px solid var(--line); border-radius:999px;">ðŸ• momos</span>
+              <span style="font-size:8.5px; color:var(--faint); padding:3px 8px; border:1px solid var(--line); border-radius:999px;">ðŸ• kunafa</span>
+              <span style="font-size:8.5px; color:var(--faint); padding:3px 8px; border:1px solid var(--line); border-radius:999px;">ðŸ• pizza</span>
+            </div>
+            <div class="scr-cats">
+              <div class="scr-cat"><i>ðŸ¥Ÿ</i><span>Momos</span></div>
+              <div class="scr-cat"><i>ðŸ§‡</i><span>Waffles</span></div>
+              <div class="scr-cat"><i>ðŸœ</i><span>Thai</span></div>
+              <div class="scr-cat"><i>ðŸ›</i><span>Biryani</span></div>
+              <div class="scr-cat"><i>ðŸ•</i><span>Pizza</span></div>
+            </div>
+            <div class="scr-sec">Best dinner near you right now <small>THIS SLOT</small></div>
+            <div class="scr-hero">
+              <b>Tonight's strongest tables</b>
+              <p>quality first â€” 9 cuisines you've loved, 9,000 you haven't</p>
+              <div class="scr-cards">
+                <div class="scr-card"><div class="scr-img gc"><span class="rate">â˜… 4.6</span></div><b>Moti Mahal Delux</b><span>North Indian Â· 26 min</span></div>
+                <div class="scr-card"><div class="scr-img ga"><span class="rate">â˜… 4.4</span></div><b>Biryani Blues</b><span>Biryani Â· 22 min</span></div>
+              </div>
+            </div>
+            <div class="scr-sec">Trending near you ðŸ”¥ <small>SEARCH-GROUNDED</small></div>
+            <div class="scr-row">
+              <div class="scr-tile"><b>Chicken Biryani</b><span>India's #1 this week</span></div>
+              <div class="scr-tile"><b>Korean Cream Bun</b><span>viral on reels</span></div>
+              <div class="scr-tile"><b>Kunafa Chocolate</b><span>rising fast</span></div>
+            </div>
+            <div class="scr-banner"><b>Cool Treats for a Sweet Escape</b><span>the AI read the Delhi heat</span></div>
+            <div class="scr-sec">More places you'd enjoy</div>
+            <div class="scr-list">
+              <div class="scr-li"><i class="gb"></i><div><b>Wonder Bao</b><span>Chinese Â· â˜… 4.3 Â· 30 min</span></div></div>
+              <div class="scr-li"><i class="gc"></i><div><b>The Good Bowl</b><span>Thai Â· â˜… 4.4 Â· 27 min</span></div></div>
+            </div>
+            <div class="scr-nav">
+              <span class="on"><i>ðŸ </i>Home</span><span><i>ðŸ”</i>Search</span><span><i>ðŸ›’</i>Cart</span><span><i>â†»</i>Reorder</span>
+            </div>
+          </div>
+        </div></div>
+        <p class="scroll-hint">â†• scroll inside the phone</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- â”€â”€ LIVE BUILD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <section>
+    <p class="kicker">In the live build</p>
+    <h2>Small details, real product feel</h2>
+    <div class="grid3">
+      <div class="cell"><h3><b>Search that remembers</b></h3><p>Live search across 86,800 real menu items, with recently-searched memory and a popular-dishes photo grid.</p></div>
+      <div class="cell"><h3><b>Real food photography</b></h3><p>Every dish, restaurant, and category tile carries a real photo â€” matched by keyword, deterministic per dish.</p></div>
+      <div class="cell"><h3><b>Draggable everything</b></h3><p>The glass nav pill slides under your finger; every carousel drags with mouse or touch.</p></div>
+      <div class="cell"><h3><b>Multi-restaurant cart</b></h3><p>Mix dishes from several places; the cart groups and labels them cleanly.</p></div>
+      <div class="cell"><h3><b>Micro-delight</b></h3><p>Spring-physics add-to-cart, confetti on order success, staggered card reveals.</p></div>
+      <div class="cell"><h3><b>Honest demo edges</b></h3><p>Unbuilt sections are visibly disabled â€” no dead ends, no fake doors.</p></div>
+    </div>
+  </section>
+
+  <!-- â”€â”€ HOW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <section>
+    <p class="kicker">How it works</p>
+    <h2>Four steps, one honest trick</h2>
+    <p>
+      No training, no fine-tuning, no black box. Behaviour is scored with plain arithmetic;
+      the LLM only ranks, assembles, and explains â€” it's never allowed to invent.
+    </p>
+    <div class="steps">
+      <div class="stepc"><div class="n">1</div><h3>Score</h3><p>Order history â†’ three behaviour dials. The dominant dial picks the strategy.</p></div>
+      <div class="stepc"><div class="n">2</div><h3>Retrieve</h3><p>RAG filters 8,680 real restaurants (86,800 dishes, 9 cities) to ~15 grounded candidates.</p></div>
+      <div class="stepc"><div class="n">3</div><h3>Generate</h3><p>Gemini assembles the homepage as strict JSON â€” a reason on every item.</p></div>
+      <div class="stepc"><div class="n">4</div><h3>Serve</h3><p>Facts re-verified against the database; cached 30 min per user per meal slot.</p></div>
+    </div>
+    <div class="formula">
+      repeat&nbsp;&nbsp;= orders repeating a (restaurant, dish) pair Ã· total&nbsp;&nbsp;<span class="c">// the usual</span><br>
+      variety = distinct dishes Ã· visits, where visits â‰¥ 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c">// loyal but curious</span><br>
+      explore = distinct restaurants Ã· total orders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c">// never the same place</span><br>
+      persona = <span class="a">argmax</span>(normalise(repeat, variety, explore))
+    </div>
+  </section>
+
+  <!-- â”€â”€ DECISIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <section>
+    <p class="kicker">Decisions I'd defend</p>
+    <h2>The judgment calls behind it</h2>
+    <div class="grid3">
+      <div class="cell"><h3><b>Why LLM + RAG</b></h3><p>Rules can't reason; an ungrounded LLM invents restaurants. Retrieval feeds it only real, orderable places â€” grounded <em>and</em> smart.</p></div>
+      <div class="cell"><h3><b>Degrade, never break</b></h3><p>Model waterfall with retries; if all models are busy, a handsome non-AI homepage ships instead of an error.</p></div>
+      <div class="cell"><h3><b>Facts stay verified</b></h3><p>The AI writes the story; the database overwrites the numbers â€” ratings and delivery times are never the model's word.</p></div>
+      <div class="cell"><h3><b>Diet is sacred</b></h3><p>A declared diet is an unbreakable constraint. Jain and vegan are never guessed â€” guessing wrong is real harm.</p></div>
+      <div class="cell"><h3><b>Location is consent</b></h3><p>Listings need live GPS permission â€” no quiet fallback to a stored address you may not be at.</p></div>
+      <div class="cell"><h3><b>Cost by design</b></h3><p>30-min homepage cache per user per slot; 24-hour trend cache. AI cost scales with people, not page loads.</p></div>
+    </div>
+  </section>
+
+  <!-- â”€â”€ STACK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <section>
+    <p class="kicker">Under the hood</p>
+    <h2>Stack &amp; candour</h2>
+    <div class="chips">
+      <span class="chip hot">Gemini 2.5 Flash</span>
+      <span class="chip hot">RAG over Postgres</span>
+      <span class="chip">Next.js 16</span>
+      <span class="chip">TypeScript</span>
+      <span class="chip">Supabase</span>
+      <span class="chip">Framer Motion</span>
+      <span class="chip">Google Search grounding</span>
+      <span class="chip">Vercel</span>
+    </div>
+    <p style="margin-top:20px;">
+      Built end-to-end with AI-assisted development: the product thinking, behavioural model, and every constraint above
+      are mine â€” the implementation was produced by directing AI coding agents, verified feature by feature on the live app.
+    </p>
+    <p>
+      <strong>Real vs simulated, honestly:</strong> the restaurant base is a real public dataset; dish menus and user
+      order histories are synthesised on top. A scoped demonstration â€” at platform scale it runs on real order data.
+    </p>
+  </section>
+
+  <footer>
+    <span><b>Simran Sharma</b> Â· Personal concept project, not affiliated with Swiggy</span>
+    <a href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Live demo</a>
+    <a href="https://github.com/sharmasimran22122001-lang/swiggy_ai" target="_blank" rel="noopener">GitHub</a>
+    <a href="mailto:sharmasimran22122001@gmail.com">sharmasimran22122001@gmail.com</a>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+    function select(tab) {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        var panel = document.getElementById(t.getAttribute('aria-controls'));
+        panel.classList.toggle('on', on);
+        if (on) { panel.removeAttribute('hidden'); } else { panel.setAttribute('hidden', ''); }
+      });
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { select(t); });
+      t.addEventListener('keydown', function (e) {
+        var next = null;
+        if (e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
+        if (e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
+        if (next) { next.focus(); select(next); e.preventDefault(); }
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
