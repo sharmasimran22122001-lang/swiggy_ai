@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronDown, Search, Mic, Bell, ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
@@ -10,6 +10,7 @@ interface Props {
   userCity?: string
   onLogout: () => void
   onCartClick?: () => void
+  onSearchClick?: () => void
 }
 
 const VERTICALS = [
@@ -19,10 +20,42 @@ const VERTICALS = [
   { label: 'Scenes',    icon: '🎭' },
 ]
 
-export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, onCartClick }: Props) {
+export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, onCartClick, onSearchClick }: Props) {
   const [vegMode, setVegMode] = useState(false)
   const [activeIdx, setActiveIdx] = useState(0)
+  // While dragging: fractional slot position the pill follows; null when idle
+  const [dragPos, setDragPos] = useState<number | null>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const dragging = useRef(false)
   const { totalItems } = useCart()
+
+  const N = VERTICALS.length
+
+  // Pointer x → fractional slot index (0 … N-1), pill centred under the pointer
+  function slotFromPointer(clientX: number): number {
+    const el = trackRef.current
+    if (!el) return activeIdx
+    const rect = el.getBoundingClientRect()
+    const inner = rect.width - 10 // minus 5px padding each side
+    const frac = (clientX - rect.left - 5) / inner
+    return Math.min(N - 1, Math.max(0, frac * N - 0.5))
+  }
+
+  function onTrackPointerDown(e: React.PointerEvent) {
+    dragging.current = true
+    trackRef.current?.setPointerCapture(e.pointerId)
+    // Don't move the pill yet — a plain tap should glide smoothly on release
+  }
+  function onTrackPointerMove(e: React.PointerEvent) {
+    if (!dragging.current) return
+    setDragPos(slotFromPointer(e.clientX)) // pill follows the finger
+  }
+  function onTrackPointerUp(e: React.PointerEvent) {
+    if (!dragging.current) return
+    dragging.current = false
+    setActiveIdx(Math.round(slotFromPointer(e.clientX)))
+    setDragPos(null)
+  }
 
   return (
     <div className="bg-white sticky top-0 z-50 shadow-sm w-full">
@@ -65,8 +98,13 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
         </div>
       </div>
 
-      {/* Row 2: Light-gray track + one sliding glass pill */}
+      {/* Row 2: Light-gray track + one glass pill — tap a tab OR drag the pill */}
       <div
+        ref={trackRef}
+        onPointerDown={onTrackPointerDown}
+        onPointerMove={onTrackPointerMove}
+        onPointerUp={onTrackPointerUp}
+        onPointerCancel={onTrackPointerUp}
         style={{
           margin: '0 14px 11px',
           background: '#EAEAEC',
@@ -75,38 +113,39 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
           overflow: 'visible',
           boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.09)',
           position: 'relative',
+          touchAction: 'none',   // horizontal drag works on touch without scrolling the page
+          cursor: 'grab',
+          userSelect: 'none',
         }}
       >
-        {/* ── The pill is a single element that slides between tab slots ── */}
+        {/* ── The pill slides between slots on tap, and follows the finger on drag ── */}
         <div
           aria-hidden
           style={{
             position: 'absolute',
             top: -3,
             bottom: -3,
-            left: `calc(5px + ${activeIdx} * ((100% - 10px) / ${VERTICALS.length}))`,
-            width: `calc((100% - 10px) / ${VERTICALS.length})`,
+            left: `calc(5px + ${dragPos ?? activeIdx} * ((100% - 10px) / ${N}))`,
+            width: `calc((100% - 10px) / ${N})`,
             borderRadius: 11,
             background: 'rgba(255,255,255,0.94)',
             backdropFilter: 'blur(10px)',
             WebkitBackdropFilter: 'blur(10px)',
             border: '1px solid rgba(255,255,255,0.95)',
             boxShadow: '0 4px 14px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.08)',
-            transition: 'left 0.38s cubic-bezier(0.3, 1.25, 0.4, 1)',
+            transition: dragPos !== null ? 'none' : 'left 0.38s cubic-bezier(0.3, 1.25, 0.4, 1)',
             pointerEvents: 'none',
             zIndex: 0,
           }}
         />
         <div className="flex items-center w-full">
           {VERTICALS.map(({ label, icon }, i) => {
-            const isActive = i === activeIdx
+            const isActive = i === (dragPos !== null ? Math.round(dragPos) : activeIdx)
             return (
-              <motion.button
+              <div
                 key={label}
-                onClick={() => setActiveIdx(i)}
-                whileTap={{ scale: 0.96 }}
                 className="relative flex-1 flex flex-col items-center justify-center"
-                style={{ paddingTop: 10, paddingBottom: 10, minWidth: 0, zIndex: 1 }}
+                style={{ paddingTop: 10, paddingBottom: 10, minWidth: 0, zIndex: 1, pointerEvents: 'none' }}
               >
                 <span
                   style={{
@@ -130,7 +169,7 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
                 >
                   {label}
                 </span>
-              </motion.button>
+              </div>
             )
           })}
         </div>
@@ -138,11 +177,15 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
 
       {/* Row 3: Search + VEG — below the tab strip */}
       <div className="flex items-center gap-2 px-4 pb-3">
-        <div className="flex-1 flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2.5 min-w-0">
+        <button
+          onClick={onSearchClick}
+          className="flex-1 flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2.5 min-w-0 text-left active:opacity-70"
+          aria-label="Search for restaurants and food"
+        >
           <Search className="w-4 h-4 text-gray-400 shrink-0" />
           <span className="text-sm text-gray-400 truncate flex-1">Search for restaurants and food</span>
           <Mic className="w-4 h-4 shrink-0" style={{ color: '#FC8019' }} />
-        </div>
+        </button>
         <div className="flex items-center gap-1 shrink-0">
           <span className="text-[11px] font-bold text-gray-600">VEG</span>
           <button

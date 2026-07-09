@@ -12,6 +12,7 @@ import OrderSuccess from '@/components/OrderSuccess'
 import CategoryPage from '@/components/CategoryPage'
 import DishPage from '@/components/DishPage'
 import TrendingAllPage from '@/components/TrendingAllPage'
+import SearchPage from '@/components/SearchPage'
 import { CartProvider, useCart } from '@/contexts/CartContext'
 import { useLocation } from '@/hooks/useLocation'
 import type { HomepageJSON, UserProfile, TimeSlot, TrendMatch } from '@/types'
@@ -26,7 +27,7 @@ interface PipelineResult {
   fromCache: boolean
 }
 
-type View = 'home' | 'restaurant' | 'cart' | 'success' | 'category' | 'dish' | 'trendingAll'
+type View = 'home' | 'restaurant' | 'cart' | 'success' | 'category' | 'dish' | 'trendingAll' | 'search'
 
 interface CategoryState {
   name: string
@@ -216,6 +217,17 @@ function AppInner() {
                 </motion.div>
               )}
 
+              {/* ── Search ── */}
+              {view === 'search' && (
+                <motion.div key="search" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                  <SearchPage
+                    city={result?.profile.city}
+                    onBack={() => setView('home')}
+                    onRestaurantSelect={handleRestaurantSelect}
+                  />
+                </motion.div>
+              )}
+
               {/* ── Trending all ── */}
               {view === 'trendingAll' && (
                 <motion.div key="trendingAll" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
@@ -267,6 +279,7 @@ function AppInner() {
                     userCity={result?.profile.city}
                     onLogout={handleLogout}
                     onCartClick={() => setView('cart')}
+                    onSearchClick={() => setView('search')}
                   />
 
                   <div className="overflow-y-auto" style={{ paddingBottom: 64 }}>
