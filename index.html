@@ -223,13 +223,15 @@
   .m-ava { width: 21px; height: 21px; border-radius: 50%; background: #ffe3c8; color: #FC8019;
     font-size: 9.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
 
-  /* glass vertical toggle */
+  /* glass vertical toggle — pill really slides (tap any tab) */
   .m-toggle { margin: 2px 10px 8px; background: #EAEAEC; border-radius: 10px; padding: 3px;
-    display: flex; box-shadow: inset 0 1px 2px rgba(0,0,0,.08); }
-  .m-tg { flex: 1; text-align: center; padding: 5px 0 4px; border-radius: 8px; }
-  .m-tg i { font-style: normal; font-size: 11px; display: block; opacity: .4; }
-  .m-tg span { font-size: 7px; font-weight: 700; color: #9ca3af; }
-  .m-tg.on { background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+    display: flex; box-shadow: inset 0 1px 2px rgba(0,0,0,.08); position: relative; cursor: pointer; }
+  .m-pill { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / 4);
+    background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.12);
+    transition: left .38s cubic-bezier(.3, 1.25, .4, 1); }
+  .m-tg { flex: 1; text-align: center; padding: 5px 0 4px; border-radius: 8px; position: relative; z-index: 1; }
+  .m-tg i { font-style: normal; font-size: 11px; display: block; opacity: .4; transition: opacity .25s; }
+  .m-tg span { font-size: 7px; font-weight: 700; color: #9ca3af; transition: color .25s; }
   .m-tg.on i { opacity: 1; }
   .m-tg.on span { color: #3d4152; }
 
@@ -326,6 +328,47 @@
     white-space: nowrap; overflow: hidden; }
 
   .m-foot { text-align: center; font-size: 7.5px; color: #93959f; padding: 12px 0 14px; }
+
+  /* interactive bits — carousels drag, + springs, cart counts, search opens */
+  .m-hrow, .m-trow, .m-crow { overflow-x: auto; scrollbar-width: none; cursor: grab; }
+  .m-hrow::-webkit-scrollbar, .m-trow::-webkit-scrollbar, .m-crow::-webkit-scrollbar { display: none; }
+  .m-search { cursor: pointer; }
+  .m-plus { cursor: pointer; }
+  @keyframes mspring { 0% { transform: scale(1) } 30% { transform: scale(.62) rotate(-14deg) }
+    62% { transform: scale(1.32) rotate(9deg) } 100% { transform: scale(1) } }
+  .m-plus.spring { animation: mspring .42s cubic-bezier(.34,1.56,.64,1); }
+  .m-cart { position: relative; display: inline-block; }
+  .m-cartn { position: absolute; top: -5px; right: -7px; background: #FC8019; color: #fff;
+    font-size: 6px; font-weight: 800; font-style: normal; border-radius: 999px;
+    min-width: 10px; height: 10px; line-height: 10px; text-align: center; padding: 0 2px; display: none; }
+  .m-cartn.show { display: block; }
+  .m-toast { position: absolute; left: 10px; right: 10px; bottom: 52px; z-index: 8;
+    background: #3d4152; color: #fff; font-size: 8px; font-weight: 700;
+    padding: 7px 10px; border-radius: 8px; display: flex; justify-content: space-between; gap: 8px;
+    opacity: 0; transform: translateY(8px); transition: .25s; pointer-events: none; }
+  .m-toast.show { opacity: 1; transform: none; }
+  .m-toast b { color: #FC8019; font-weight: 800; }
+
+  /* in-phone search screen (replica of the live search page) */
+  .m-sscr { position: absolute; inset: 0; z-index: 9; background: #fff; border-radius: 30px;
+    display: none; flex-direction: column; }
+  .m-sscr.show { display: flex; }
+  .m-shdr { display: flex; align-items: center; gap: 6px; padding: 32px 10px 8px; border-bottom: 1px solid #eee; }
+  .m-back { width: 22px; height: 22px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fff;
+    font-size: 10px; color: #3d4152; cursor: pointer; flex-shrink: 0; }
+  .m-sin { flex: 1; display: flex; align-items: center; gap: 5px; background: #f3f4f6; border-radius: 8px; padding: 5px 8px; }
+  .m-sin input { border: 0; background: none; outline: none; font-size: 9px; color: #3d4152; width: 100%;
+    font-family: inherit; }
+  .m-sbody { padding: 12px 12px 0; overflow-y: auto; }
+  .m-slabel { display: flex; align-items: center; gap: 4px; font-size: 7px; font-weight: 800;
+    letter-spacing: .07em; text-transform: uppercase; color: #93959f; margin: 0 0 7px; }
+  .m-rchips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 16px; }
+  .m-rchip { font-size: 7.5px; font-weight: 700; color: #3d4152; background: #fafafa;
+    border: 1px solid #e0e0e0; border-radius: 999px; padding: 4px 9px; cursor: pointer; }
+  .m-pgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+  .m-ptile { cursor: pointer; text-align: center; }
+  .m-ptile .m-ph { width: 100%; aspect-ratio: 1; border-radius: 10px; }
+  .m-ptile span { display: block; font-size: 7px; font-weight: 700; color: #3d4152; margin-top: 3px; }
 
   /* bottom nav — Food active, rest disabled (as in live build) */
   .m-nav { position: sticky; bottom: 0; z-index: 6; display: flex; background: #fff;
@@ -499,9 +542,10 @@
           <div class="m-white">
             <div class="m-top">
               <div class="m-addr"><small>HOME ▾</small><b>T Nagar, Chennai</b></div>
-              <div class="m-ic">🔔 🛒 <span class="m-ava">K</span></div>
+              <div class="m-ic">🔔 <span class="m-cart">🛒<i class="m-cartn">0</i></span> <span class="m-ava">K</span></div>
             </div>
             <div class="m-toggle">
+              <i class="m-pill" aria-hidden="true"></i>
               <div class="m-tg on"><i>🍔</i><span>Food</span></div>
               <div class="m-tg"><i>⚡</i><span>Instamart</span></div>
               <div class="m-tg"><i>🍽️</i><span>Dineout</span></div>
@@ -562,7 +606,7 @@
             <div class="m-ni off"><i>↻</i><span>Reorder</span></div>
           </div>
         </div></div>
-        <p class="scroll-hint">↕ scroll inside the phone — replica of the live build</p>
+        <p class="scroll-hint">interactive replica — scroll it, slide the toggle, tap search &amp; the + buttons</p>
       </div>
     </div>
 
@@ -591,9 +635,10 @@
           <div class="m-white">
             <div class="m-top">
               <div class="m-addr"><small>HOME ▾</small><b>Bandra West, Mumbai</b></div>
-              <div class="m-ic">🔔 🛒 <span class="m-ava">P</span></div>
+              <div class="m-ic">🔔 <span class="m-cart">🛒<i class="m-cartn">0</i></span> <span class="m-ava">P</span></div>
             </div>
             <div class="m-toggle">
+              <i class="m-pill" aria-hidden="true"></i>
               <div class="m-tg on"><i>🍔</i><span>Food</span></div>
               <div class="m-tg"><i>⚡</i><span>Instamart</span></div>
               <div class="m-tg"><i>🍽️</i><span>Dineout</span></div>
@@ -656,7 +701,7 @@
             <div class="m-ni off"><i>↻</i><span>Reorder</span></div>
           </div>
         </div></div>
-        <p class="scroll-hint">↕ scroll inside the phone — replica of the live build</p>
+        <p class="scroll-hint">interactive replica — scroll it, slide the toggle, tap search &amp; the + buttons</p>
       </div>
     </div>
 
@@ -685,9 +730,10 @@
           <div class="m-white">
             <div class="m-top">
               <div class="m-addr"><small>HOME ▾</small><b>Connaught Place, Delhi</b></div>
-              <div class="m-ic">🔔 🛒 <span class="m-ava">V</span></div>
+              <div class="m-ic">🔔 <span class="m-cart">🛒<i class="m-cartn">0</i></span> <span class="m-ava">V</span></div>
             </div>
             <div class="m-toggle">
+              <i class="m-pill" aria-hidden="true"></i>
               <div class="m-tg on"><i>🍔</i><span>Food</span></div>
               <div class="m-tg"><i>⚡</i><span>Instamart</span></div>
               <div class="m-tg"><i>🍽️</i><span>Dineout</span></div>
@@ -747,7 +793,7 @@
             <div class="m-ni off"><i>↻</i><span>Reorder</span></div>
           </div>
         </div></div>
-        <p class="scroll-hint">↕ scroll inside the phone — replica of the live build</p>
+        <p class="scroll-hint">interactive replica — scroll it, slide the toggle, tap search &amp; the + buttons</p>
       </div>
     </div>
   </section>
@@ -837,6 +883,7 @@
 
 <script>
   (function () {
+    /* ── persona tabs ── */
     var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
     function select(tab) {
       tabs.forEach(function (t) {
@@ -854,6 +901,104 @@
         if (e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
         if (e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
         if (next) { next.focus(); select(next); e.preventDefault(); }
+      });
+    });
+
+    /* ── phone: sliding glass toggle ── */
+    document.querySelectorAll('.m-toggle').forEach(function (tog) {
+      var pill = tog.querySelector('.m-pill');
+      var tgs = Array.prototype.slice.call(tog.querySelectorAll('.m-tg'));
+      tgs.forEach(function (tg, i) {
+        tg.addEventListener('click', function () {
+          tgs.forEach(function (x) { x.classList.remove('on'); });
+          tg.classList.add('on');
+          pill.style.left = 'calc(3px + ' + i + ' * ((100% - 6px) / 4))';
+        });
+      });
+    });
+
+    /* ── phone: drag-to-scroll carousels (mouse; touch scrolls natively) ── */
+    document.querySelectorAll('.m-hrow, .m-trow, .m-crow').forEach(function (row) {
+      var down = false, sx = 0, sl = 0;
+      row.addEventListener('pointerdown', function (e) {
+        if (e.pointerType !== 'mouse') return;
+        down = true; sx = e.clientX; sl = row.scrollLeft;
+      });
+      row.addEventListener('pointermove', function (e) {
+        if (!down) return;
+        row.scrollLeft = sl - (e.clientX - sx);
+      });
+      ['pointerup', 'pointerleave'].forEach(function (ev) {
+        row.addEventListener(ev, function () { down = false; });
+      });
+    });
+
+    /* ── phone: spring add-to-cart + badge + toast ── */
+    function toastIn(screen, dish) {
+      var t = screen.querySelector('.m-toast');
+      if (!t) {
+        t = document.createElement('div');
+        t.className = 'm-toast';
+        screen.appendChild(t);
+      }
+      t.innerHTML = '✓ ' + dish + ' added &nbsp;·&nbsp; <b>full flow in the live demo</b>';
+      t.classList.add('show');
+      clearTimeout(t._h);
+      t._h = setTimeout(function () { t.classList.remove('show'); }, 1800);
+    }
+    document.querySelectorAll('.m-plus').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        btn.classList.remove('spring'); void btn.offsetWidth; btn.classList.add('spring');
+        var screen = btn.closest('.screen');
+        var n = screen.querySelector('.m-cartn');
+        n.textContent = (parseInt(n.textContent, 10) || 0) + 1;
+        n.classList.add('show');
+        var card = btn.closest('.m-hcard, .m-rcard, .m-tcard');
+        var name = card && card.querySelector('b') ? card.querySelector('b').textContent : 'Item';
+        toastIn(screen, name);
+      });
+    });
+
+    /* ── phone: search screen replica ── */
+    var PHOTO = function (id) { return 'https://images.unsplash.com/' + id + '?w=160&q=60&auto=format&fit=crop'; };
+    var POPULAR = [
+      ['Biryani', 'photo-1563379091339-03b21ab4a4f8'],
+      ['Pizza', 'photo-1513104890138-7c749659a591'],
+      ['Momos', 'photo-1563245372-f21724e3856d'],
+      ['Chai', 'photo-1571934811356-5cc061b6821f']
+    ];
+    document.querySelectorAll('.m-search').forEach(function (bar) {
+      bar.addEventListener('click', function () {
+        var screen = bar.closest('.screen');
+        var scr = screen.querySelector('.m-sscr');
+        if (!scr) {
+          var addr = screen.querySelector('.m-addr b').textContent;
+          var city = addr.indexOf(',') > -1 ? addr.split(',')[1].trim() : addr;
+          scr = document.createElement('div');
+          scr.className = 'm-sscr';
+          scr.innerHTML =
+            '<div class="m-shdr"><button class="m-back">←</button>' +
+            '<div class="m-sin">🔍<input placeholder="Search for restaurants and food"></div></div>' +
+            '<div class="m-sbody">' +
+            '<div class="m-slabel">🕐 Recently searched</div>' +
+            '<div class="m-rchips"><span class="m-rchip">🕐 momos</span><span class="m-rchip">🕐 kunafa</span><span class="m-rchip">🕐 pizza</span></div>' +
+            '<div class="m-slabel">📈 Popular right now in ' + city + '</div>' +
+            '<div class="m-pgrid">' + POPULAR.map(function (p) {
+              return '<div class="m-ptile"><div class="m-ph"><img src="' + PHOTO(p[1]) + '" alt="" loading="lazy" onerror="this.remove()"></div><span>' + p[0] + '</span></div>';
+            }).join('') + '</div></div>';
+          screen.appendChild(scr);
+          scr.querySelector('.m-back').addEventListener('click', function () { scr.classList.remove('show'); });
+          scr.querySelectorAll('.m-rchip, .m-ptile').forEach(function (el) {
+            el.addEventListener('click', function () {
+              scr.querySelector('input').value = el.textContent.replace('🕐', '').trim();
+              scr.querySelector('input').focus();
+            });
+          });
+        }
+        scr.classList.add('show');
+        var inp = scr.querySelector('input');
+        setTimeout(function () { inp.focus(); }, 60);
       });
     });
   })();
