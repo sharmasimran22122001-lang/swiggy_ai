@@ -1,9 +1,18 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Search, X } from 'lucide-react'
+import { ArrowLeft, Search, X, Clock, TrendingUp } from 'lucide-react'
 import FoodImg from './FoodImg'
 import type { RestaurantInfo } from './RestaurantPage'
+
+const RECENT_KEY = 'swiggy_recent_searches'
+
+function loadRecent(): string[] {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]') } catch { return [] }
+}
+function persistRecent(list: string[]) {
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)) } catch { /* private mode */ }
+}
 
 interface SearchResult {
   name: string
@@ -21,16 +30,31 @@ interface Props {
   onRestaurantSelect: (info: RestaurantInfo) => void
 }
 
-const POPULAR = ['Biryani', 'Pizza', 'Burger', 'Dosa', 'Momos', 'Chai', 'Ice Cream', 'Paneer']
+// Popular dishes shown as photo tiles in the empty state
+const POPULAR = ['Biryani', 'Pizza', 'Burger', 'Momos', 'Dosa', 'Paneer', 'Rolls', 'Ice Cream']
 
 export default function SearchPage({ city, onBack, onRestaurantSelect }: Props) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
   const [searching, setSearching] = useState(false)
   const [searched, setSearched] = useState(false)
+  const [recent, setRecent] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => { inputRef.current?.focus() }, [])
+  useEffect(() => { inputRef.current?.focus(); setRecent(loadRecent()) }, [])
+
+  function saveRecent(q: string) {
+    const clean = q.trim()
+    if (clean.length < 2) return
+    const next = [clean, ...recent.filter(r => r.toLowerCase() !== clean.toLowerCase())].slice(0, 8)
+    setRecent(next)
+    persistRecent(next)
+  }
+
+  function clearRecent() {
+    setRecent([])
+    persistRecent([])
+  }
 
   // Debounced live search
   useEffect(() => {
@@ -73,6 +97,7 @@ export default function SearchPage({ city, onBack, onRestaurantSelect }: Props) 
             ref={inputRef}
             value={query}
             onChange={e => setQuery(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') saveRecent(query) }}
             placeholder={`Search restaurants & dishes${city ? ` in ${city}` : ''}`}
             className="flex-1 bg-transparent outline-none min-w-0"
             style={{ fontSize: 13.5, color: '#3d4152' }}
@@ -85,22 +110,64 @@ export default function SearchPage({ city, onBack, onRestaurantSelect }: Props) 
         </div>
       </div>
 
-      {/* Popular chips (empty state) */}
+      {/* Empty state: recently searched + popular photo grid */}
       {query.trim().length < 2 && (
         <div style={{ padding: '18px 15px' }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#93959f', marginBottom: 10 }}>
-            Popular searches
-          </p>
-          <div className="flex flex-wrap" style={{ gap: 8 }}>
-            {POPULAR.map(p => (
-              <button
+
+          {/* ── Recently searched ── */}
+          {recent.length > 0 && (
+            <div style={{ marginBottom: 26 }}>
+              <div className="flex items-center justify-between" style={{ marginBottom: 10 }}>
+                <div className="flex items-center" style={{ gap: 6 }}>
+                  <Clock size={13} color="#93959f" />
+                  <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#93959f' }}>
+                    Recently searched
+                  </p>
+                </div>
+                <button onClick={clearRecent} style={{ fontSize: 11, fontWeight: 700, color: '#FC8019' }}>
+                  Clear
+                </button>
+              </div>
+              <div className="flex flex-wrap" style={{ gap: 8 }}>
+                {recent.map(r => (
+                  <button
+                    key={r}
+                    onClick={() => setQuery(r)}
+                    className="flex items-center active:scale-95 transition-transform"
+                    style={{ gap: 6, fontSize: 12, fontWeight: 600, color: '#3d4152', border: '1px solid #e0e0e0', borderRadius: 18, padding: '7px 13px', background: '#fafafa' }}
+                  >
+                    <Clock size={11} color="#bdbdbd" />
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── Popular right now ── */}
+          <div className="flex items-center" style={{ gap: 6, marginBottom: 12 }}>
+            <TrendingUp size={13} color="#FC8019" />
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#93959f' }}>
+              Popular right now{city ? ` in ${city}` : ''}
+            </p>
+          </div>
+          <div className="grid grid-cols-4" style={{ gap: 10 }}>
+            {POPULAR.map((p, i) => (
+              <motion.button
                 key={p}
-                onClick={() => setQuery(p)}
-                className="active:scale-95 transition-transform"
-                style={{ fontSize: 12, fontWeight: 600, color: '#3d4152', border: '1px solid #e0e0e0', borderRadius: 18, padding: '7px 14px', background: '#fff' }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.045 }}
+                onClick={() => { setQuery(p); saveRecent(p) }}
+                className="flex flex-col items-center active:scale-95 transition-transform"
+                style={{ gap: 6 }}
               >
-                {p}
-              </button>
+                <div className="rounded-[14px] overflow-hidden w-full relative" style={{ aspectRatio: '1' }}>
+                  <FoodImg name={p} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.25), transparent 45%)' }} />
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 650, color: '#3d4152' }}>{p}</span>
+              </motion.button>
             ))}
           </div>
         </div>
@@ -133,13 +200,16 @@ export default function SearchPage({ city, onBack, onRestaurantSelect }: Props) 
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(i * 0.04, 0.3) }}
-              onClick={() => onRestaurantSelect({
-                name: r.name,
-                area: r.area,
-                cuisines: r.cuisines,
-                rating: r.rating,
-                delivery_min: r.delivery_min,
-              })}
+              onClick={() => {
+                saveRecent(query)
+                onRestaurantSelect({
+                  name: r.name,
+                  area: r.area,
+                  cuisines: r.cuisines,
+                  rating: r.rating,
+                  delivery_min: r.delivery_min,
+                })
+              }}
               className="flex items-center gap-3 cursor-pointer active:bg-gray-50"
               style={{ padding: '11px 15px', borderBottom: '1px solid #f0f0f0' }}
             >
