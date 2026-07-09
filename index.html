@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Swiggy AI â€” Persona-Driven Food Delivery Homepage</title>
+<title>Swiggy AI — Persona-Driven Food Delivery Homepage</title>
 <style>
   :root {
     --bg: #ffffff;
@@ -69,7 +69,7 @@
     @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
   }
 
-  /* â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Hero ─────────────────────────────── */
   .hero {
     margin: 26px -24px 0; padding: 74px 24px 66px;
     background:
@@ -106,7 +106,7 @@
   .btn-ghost:hover { text-decoration: none; border-color: var(--accent); }
   .cta-note { font-size: 12.5px; color: var(--faint); margin-top: 16px; }
 
-  /* â”€â”€ Sections â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Sections ─────────────────────────── */
   section { padding: 62px 0 0; }
   .kicker {
     display: flex; align-items: center; gap: 10px;
@@ -121,7 +121,7 @@
   section > p { max-width: 64ch; color: var(--muted); margin: 0 0 14px; font-size: 16px; }
   section > p strong { color: var(--ink); font-weight: 650; }
 
-  /* â”€â”€ Why: bars + ladder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Why: bars + ladder ───────────────── */
   .why-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: start; margin-top: 8px; }
   @media (max-width: 760px) { .why-grid { grid-template-columns: 1fr; gap: 26px; } }
   .bars { display: flex; flex-direction: column; gap: 10px; }
@@ -147,7 +147,7 @@
   .ladder .rung.end { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
   .ladder .arrow { color: var(--faint); font-weight: 800; }
 
-  /* â”€â”€ Persona tabs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Persona tabs ─────────────────────── */
   .tabs { display: flex; gap: 10px; margin: 26px 0 0; flex-wrap: wrap; }
   .tab {
     flex: 1; min-width: 150px; text-align: left; cursor: pointer;
@@ -193,16 +193,16 @@
   }
   .try-live:hover { text-decoration: none; filter: brightness(.97); }
 
-  /* â”€â”€ Phone prototype â€” 1:1 replica of the live build UI â”€â”€ */
+  /* ── Phone prototype — 1:1 replica of the live build UI ── */
   .phone-wrap { width: 300px; max-width: 100%; }
   .phone {
     background: #1d1e23; border-radius: 38px; padding: 10px;
     box-shadow: 0 24px 48px -20px rgba(0,0,0,.35);
   }
   .screen {
-    background: #f4f4f4; border-radius: 30px; height: 560px; overflow-y: auto;
+    background: #f4f4f4; border-radius: 30px; height: 640px; overflow-y: auto;
     scrollbar-width: none; position: relative;
-    color: #3d4152; /* app is light-theme only â€” matches live build */
+    color: #3d4152; /* app is light-theme only — matches live build */
   }
   .screen::-webkit-scrollbar { display: none; }
   .notch {
@@ -327,7 +327,7 @@
 
   .m-foot { text-align: center; font-size: 7.5px; color: #93959f; padding: 12px 0 14px; }
 
-  /* bottom nav â€” Food active, rest disabled (as in live build) */
+  /* bottom nav — Food active, rest disabled (as in live build) */
   .m-nav { position: sticky; bottom: 0; z-index: 6; display: flex; background: #fff;
     border-top: 1px solid #e5e7eb; padding: 5px 0 9px; }
   .m-ni { flex: 1; text-align: center; position: relative; padding-top: 4px; }
@@ -340,7 +340,7 @@
   .m-badge { position: absolute; top: 0; right: 6%; font-size: 4.5px; font-weight: 900; color: #fff;
     border-radius: 3px; padding: 1px 3px; line-height: 1.2; }
 
-  /* â”€â”€ Steps strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Steps strip ──────────────────────── */
   .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 26px; }
   @media (max-width: 760px) { .steps { grid-template-columns: 1fr 1fr; } }
   .stepc { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 16px; position: relative; }
@@ -354,7 +354,7 @@
   }
   .formula .c { color: #8d919d; } .formula .a { color: #ffab5e; }
 
-  /* â”€â”€ Decision cells â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Decision cells ───────────────────── */
   .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
   @media (max-width: 760px) { .grid3 { grid-template-columns: 1fr; } }
   .cell { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
@@ -373,8 +373,8 @@
   }
   footer b { color: var(--ink); }
 
-  /* â”€â”€ Small-phone polish â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-  /* No overflow rules on html/body â€” they break scrolling inside the
+  /* ── Small-phone polish ───────────────── */
+  /* No overflow rules on html/body — they break scrolling inside the
      artifact frame. Horizontal overflow is prevented at the layout level. */
   @media (max-width: 560px) {
     .wrap { padding: 0 18px 72px; }
@@ -394,7 +394,7 @@
     .stepc h3 { margin: 2px 0 3px; }
     .formula { font-size: 11.5px; padding: 14px 16px; }
     .why-grid { gap: 30px; }
-    .screen { height: 500px; }
+    .screen { height: 580px; }
   }
   @media (max-width: 380px) {
     h1 { font-size: 32px; }
@@ -408,28 +408,28 @@
 
 <div class="wrap">
 
-  <!-- â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <!-- ── HERO ─────────────────────────────── -->
   <div class="hero">
-    <div class="wordmark rise">ðŸ› Swiggy AI Â· a concept by Simran Sharma</div>
+    <div class="wordmark rise">🍛 Swiggy AI · a concept by Simran Sharma</div>
     <h1 class="rise d1">Three kinds of eaters.<br>Three <em>homepages</em>.</h1>
     <p class="lede rise d2">
       A live product I designed and shipped: the homepage is assembled by AI, differently for
-      each person â€” <strong>by reading how they actually order</strong>.
+      each person — <strong>by reading how they actually order</strong>.
     </p>
     <div class="cta-row rise d3">
-      <a class="btn btn-primary" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Open the live demo â†—</a>
+      <a class="btn btn-primary" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Open the live demo ↗</a>
       <a class="btn btn-ghost" href="https://github.com/sharmasimran22122001-lang/swiggy_ai" target="_blank" rel="noopener">Source on GitHub</a>
     </div>
-    <p class="cta-note rise d3">Best on a phone or a narrow window Â· log in as any demo profile to feel the difference</p>
+    <p class="cta-note rise d3">Best on a phone or a narrow window · log in as any demo profile to feel the difference</p>
   </div>
 
-  <!-- â”€â”€ WHY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <!-- ── WHY ──────────────────────────────── -->
   <section>
     <p class="kicker">Why this, and for whom</p>
     <h2>Built for the user who matters most</h2>
     <p>
       I sized the audience by <strong>profit contribution</strong> before writing a single requirement.
-      One segment towers over the rest â€” the returning regular â€” and that's who this homepage serves.
+      One segment towers over the rest — the returning regular — and that's who this homepage serves.
     </p>
     <div class="why-grid">
       <div>
@@ -440,26 +440,26 @@
           <div class="bar-row"><span class="lbl">Budget-driven</span><div><div class="bar-fill" style="width:5%"></div></div><span class="val">5%</span></div>
           <div class="bar-row"><span class="lbl">New user</span><div><div class="bar-fill" style="width:0%"></div></div><span class="val">0%</span></div>
         </div>
-        <p class="chart-cap">Estimated profit contribution by segment â€” my sizing exercise during design, used as the decision input.</p>
+        <p class="chart-cap">Estimated profit contribution by segment — my sizing exercise during design, used as the decision input.</p>
       </div>
       <div class="why-side">
         <h3>One segment, three personalities</h3>
-        <p>That 80% isn't one kind of user â€” order histories reveal three distinct eating personalities, and each deserves a different homepage. That's the whole product.</p>
+        <p>That 80% isn't one kind of user — order histories reveal three distinct eating personalities, and each deserves a different homepage. That's the whole product.</p>
         <h3>The growth thesis</h3>
         <p>Exploration drives incremental orders. So the north star is moving people up the exploration ladder:</p>
         <div class="ladder" aria-label="North star: from Loyalist to Explorer to Variety Seeker">
-          <span class="rung">Loyalist</span><span class="arrow">â†’</span>
-          <span class="rung">Explorer</span><span class="arrow">â†’</span>
+          <span class="rung">Loyalist</span><span class="arrow">→</span>
+          <span class="rung">Explorer</span><span class="arrow">→</span>
           <span class="rung end">Variety Seeker</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- â”€â”€ PERSONA TABS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <!-- ── PERSONA TABS ─────────────────────── -->
   <section>
     <p class="kicker">Meet the three eaters</p>
-    <h2>Pick a persona â€” see their homepage</h2>
+    <h2>Pick a persona — see their homepage</h2>
     <p>Each tab shows the behaviour, the logic, and a scrollable prototype of the homepage that persona gets. For the AI generating these live, open the demo.</p>
 
     <div class="tabs" role="tablist" aria-label="Personas">
@@ -478,7 +478,7 @@
     <div class="panel on" id="panel-2a" role="tabpanel" aria-labelledby="tab-2a">
       <div class="p-info">
         <h3>Kavitha orders chicken biryani from the same place, 8 times out of 10.</h3>
-        <p>She knows what she loves. The homepage's job is to deepen that trust â€” and gently widen her world <em>inside</em> the restaurant she already believes in.</p>
+        <p>She knows what she loves. The homepage's job is to deepen that trust — and gently widen her world <em>inside</em> the restaurant she already believes in.</p>
         <div class="p-block">
           <h4>Her behaviour dials</h4>
           <div class="dials">
@@ -489,37 +489,37 @@
         </div>
         <div class="p-block">
           <h4>Homepage strategy</h4>
-          <p><strong>Hero = her favourite restaurant, minus what she's tried.</strong> The AI leads with dishes she hasn't ordered at Ss Hyderabad Biryani â€” loyalty first, curiosity second. Her usual reorder stays one tap away.</p>
+          <p><strong>Hero = her favourite restaurant, minus what she's tried.</strong> The AI leads with dishes she hasn't ordered at Ss Hyderabad Biryani — loyalty first, curiosity second. Her usual reorder stays one tap away.</p>
         </div>
-        <a class="try-live" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Try it live â€” log in as Kavitha Rajan â†—</a>
+        <a class="try-live" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Try it live — log in as Kavitha Rajan ↗</a>
       </div>
       <div class="phone-wrap">
         <div class="phone"><div class="screen">
           <div class="notch"><i></i></div>
           <div class="m-white">
             <div class="m-top">
-              <div class="m-addr"><small>HOME â–¾</small><b>T Nagar, Chennai</b></div>
-              <div class="m-ic">ðŸ”” ðŸ›’ <span class="m-ava">K</span></div>
+              <div class="m-addr"><small>HOME ▾</small><b>T Nagar, Chennai</b></div>
+              <div class="m-ic">🔔 🛒 <span class="m-ava">K</span></div>
             </div>
             <div class="m-toggle">
-              <div class="m-tg on"><i>ðŸ”</i><span>Food</span></div>
-              <div class="m-tg"><i>âš¡</i><span>Instamart</span></div>
-              <div class="m-tg"><i>ðŸ½ï¸</i><span>Dineout</span></div>
-              <div class="m-tg"><i>ðŸŽ­</i><span>Scenes</span></div>
+              <div class="m-tg on"><i>🍔</i><span>Food</span></div>
+              <div class="m-tg"><i>⚡</i><span>Instamart</span></div>
+              <div class="m-tg"><i>🍽️</i><span>Dineout</span></div>
+              <div class="m-tg"><i>🎭</i><span>Scenes</span></div>
             </div>
             <div class="m-srow">
-              <div class="m-search"><i>ðŸ”</i><span>Search for restaurants and food</span><i style="color:#FC8019">ðŸŽ™ï¸</i></div>
+              <div class="m-search"><i>🔍</i><span>Search for restaurants and food</span><i style="color:#FC8019">🎙️</i></div>
               <div class="m-veg"><small>VEG</small><i></i></div>
             </div>
             <div class="m-hero">
               <div class="m-eyebrow">Your usual</div>
               <div class="m-htitle">Order more from Ss Hyderabad Biryani</div>
               <div class="m-hrow">
-                <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Mutton Biryani</b><span>â‚¹300</span></div>
-                <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Seekh Kebab</b><span>â‚¹180</span></div>
-                <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Phirni</b><span>â‚¹120</span></div>
+                <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Mutton Biryani</b><span>₹300</span></div>
+                <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Seekh Kebab</b><span>₹180</span></div>
+                <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Phirni</b><span>₹120</span></div>
               </div>
-              <div class="m-dashed"><span>Explore all from Ss Hyderabad Biryani</span><b>â†’</b></div>
+              <div class="m-dashed"><span>Explore all from Ss Hyderabad Biryani</span><b>→</b></div>
             </div>
           </div>
           <div class="m-div"></div>
@@ -529,17 +529,17 @@
                 <span class="m-bchip">COOL &amp; SWEET</span>
                 <b>Sweet Treats for a Refreshing Break</b>
                 <p>picked for a warm Chennai evening</p>
-                <span class="m-cta">Explore â†’</span>
+                <span class="m-cta">Explore →</span>
               </div>
               <div class="m-ph"><img src="https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div>
             </div>
           </div>
           <div class="m-div"></div>
           <div class="m-white m-sec">
-            <div class="m-shead"><b>Top Rated Near You</b><span>See all â†’</span></div>
+            <div class="m-shead"><b>Top Rated Near You</b><span>See all →</span></div>
             <div class="m-2col">
-              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Dr Bubbles</b><i>Cold Coffee</i><div class="m-meta"><span class="m-star">â˜… 4.6</span><small>Â· 18m</small></div></div></div>
-              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Madras Tiffin Hall</b><i>Masala Dosa</i><div class="m-meta"><span class="m-star">â˜… 4.4</span><small>Â· 22m</small></div></div></div>
+              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Dr Bubbles</b><i>Cold Coffee</i><div class="m-meta"><span class="m-star">★ 4.6</span><small>· 18m</small></div></div></div>
+              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Madras Tiffin Hall</b><i>Masala Dosa</i><div class="m-meta"><span class="m-star">★ 4.4</span><small>· 22m</small></div></div></div>
             </div>
           </div>
           <div class="m-div"></div>
@@ -555,21 +555,21 @@
             <div class="m-foot">Personalised for Kavitha</div>
           </div>
           <div class="m-nav">
-            <div class="m-ni on"><i>ðŸ </i><span>Food</span></div>
-            <div class="m-ni off"><i>âš¡</i><span>Bolt</span><span class="m-badge" style="background:#FC8019">15 MIN</span></div>
-            <div class="m-ni off"><i>ðŸ›ï¸</i><span>99 store</span></div>
-            <div class="m-ni off"><i>ðŸŒ¿</i><span>EatRight</span><span class="m-badge" style="background:#22c55e">NEW</span></div>
-            <div class="m-ni off"><i>â†»</i><span>Reorder</span></div>
+            <div class="m-ni on"><i>🏠</i><span>Food</span></div>
+            <div class="m-ni off"><i>⚡</i><span>Bolt</span><span class="m-badge" style="background:#FC8019">15 MIN</span></div>
+            <div class="m-ni off"><i>🛍️</i><span>99 store</span></div>
+            <div class="m-ni off"><i>🌿</i><span>EatRight</span><span class="m-badge" style="background:#22c55e">NEW</span></div>
+            <div class="m-ni off"><i>↻</i><span>Reorder</span></div>
           </div>
         </div></div>
-        <p class="scroll-hint">â†• scroll inside the phone â€” replica of the live build</p>
+        <p class="scroll-hint">↕ scroll inside the phone — replica of the live build</p>
       </div>
     </div>
 
     <!-- 2B -->
     <div class="panel" id="panel-2b" role="tabpanel" aria-labelledby="tab-2b" hidden>
       <div class="p-info">
-        <h3>Priya sticks to three restaurants â€” but never orders the same dish twice.</h3>
+        <h3>Priya sticks to three restaurants — but never orders the same dish twice.</h3>
         <p>Her loyalty is to a taste, not a menu item. The homepage's job is taste-anchored exploration: new restaurants that feel like the ones she already trusts.</p>
         <div class="p-block">
           <h4>Her behaviour dials</h4>
@@ -583,24 +583,24 @@
           <h4>Homepage strategy</h4>
           <p><strong>Hero = new restaurants, proven cuisines.</strong> The AI reads her top cuisines from history and surfaces highly-rated places she's never ordered from that match that taste profile.</p>
         </div>
-        <a class="try-live" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Try it live â€” log in as Priya Nair â†—</a>
+        <a class="try-live" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Try it live — log in as Priya Nair ↗</a>
       </div>
       <div class="phone-wrap">
         <div class="phone"><div class="screen">
           <div class="notch"><i></i></div>
           <div class="m-white">
             <div class="m-top">
-              <div class="m-addr"><small>HOME â–¾</small><b>Bandra West, Mumbai</b></div>
-              <div class="m-ic">ðŸ”” ðŸ›’ <span class="m-ava">P</span></div>
+              <div class="m-addr"><small>HOME ▾</small><b>Bandra West, Mumbai</b></div>
+              <div class="m-ic">🔔 🛒 <span class="m-ava">P</span></div>
             </div>
             <div class="m-toggle">
-              <div class="m-tg on"><i>ðŸ”</i><span>Food</span></div>
-              <div class="m-tg"><i>âš¡</i><span>Instamart</span></div>
-              <div class="m-tg"><i>ðŸ½ï¸</i><span>Dineout</span></div>
-              <div class="m-tg"><i>ðŸŽ­</i><span>Scenes</span></div>
+              <div class="m-tg on"><i>🍔</i><span>Food</span></div>
+              <div class="m-tg"><i>⚡</i><span>Instamart</span></div>
+              <div class="m-tg"><i>🍽️</i><span>Dineout</span></div>
+              <div class="m-tg"><i>🎭</i><span>Scenes</span></div>
             </div>
             <div class="m-srow">
-              <div class="m-search"><i>ðŸ”</i><span>Search for restaurants and food</span><i style="color:#FC8019">ðŸŽ™ï¸</i></div>
+              <div class="m-search"><i>🔍</i><span>Search for restaurants and food</span><i style="color:#FC8019">🎙️</i></div>
               <div class="m-veg"><small>VEG</small><i></i></div>
             </div>
             <div class="m-hero">
@@ -610,29 +610,29 @@
                 <span class="m-chip">Fast Food</span><span class="m-chip">North Indian</span><span class="m-chip">Chinese</span>
               </div>
               <div class="m-hrow">
-                <div class="m-hcard" style="width:84px"><div class="m-ph" style="width:84px;height:58px"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Bandra Burger Room</b><span style="color:#686b78;font-weight:600">new to you Â· â˜… 4.5</span></div>
-                <div class="m-hcard" style="width:84px"><div class="m-ph" style="width:84px;height:58px"><img src="https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Punjabi Rasoi</b><span style="color:#686b78;font-weight:600">new to you Â· â˜… 4.4</span></div>
-                <div class="m-hcard" style="width:84px"><div class="m-ph" style="width:84px;height:58px"><img src="https://images.unsplash.com/photo-1585032226651-759b368d7246?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Wok This Way</b><span style="color:#686b78;font-weight:600">new to you Â· â˜… 4.3</span></div>
+                <div class="m-hcard" style="width:84px"><div class="m-ph" style="width:84px;height:58px"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Bandra Burger Room</b><span style="color:#686b78;font-weight:600">new to you · ★ 4.5</span></div>
+                <div class="m-hcard" style="width:84px"><div class="m-ph" style="width:84px;height:58px"><img src="https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Punjabi Rasoi</b><span style="color:#686b78;font-weight:600">new to you · ★ 4.4</span></div>
+                <div class="m-hcard" style="width:84px"><div class="m-ph" style="width:84px;height:58px"><img src="https://images.unsplash.com/photo-1585032226651-759b368d7246?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Wok This Way</b><span style="color:#686b78;font-weight:600">new to you · ★ 4.3</span></div>
               </div>
-              <div class="m-dashed"><span>Explore more like these</span><b>â†’</b></div>
+              <div class="m-dashed"><span>Explore more like these</span><b>→</b></div>
             </div>
           </div>
           <div class="m-div"></div>
           <div class="m-white m-sec">
-            <div class="m-shead"><div><b>ðŸ”¥ Trending Near You</b><small>What Mumbai is ordering right now</small></div></div>
+            <div class="m-shead"><div><b>🔥 Trending Near You</b><small>What Mumbai is ordering right now</small></div></div>
             <div class="m-trow">
-              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#1 Trending</span><span class="m-dot"></span><span class="m-dname">Momos</span></div><div class="m-body"><i>viral on reels this week</i><div class="m-meta"><span class="m-star">â˜… 4.4</span><small>28m</small><span class="m-price">â‚¹120</span></div><span class="m-view">View restaurants â†’</span></div></div>
-              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#2 Trending</span><span class="m-dname">Margherita Pizza</span></div><div class="m-body"><i>weekend favourite</i><div class="m-meta"><span class="m-star">â˜… 4.3</span><small>40m</small><span class="m-price">â‚¹280</span></div><span class="m-view">View restaurants â†’</span></div></div>
-              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#3 Trending</span><span class="m-dname">Kunafa</span></div><div class="m-body"><i>rising fast</i><div class="m-meta"><span class="m-star">â˜… 4.5</span><small>32m</small><span class="m-price">â‚¹240</span></div><span class="m-view">View restaurants â†’</span></div></div>
+              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#1 Trending</span><span class="m-dot"></span><span class="m-dname">Momos</span></div><div class="m-body"><i>viral on reels this week</i><div class="m-meta"><span class="m-star">★ 4.4</span><small>28m</small><span class="m-price">₹120</span></div><span class="m-view">View restaurants →</span></div></div>
+              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#2 Trending</span><span class="m-dname">Margherita Pizza</span></div><div class="m-body"><i>weekend favourite</i><div class="m-meta"><span class="m-star">★ 4.3</span><small>40m</small><span class="m-price">₹280</span></div><span class="m-view">View restaurants →</span></div></div>
+              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#3 Trending</span><span class="m-dname">Kunafa</span></div><div class="m-body"><i>rising fast</i><div class="m-meta"><span class="m-star">★ 4.5</span><small>32m</small><span class="m-price">₹240</span></div><span class="m-view">View restaurants →</span></div></div>
             </div>
-            <div class="m-dashed" style="margin-top:8px"><span>Explore all trending in Mumbai</span><b>â†’</b></div>
+            <div class="m-dashed" style="margin-top:8px"><span>Explore all trending in Mumbai</span><b>→</b></div>
           </div>
           <div class="m-div"></div>
           <div class="m-white m-sec">
-            <div class="m-shead"><b>Top Rated Near You</b><span>See all â†’</span></div>
+            <div class="m-shead"><b>Top Rated Near You</b><span>See all →</span></div>
             <div class="m-2col">
-              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>The Paratha Project</b><i>Kathi Roll</i><div class="m-meta"><span class="m-star">â˜… 4.5</span><small>Â· 24m</small></div></div></div>
-              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Bowl Story</b><i>Buddha Bowl</i><div class="m-meta"><span class="m-star">â˜… 4.4</span><small>Â· 26m</small></div></div></div>
+              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>The Paratha Project</b><i>Kathi Roll</i><div class="m-meta"><span class="m-star">★ 4.5</span><small>· 24m</small></div></div></div>
+              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Bowl Story</b><i>Buddha Bowl</i><div class="m-meta"><span class="m-star">★ 4.4</span><small>· 26m</small></div></div></div>
             </div>
           </div>
           <div class="m-div"></div>
@@ -642,28 +642,28 @@
                 <span class="m-bchip">MONSOON</span>
                 <b>Monsoon Comfort Food</b>
                 <p>hot, saucy, made for Mumbai rain</p>
-                <span class="m-cta">Explore â†’</span>
+                <span class="m-cta">Explore →</span>
               </div>
               <div class="m-ph"><img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div>
             </div>
             <div class="m-foot">Personalised for Priya</div>
           </div>
           <div class="m-nav">
-            <div class="m-ni on"><i>ðŸ </i><span>Food</span></div>
-            <div class="m-ni off"><i>âš¡</i><span>Bolt</span><span class="m-badge" style="background:#FC8019">15 MIN</span></div>
-            <div class="m-ni off"><i>ðŸ›ï¸</i><span>99 store</span></div>
-            <div class="m-ni off"><i>ðŸŒ¿</i><span>EatRight</span><span class="m-badge" style="background:#22c55e">NEW</span></div>
-            <div class="m-ni off"><i>â†»</i><span>Reorder</span></div>
+            <div class="m-ni on"><i>🏠</i><span>Food</span></div>
+            <div class="m-ni off"><i>⚡</i><span>Bolt</span><span class="m-badge" style="background:#FC8019">15 MIN</span></div>
+            <div class="m-ni off"><i>🛍️</i><span>99 store</span></div>
+            <div class="m-ni off"><i>🌿</i><span>EatRight</span><span class="m-badge" style="background:#22c55e">NEW</span></div>
+            <div class="m-ni off"><i>↻</i><span>Reorder</span></div>
           </div>
         </div></div>
-        <p class="scroll-hint">â†• scroll inside the phone â€” replica of the live build</p>
+        <p class="scroll-hint">↕ scroll inside the phone — replica of the live build</p>
       </div>
     </div>
 
     <!-- 2C -->
     <div class="panel" id="panel-2c" role="tabpanel" aria-labelledby="tab-2c" hidden>
       <div class="p-info">
-        <h3>Vikram has ordered 12 times â€” from 12 different restaurants.</h3>
+        <h3>Vikram has ordered 12 times — from 12 different restaurants.</h3>
         <p>He's loyal to the platform, not to any kitchen. The homepage's job is pure discovery: what's excellent and what's trending right now, with his past taste only a minor factor.</p>
         <div class="p-block">
           <h4>His behaviour dials</h4>
@@ -675,55 +675,55 @@
         </div>
         <div class="p-block">
           <h4>Homepage strategy</h4>
-          <p><strong>Hero = the best of right now.</strong> Slot-aware discovery (the best dinner options at dinner time) plus a trending section powered by a search-grounded agent â€” every trending dish verified as actually orderable in his city.</p>
+          <p><strong>Hero = the best of right now.</strong> Slot-aware discovery (the best dinner options at dinner time) plus a trending section powered by a search-grounded agent — every trending dish verified as actually orderable in his city.</p>
         </div>
-        <a class="try-live" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Try it live â€” log in as Vikram Bose â†—</a>
+        <a class="try-live" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Try it live — log in as Vikram Bose ↗</a>
       </div>
       <div class="phone-wrap">
         <div class="phone"><div class="screen">
           <div class="notch"><i></i></div>
           <div class="m-white">
             <div class="m-top">
-              <div class="m-addr"><small>HOME â–¾</small><b>Connaught Place, Delhi</b></div>
-              <div class="m-ic">ðŸ”” ðŸ›’ <span class="m-ava">V</span></div>
+              <div class="m-addr"><small>HOME ▾</small><b>Connaught Place, Delhi</b></div>
+              <div class="m-ic">🔔 🛒 <span class="m-ava">V</span></div>
             </div>
             <div class="m-toggle">
-              <div class="m-tg on"><i>ðŸ”</i><span>Food</span></div>
-              <div class="m-tg"><i>âš¡</i><span>Instamart</span></div>
-              <div class="m-tg"><i>ðŸ½ï¸</i><span>Dineout</span></div>
-              <div class="m-tg"><i>ðŸŽ­</i><span>Scenes</span></div>
+              <div class="m-tg on"><i>🍔</i><span>Food</span></div>
+              <div class="m-tg"><i>⚡</i><span>Instamart</span></div>
+              <div class="m-tg"><i>🍽️</i><span>Dineout</span></div>
+              <div class="m-tg"><i>🎭</i><span>Scenes</span></div>
             </div>
             <div class="m-srow">
-              <div class="m-search"><i>ðŸ”</i><span>Search for restaurants and food</span><i style="color:#FC8019">ðŸŽ™ï¸</i></div>
+              <div class="m-search"><i>🔍</i><span>Search for restaurants and food</span><i style="color:#FC8019">🎙️</i></div>
               <div class="m-veg"><small>VEG</small><i></i></div>
             </div>
             <div class="m-hero">
-              <div class="m-chips"><span class="m-chip">ðŸŒ™ Dinner time</span></div>
+              <div class="m-chips"><span class="m-chip">🌙 Dinner time</span></div>
               <div class="m-htitle">What's for dinner tonight?</div>
               <div class="m-hrow">
                 <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Biryani</b></div>
                 <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Pizza</b></div>
                 <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Kebabs</b></div>
               </div>
-              <div class="m-dashed"><span>Explore all dinner options</span><b>â†’</b></div>
+              <div class="m-dashed"><span>Explore all dinner options</span><b>→</b></div>
             </div>
           </div>
           <div class="m-div"></div>
           <div class="m-white m-sec">
-            <div class="m-shead"><div><b>ðŸ”¥ Trending Near You</b><small>What Delhi is ordering right now</small></div></div>
+            <div class="m-shead"><div><b>🔥 Trending Near You</b><small>What Delhi is ordering right now</small></div></div>
             <div class="m-trow">
-              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#1 Trending</span><span class="m-dot"></span><span class="m-dname">Chicken Biryani</span></div><div class="m-body"><i>India's most ordered dish</i><div class="m-meta"><span class="m-star">â˜… 4.4</span><small>22m</small><span class="m-price">â‚¹270</span></div><span class="m-view">View restaurants â†’</span></div></div>
-              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#2 Trending</span><span class="m-dot"></span><span class="m-dname">Korean Cream Bun</span></div><div class="m-body"><i>viral on reels</i><div class="m-meta"><span class="m-star">â˜… 4.3</span><small>30m</small><span class="m-price">â‚¹160</span></div><span class="m-view">View restaurants â†’</span></div></div>
-              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#3 Trending</span><span class="m-dname">Kunafa Chocolate</span></div><div class="m-body"><i>rising fast</i><div class="m-meta"><span class="m-star">â˜… 4.5</span><small>28m</small><span class="m-price">â‚¹240</span></div><span class="m-view">View restaurants â†’</span></div></div>
+              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#1 Trending</span><span class="m-dot"></span><span class="m-dname">Chicken Biryani</span></div><div class="m-body"><i>India's most ordered dish</i><div class="m-meta"><span class="m-star">★ 4.4</span><small>22m</small><span class="m-price">₹270</span></div><span class="m-view">View restaurants →</span></div></div>
+              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#2 Trending</span><span class="m-dot"></span><span class="m-dname">Korean Cream Bun</span></div><div class="m-body"><i>viral on reels</i><div class="m-meta"><span class="m-star">★ 4.3</span><small>30m</small><span class="m-price">₹160</span></div><span class="m-view">View restaurants →</span></div></div>
+              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#3 Trending</span><span class="m-dname">Kunafa Chocolate</span></div><div class="m-body"><i>rising fast</i><div class="m-meta"><span class="m-star">★ 4.5</span><small>28m</small><span class="m-price">₹240</span></div><span class="m-view">View restaurants →</span></div></div>
             </div>
-            <div class="m-dashed" style="margin-top:8px"><span>Explore all trending in Delhi</span><b>â†’</b></div>
+            <div class="m-dashed" style="margin-top:8px"><span>Explore all trending in Delhi</span><b>→</b></div>
           </div>
           <div class="m-div"></div>
           <div class="m-white m-sec">
-            <div class="m-shead"><b>Top Rated Near You</b><span>See all â†’</span></div>
+            <div class="m-shead"><b>Top Rated Near You</b><span>See all →</span></div>
             <div class="m-2col">
-              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Moti Mahal Delux</b><i>Butter Chicken</i><div class="m-meta"><span class="m-star">â˜… 4.6</span><small>Â· 26m</small></div></div></div>
-              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Biryani Blues</b><i>Dum Biryani</i><div class="m-meta"><span class="m-star">â˜… 4.4</span><small>Â· 22m</small></div></div></div>
+              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Moti Mahal Delux</b><i>Butter Chicken</i><div class="m-meta"><span class="m-star">★ 4.6</span><small>· 26m</small></div></div></div>
+              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Biryani Blues</b><i>Dum Biryani</i><div class="m-meta"><span class="m-star">★ 4.4</span><small>· 22m</small></div></div></div>
             </div>
           </div>
           <div class="m-div"></div>
@@ -733,76 +733,76 @@
                 <span class="m-bchip">SUMMER</span>
                 <b>Cool Treats for a Sweet Escape</b>
                 <p>the AI read the Delhi heat</p>
-                <span class="m-cta">Explore â†’</span>
+                <span class="m-cta">Explore →</span>
               </div>
               <div class="m-ph"><img src="https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div>
             </div>
             <div class="m-foot">Personalised for Vikram</div>
           </div>
           <div class="m-nav">
-            <div class="m-ni on"><i>ðŸ </i><span>Food</span></div>
-            <div class="m-ni off"><i>âš¡</i><span>Bolt</span><span class="m-badge" style="background:#FC8019">15 MIN</span></div>
-            <div class="m-ni off"><i>ðŸ›ï¸</i><span>99 store</span></div>
-            <div class="m-ni off"><i>ðŸŒ¿</i><span>EatRight</span><span class="m-badge" style="background:#22c55e">NEW</span></div>
-            <div class="m-ni off"><i>â†»</i><span>Reorder</span></div>
+            <div class="m-ni on"><i>🏠</i><span>Food</span></div>
+            <div class="m-ni off"><i>⚡</i><span>Bolt</span><span class="m-badge" style="background:#FC8019">15 MIN</span></div>
+            <div class="m-ni off"><i>🛍️</i><span>99 store</span></div>
+            <div class="m-ni off"><i>🌿</i><span>EatRight</span><span class="m-badge" style="background:#22c55e">NEW</span></div>
+            <div class="m-ni off"><i>↻</i><span>Reorder</span></div>
           </div>
         </div></div>
-        <p class="scroll-hint">â†• scroll inside the phone â€” replica of the live build</p>
+        <p class="scroll-hint">↕ scroll inside the phone — replica of the live build</p>
       </div>
     </div>
   </section>
 
-  <!-- â”€â”€ LIVE BUILD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <!-- ── LIVE BUILD ───────────────────────── -->
   <section>
     <p class="kicker">In the live build</p>
     <h2>Small details, real product feel</h2>
     <div class="grid3">
       <div class="cell"><h3><b>Search that remembers</b></h3><p>Live search across 86,800 real menu items, with recently-searched memory and a popular-dishes photo grid.</p></div>
-      <div class="cell"><h3><b>Real food photography</b></h3><p>Every dish, restaurant, and category tile carries a real photo â€” matched by keyword, deterministic per dish.</p></div>
+      <div class="cell"><h3><b>Real food photography</b></h3><p>Every dish, restaurant, and category tile carries a real photo — matched by keyword, deterministic per dish.</p></div>
       <div class="cell"><h3><b>Draggable everything</b></h3><p>The glass nav pill slides under your finger; every carousel drags with mouse or touch.</p></div>
       <div class="cell"><h3><b>Multi-restaurant cart</b></h3><p>Mix dishes from several places; the cart groups and labels them cleanly.</p></div>
       <div class="cell"><h3><b>Micro-delight</b></h3><p>Spring-physics add-to-cart, confetti on order success, staggered card reveals.</p></div>
-      <div class="cell"><h3><b>Honest demo edges</b></h3><p>Unbuilt sections are visibly disabled â€” no dead ends, no fake doors.</p></div>
+      <div class="cell"><h3><b>Honest demo edges</b></h3><p>Unbuilt sections are visibly disabled — no dead ends, no fake doors.</p></div>
     </div>
   </section>
 
-  <!-- â”€â”€ HOW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <!-- ── HOW ──────────────────────────────── -->
   <section>
     <p class="kicker">How it works</p>
     <h2>Four steps, one honest trick</h2>
     <p>
       No training, no fine-tuning, no black box. Behaviour is scored with plain arithmetic;
-      the LLM only ranks, assembles, and explains â€” it's never allowed to invent.
+      the LLM only ranks, assembles, and explains — it's never allowed to invent.
     </p>
     <div class="steps">
-      <div class="stepc"><div class="n">1</div><h3>Score</h3><p>Order history â†’ three behaviour dials. The dominant dial picks the strategy.</p></div>
+      <div class="stepc"><div class="n">1</div><h3>Score</h3><p>Order history → three behaviour dials. The dominant dial picks the strategy.</p></div>
       <div class="stepc"><div class="n">2</div><h3>Retrieve</h3><p>RAG filters 8,680 real restaurants (86,800 dishes, 9 cities) to ~15 grounded candidates.</p></div>
-      <div class="stepc"><div class="n">3</div><h3>Generate</h3><p>Gemini assembles the homepage as strict JSON â€” a reason on every item.</p></div>
+      <div class="stepc"><div class="n">3</div><h3>Generate</h3><p>Gemini assembles the homepage as strict JSON — a reason on every item.</p></div>
       <div class="stepc"><div class="n">4</div><h3>Serve</h3><p>Facts re-verified against the database; cached 30 min per user per meal slot.</p></div>
     </div>
     <div class="formula">
-      repeat&nbsp;&nbsp;= orders repeating a (restaurant, dish) pair Ã· total&nbsp;&nbsp;<span class="c">// the usual</span><br>
-      variety = distinct dishes Ã· visits, where visits â‰¥ 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c">// loyal but curious</span><br>
-      explore = distinct restaurants Ã· total orders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c">// never the same place</span><br>
+      repeat&nbsp;&nbsp;= orders repeating a (restaurant, dish) pair ÷ total&nbsp;&nbsp;<span class="c">// the usual</span><br>
+      variety = distinct dishes ÷ visits, where visits ≥ 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c">// loyal but curious</span><br>
+      explore = distinct restaurants ÷ total orders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c">// never the same place</span><br>
       persona = <span class="a">argmax</span>(normalise(repeat, variety, explore))
     </div>
   </section>
 
-  <!-- â”€â”€ DECISIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <!-- ── DECISIONS ────────────────────────── -->
   <section>
     <p class="kicker">Decisions I'd defend</p>
     <h2>The judgment calls behind it</h2>
     <div class="grid3">
-      <div class="cell"><h3><b>Why LLM + RAG</b></h3><p>Rules can't reason; an ungrounded LLM invents restaurants. Retrieval feeds it only real, orderable places â€” grounded <em>and</em> smart.</p></div>
+      <div class="cell"><h3><b>Why LLM + RAG</b></h3><p>Rules can't reason; an ungrounded LLM invents restaurants. Retrieval feeds it only real, orderable places — grounded <em>and</em> smart.</p></div>
       <div class="cell"><h3><b>Degrade, never break</b></h3><p>Model waterfall with retries; if all models are busy, a handsome non-AI homepage ships instead of an error.</p></div>
-      <div class="cell"><h3><b>Facts stay verified</b></h3><p>The AI writes the story; the database overwrites the numbers â€” ratings and delivery times are never the model's word.</p></div>
-      <div class="cell"><h3><b>Diet is sacred</b></h3><p>A declared diet is an unbreakable constraint. Jain and vegan are never guessed â€” guessing wrong is real harm.</p></div>
-      <div class="cell"><h3><b>Location is consent</b></h3><p>Listings need live GPS permission â€” no quiet fallback to a stored address you may not be at.</p></div>
+      <div class="cell"><h3><b>Facts stay verified</b></h3><p>The AI writes the story; the database overwrites the numbers — ratings and delivery times are never the model's word.</p></div>
+      <div class="cell"><h3><b>Diet is sacred</b></h3><p>A declared diet is an unbreakable constraint. Jain and vegan are never guessed — guessing wrong is real harm.</p></div>
+      <div class="cell"><h3><b>Location is consent</b></h3><p>Listings need live GPS permission — no quiet fallback to a stored address you may not be at.</p></div>
       <div class="cell"><h3><b>Cost by design</b></h3><p>30-min homepage cache per user per slot; 24-hour trend cache. AI cost scales with people, not page loads.</p></div>
     </div>
   </section>
 
-  <!-- â”€â”€ STACK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <!-- ── STACK ────────────────────────────── -->
   <section>
     <p class="kicker">Under the hood</p>
     <h2>Stack &amp; candour</h2>
@@ -818,16 +818,16 @@
     </div>
     <p style="margin-top:20px;">
       Built end-to-end with AI-assisted development: the product thinking, behavioural model, and every constraint above
-      are mine â€” the implementation was produced by directing AI coding agents, verified feature by feature on the live app.
+      are mine — the implementation was produced by directing AI coding agents, verified feature by feature on the live app.
     </p>
     <p>
       <strong>Real vs simulated, honestly:</strong> the restaurant base is a real public dataset; dish menus and user
-      order histories are synthesised on top. A scoped demonstration â€” at platform scale it runs on real order data.
+      order histories are synthesised on top. A scoped demonstration — at platform scale it runs on real order data.
     </p>
   </section>
 
   <footer>
-    <span><b>Simran Sharma</b> Â· Personal concept project, not affiliated with Swiggy</span>
+    <span><b>Simran Sharma</b> · Personal concept project, not affiliated with Swiggy</span>
     <a href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Live demo</a>
     <a href="https://github.com/sharmasimran22122001-lang/swiggy_ai" target="_blank" rel="noopener">GitHub</a>
     <a href="mailto:sharmasimran22122001@gmail.com">sharmasimran22122001@gmail.com</a>
