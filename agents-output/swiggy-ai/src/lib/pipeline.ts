@@ -97,6 +97,30 @@ async function cacheHomepage(userId: string, slot: string, homepage: HomepageJSO
   } catch { /* non-fatal */ }
 }
 
+// Stale-on-error: the user's most recent AI homepage regardless of age.
+// Used when every Gemini model is exhausted — an old real page beats a generic one.
+async function getStaleHomepage(userId: string, slot: string): Promise<HomepageJSON | null> {
+  const { data: sameSlot } = await supabaseAdmin
+    .from('homepage_cache')
+    .select('homepage_json')
+    .eq('user_id', userId)
+    .eq('slot', slot)
+    .order('generated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (sameSlot) return sameSlot.homepage_json as HomepageJSON
+
+  // Nothing for this meal slot — any previous slot's page still beats the generic one
+  const { data: anySlot } = await supabaseAdmin
+    .from('homepage_cache')
+    .select('homepage_json')
+    .eq('user_id', userId)
+    .order('generated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  return (anySlot?.homepage_json as HomepageJSON) ?? null
+}
+
 // ─── Static fallback homepage ─────────────────────────────────────────────────
 // Returned when ALL Gemini models are unavailable.
 // Built from real restaurant data in DB so it always shows real places.
@@ -177,7 +201,17 @@ export async function runPipeline(userId: string): Promise<{
     const prompt = buildPrompt(profile, slot, mood, candidates)
     homepage = await callGemini(prompt)
   } catch (geminiErr) {
-    console.error('[pipeline] Gemini unavailable — serving static fallback:', geminiErr)
+    console.error('[pipeline] Gemini unavailable:', geminiErr)
+
+    // ① Stale-on-error: serve this user's last real AI homepage, however old.
+    //    Looks identical to a fresh page — ideal when free-tier quota is exhausted.
+    const stale = await getStaleHomepage(userId, slot.part)
+    if (stale) {
+      console.warn('[pipeline] serving stale cached homepage for', userId)
+      return { homepage: stale, profile, slot, fromCache: true }
+    }
+
+    // ② User has never had a page generated — static fallback from real top-rated places.
     homepage = buildFallback(profile, allRestaurants)
     fromCache = false
 
