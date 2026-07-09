@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { MoodType } from '@/types'
-import FoodPlate3D from './FoodPlate3D'
+import FoodImg from './FoodImg'
 
 interface BannerData {
   mood: MoodType
@@ -238,13 +238,12 @@ export default function PromoBanner({ banner, onExplore }: Props) {
                 pointerEvents: 'none',
               }} />
 
-              <FoodPlate3D
-                emoji={slide.emoji}
-                gradA={slide.gradA}
-                gradB={slide.gradB}
-                size="lg"
-                float
-              />
+              <div
+                className="rounded-full overflow-hidden"
+                style={{ width: 104, height: 104, border: '2.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 24px rgba(0,0,0,0.35)' }}
+              >
+                <FoodImg name={slide.title} extra={slide.eyebrow} emoji={slide.emoji} gradA={slide.gradA} gradB={slide.gradB} />
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>

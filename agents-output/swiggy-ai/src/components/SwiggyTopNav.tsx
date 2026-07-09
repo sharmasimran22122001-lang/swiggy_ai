@@ -65,22 +65,39 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
         </div>
       </div>
 
-      {/* Row 2: Light-gray track + floating glass pill */}
+      {/* Row 2: Light-gray track + one sliding glass pill */}
       <div
         style={{
           margin: '0 14px 11px',
-          /* ── Light gray track — blends with white but clearly tinted ── */
           background: '#EAEAEC',
           borderRadius: 14,
           padding: '5px',
-          /* Allow the pill to float slightly taller than the track */
           overflow: 'visible',
-          /* Subtle inner shadow so it reads as a recessed slot */
           boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.09)',
           position: 'relative',
         }}
       >
-        <div className="flex items-center w-full" style={{ gap: 2 }}>
+        {/* ── The pill is a single element that slides between tab slots ── */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: -3,
+            bottom: -3,
+            left: `calc(5px + ${activeIdx} * ((100% - 10px) / ${VERTICALS.length}))`,
+            width: `calc((100% - 10px) / ${VERTICALS.length})`,
+            borderRadius: 11,
+            background: 'rgba(255,255,255,0.94)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.95)',
+            boxShadow: '0 4px 14px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.08)',
+            transition: 'left 0.38s cubic-bezier(0.3, 1.25, 0.4, 1)',
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        />
+        <div className="flex items-center w-full">
           {VERTICALS.map(({ label, icon }, i) => {
             const isActive = i === activeIdx
             return (
@@ -88,59 +105,27 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
                 key={label}
                 onClick={() => setActiveIdx(i)}
                 whileTap={{ scale: 0.96 }}
-                className="relative flex-1 flex flex-col items-center justify-center z-10"
-                style={{
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  minWidth: 0,
-                  /* Make each tab's coordinate space the reference for the pill */
-                  isolation: 'isolate',
-                }}
+                className="relative flex-1 flex flex-col items-center justify-center"
+                style={{ paddingTop: 10, paddingBottom: 10, minWidth: 0, zIndex: 1 }}
               >
-                {/* ── Floating glass pill — overflows track by 4px top & bottom ── */}
-                {isActive && (
-                  <motion.div
-                    layoutId="glassSlider"
-                    className="absolute rounded-[11px]"
-                    style={{
-                      /* 4px overflow above and below the track padding */
-                      inset: '-9px -1px',
-                      zIndex: -1,
-                      /* White glass with translucency */
-                      background: 'rgba(255,255,255,0.92)',
-                      backdropFilter: 'blur(10px)',
-                      WebkitBackdropFilter: 'blur(10px)',
-                      /* Crisp border — looks like a glass card */
-                      border: '1px solid rgba(255,255,255,0.95)',
-                      /* Shadow lifts it clearly above the gray track */
-                      boxShadow:
-                        '0 4px 14px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.08)',
-                    }}
-                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-                  />
-                )}
-
-                {/* Icon */}
                 <span
                   style={{
                     fontSize: 17,
                     lineHeight: 1,
                     marginBottom: 3,
                     opacity: isActive ? 1 : 0.42,
-                    transition: 'opacity 0.2s',
+                    transition: 'opacity 0.25s',
                   }}
                 >
                   {icon}
                 </span>
-
-                {/* Label */}
                 <span
                   className="font-semibold leading-none"
                   style={{
                     fontSize: 11,
                     letterSpacing: '0.005em',
                     color: isActive ? '#3d4152' : '#9ca3af',
-                    transition: 'color 0.2s',
+                    transition: 'color 0.25s',
                   }}
                 >
                   {label}

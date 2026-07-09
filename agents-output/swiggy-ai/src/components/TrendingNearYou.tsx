@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import type { TrendMatch } from '@/types'
 import FoodImage from './FoodImage'
+import { useDragScroll } from '@/hooks/useDragScroll'
 
 function buildFallback(city: string): TrendMatch[] {
   return [
@@ -24,6 +25,7 @@ interface Props {
 export default function TrendingNearYou({ city, onDishSelect, onSeeAll }: Props) {
   const [items, setItems] = useState<TrendMatch[]>([])
   const [loading, setLoading] = useState(true)
+  const drag = useDragScroll<HTMLDivElement>()
 
   useEffect(() => {
     if (!city) return
@@ -64,7 +66,7 @@ export default function TrendingNearYou({ city, onDishSelect, onSeeAll }: Props)
       </div>
 
       {/* Dish cards */}
-      <div className="flex overflow-x-auto" style={{ gap: 10, padding: '0 15px 4px', scrollbarWidth: 'none' }}>
+      <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '0 15px 4px', scrollbarWidth: 'none', ...drag.style }}>
         {unique.map((item, i) => (
           <motion.div
             key={item.trending_name}

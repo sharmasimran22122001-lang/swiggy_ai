@@ -1,5 +1,7 @@
 'use client'
 import { motion } from 'framer-motion'
+import FoodImg from './FoodImg'
+import { useDragScroll } from '@/hooks/useDragScroll'
 
 const EMOJI_MAP: Record<string, string> = {
   'Biryani': '🍛', 'North Indian': '🫓', 'South Indian': '🥘', 'Chinese': '🥡',
@@ -30,6 +32,7 @@ interface Props {
 
 export default function FoodCategoryRow({ categories, seasonTag, locationTag, onCategorySelect }: Props) {
   const contextLabel = [seasonTag, locationTag ? `${locationTag}` : null].filter(Boolean).join(' picks · ')
+  const drag = useDragScroll<HTMLDivElement>()
 
   return (
     <div style={{ paddingTop: 2 }}>
@@ -52,7 +55,7 @@ export default function FoodCategoryRow({ categories, seasonTag, locationTag, on
         </div>
       )}
 
-      <div className="flex gap-[9px] overflow-x-auto pb-3" style={{ padding: '0 15px 13px', scrollbarWidth: 'none' }}>
+      <div className="flex gap-[9px] overflow-x-auto pb-3" {...drag} style={{ padding: '0 15px 13px', scrollbarWidth: 'none', ...drag.style }}>
         {categories.slice(0, 7).map((label, i) => (
           <motion.button
             key={label}
@@ -65,10 +68,10 @@ export default function FoodCategoryRow({ categories, seasonTag, locationTag, on
             style={{ width: 58 }}
           >
             <div
-              className="rounded-full flex items-center justify-center overflow-hidden"
-              style={{ width: 54, height: 54, border: '1.5px solid #bdbdbd', background: '#EEEEEE', fontSize: 26 }}
+              className="rounded-full overflow-hidden"
+              style={{ width: 54, height: 54, border: '1.5px solid #e0e0e0' }}
             >
-              {getEmoji(label)}
+              <FoodImg name={label} emoji={getEmoji(label)} gradA="#8a6838" gradB="#6a5028" style={{ fontSize: 24 }} />
             </div>
             <span className="text-center leading-tight" style={{ fontSize: 10, fontWeight: 600, color: '#686b78' }}>
               {label}

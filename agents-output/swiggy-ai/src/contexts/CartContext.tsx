@@ -31,13 +31,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const add = (item: Omit<CartItem, 'qty' | 'id'>) => {
     const id = `${item.dish}||${item.restaurant}`
     setItems(prev => {
-      const currentRestaurant = prev[0]?.restaurant
-      const base = currentRestaurant && currentRestaurant !== item.restaurant ? [] : prev
-      const existing = base.find(i => i.id === id)
+      const existing = prev.find(i => i.id === id)
       if (existing) {
-        return base.map(i => i.id === id ? { ...i, qty: i.qty + 1 } : i)
+        return prev.map(i => i.id === id ? { ...i, qty: i.qty + 1 } : i)
       }
-      return [...base, { ...item, id, qty: 1 }]
+      return [...prev, { ...item, id, qty: 1 }]
     })
   }
 
@@ -57,7 +55,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const totalItems = items.reduce((sum, i) => sum + i.qty, 0)
   const totalPrice = items.reduce((sum, i) => sum + i.price * i.qty, 0)
-  const restaurantName = items[0]?.restaurant ?? null
+  // One restaurant → its name; several → "X & 2 more"
+  const distinctRestaurants = [...new Set(items.map(i => i.restaurant))]
+  const restaurantName =
+    distinctRestaurants.length === 0 ? null :
+    distinctRestaurants.length === 1 ? distinctRestaurants[0] :
+    `${distinctRestaurants[0]} & ${distinctRestaurants.length - 1} more`
 
   return (
     <CartContext.Provider value={{ items, add, remove, updateQty, clear, totalItems, totalPrice, restaurantName }}>

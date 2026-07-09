@@ -5,8 +5,9 @@ import FoodCategoryRow from './FoodCategoryRow'
 import PromoBanner from './PromoBanner'
 import MoreOnSwiggy from './MoreOnSwiggy'
 import TrendingNearYou from './TrendingNearYou'
-import FoodPlate3D from './FoodPlate3D'
+import FoodImg from './FoodImg'
 import { getRestaurantVisual } from './CategoryPage'
+import { useDragScroll } from '@/hooks/useDragScroll'
 import { useCart } from '@/contexts/CartContext'
 import type { HomepageJSON, UserProfile, MoodType, HomepageItem } from '@/types'
 import type { RestaurantInfo } from './RestaurantPage'
@@ -148,6 +149,7 @@ function LoyalistHero({ homepage, profile, onRestaurantSelect, onAdd }: {
   const raw = homepage.hero.items.slice(0, 6)
   const items = atLeastThree(raw)
   const restName = profile.favourite_restaurant || homepage.hero.title || 'your go-to spot'
+  const drag = useDragScroll<HTMLDivElement>()
 
   return (
     <GlassHero>
@@ -156,7 +158,7 @@ function LoyalistHero({ homepage, profile, onRestaurantSelect, onAdd }: {
         <h2 style={{ fontSize: 14, fontWeight: 700, color: '#3d4152' }}>Order more from {restName}</h2>
       </div>
 
-      <div className="flex overflow-x-auto" style={{ gap: 10, padding: '12px 15px 4px', scrollbarWidth: 'none' }}>
+      <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '12px 15px 4px', scrollbarWidth: 'none', ...drag.style }}>
         {items.map((item, i) => {
           const vis = getRestaurantVisual(item.restaurant, i)
           return (
@@ -167,8 +169,8 @@ function LoyalistHero({ homepage, profile, onRestaurantSelect, onAdd }: {
               style={{ width: 94 }}
               onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
             >
-              <div className="relative" style={{ width: 94 }}>
-                <FoodPlate3D emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} size="md" float />
+              <div className="relative rounded-[12px] overflow-hidden" style={{ width: 94, height: 94 }}>
+                <FoodImg name={item.name} extra={item.restaurant} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
                 <SpringAddButton onAdd={() => onAdd?.(item)} size={26} fontSize={18} bottom={5} right={5} />
               </div>
               <p className="mt-1.5 leading-tight" style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
@@ -192,14 +194,16 @@ function LoyalistHero({ homepage, profile, onRestaurantSelect, onAdd }: {
 
 // ─── 2B Explorer Hero ────────────────────────────────────────────────────────
 
-function ExplorerHero({ homepage, profile, onRestaurantSelect, onAdd }: {
+function ExplorerHero({ homepage, profile, onRestaurantSelect, onAdd, onCategorySelect }: {
   homepage: HomepageJSON; profile: UserProfile
   onRestaurantSelect?: (info: RestaurantInfo) => void
   onAdd?: (item: HomepageItem) => void
+  onCategorySelect?: (category: string) => void
 }) {
   const raw = homepage.hero.items.slice(0, 5)
   const items = atLeastThree(raw)
   const topCuisines = profile.top_cuisines?.slice(0, 3) ?? []
+  const drag = useDragScroll<HTMLDivElement>()
 
   return (
     <GlassHero>
@@ -215,7 +219,7 @@ function ExplorerHero({ homepage, profile, onRestaurantSelect, onAdd }: {
         )}
       </div>
 
-      <div className="flex overflow-x-auto" style={{ gap: 10, padding: '12px 15px 4px', scrollbarWidth: 'none' }}>
+      <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '12px 15px 4px', scrollbarWidth: 'none', ...drag.style }}>
         {items.map((item, i) => {
           const vis = getRestaurantVisual(item.restaurant, i)
           return (
@@ -226,11 +230,8 @@ function ExplorerHero({ homepage, profile, onRestaurantSelect, onAdd }: {
               style={{ width: 128, border: '1px solid #e0e0e0', background: 'rgba(255,255,255,0.88)' }}
               onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
             >
-              <div
-                className="relative flex items-center justify-center"
-                style={{ height: 88, background: `linear-gradient(145deg, ${vis.gradA}, ${vis.gradB})` }}
-              >
-                <FoodPlate3D emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} size="md" float />
+              <div className="relative" style={{ height: 88 }}>
+                <FoodImg name={item.restaurant} extra={item.name} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
                 <SpringAddButton onAdd={() => onAdd?.(item)} size={26} fontSize={18} bottom={6} right={6} />
               </div>
               <div style={{ padding: '7px 8px 8px' }}>
@@ -247,7 +248,15 @@ function ExplorerHero({ homepage, profile, onRestaurantSelect, onAdd }: {
         })}
       </div>
 
-      <div className="flex items-center justify-between cursor-pointer" style={{ margin: '10px 15px 0', padding: '9px 14px', border: '1.5px solid #bdbdbd', borderRadius: 10 }}>
+      <div
+        className="flex items-center justify-between cursor-pointer active:opacity-70"
+        style={{ margin: '10px 15px 0', padding: '9px 14px', border: '1.5px solid #bdbdbd', borderRadius: 10 }}
+        onClick={() => {
+          const cuisine = topCuisines[0]
+          if (cuisine) onCategorySelect?.(cuisine)
+          else if (items[0]) onRestaurantSelect?.(toRestaurantInfo(items[0], profile))
+        }}
+      >
         <span style={{ fontSize: 12, fontWeight: 600, color: '#686b78' }}>Explore more like these</span>
         <span style={{ fontSize: 13, color: '#FC8019', fontWeight: 700 }}>→</span>
       </div>
@@ -307,6 +316,7 @@ function VarietyHero({ profile: _profile, onCategorySelect }: {
   const hour = new Date().getHours()
   const slot = getMealSlot(hour)
   const categories = slot.categories.slice(0, 6)
+  const drag = useDragScroll<HTMLDivElement>()
 
   return (
     <GlassHero>
@@ -317,7 +327,7 @@ function VarietyHero({ profile: _profile, onCategorySelect }: {
         <h2 style={{ fontSize: 14, fontWeight: 700, color: '#3d4152' }}>{slot.title}</h2>
       </div>
 
-      <div className="flex overflow-x-auto" style={{ gap: 10, padding: '12px 15px 4px', scrollbarWidth: 'none' }}>
+      <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '12px 15px 4px', scrollbarWidth: 'none', ...drag.style }}>
         {categories.map((cat, i) => (
           <motion.div
             key={cat}
@@ -326,13 +336,12 @@ function VarietyHero({ profile: _profile, onCategorySelect }: {
             style={{ width: 94 }}
             onClick={() => onCategorySelect?.(cat)}
           >
-            <div className="relative" style={{ width: 94 }}>
-              <FoodPlate3D
+            <div className="relative rounded-[12px] overflow-hidden" style={{ width: 94, height: 94 }}>
+              <FoodImg
+                name={cat}
                 emoji={MEAL_EMOJI[cat] ?? '🍽️'}
                 gradA={MEAL_GRADS[cat]?.a ?? '#4a5060'}
                 gradB={MEAL_GRADS[cat]?.b ?? '#585e68'}
-                size="md"
-                float
               />
               <button
                 onClick={e => { e.stopPropagation(); onCategorySelect?.(cat) }}
@@ -346,7 +355,11 @@ function VarietyHero({ profile: _profile, onCategorySelect }: {
         ))}
       </div>
 
-      <div className="flex items-center justify-between cursor-pointer" style={{ margin: '10px 15px 0', padding: '9px 14px', border: '1.5px solid #bdbdbd', borderRadius: 10 }}>
+      <div
+        className="flex items-center justify-between cursor-pointer active:opacity-70"
+        style={{ margin: '10px 15px 0', padding: '9px 14px', border: '1.5px solid #bdbdbd', borderRadius: 10 }}
+        onClick={() => onCategorySelect?.(categories[0])}
+      >
         <span style={{ fontSize: 12, fontWeight: 600, color: '#686b78' }}>Explore all {slot.part} options</span>
         <span style={{ fontSize: 13, color: '#FC8019', fontWeight: 700 }}>→</span>
       </div>
@@ -356,22 +369,28 @@ function VarietyHero({ profile: _profile, onCategorySelect }: {
 
 // ─── Top Rated Near You — with cuisine images ─────────────────────────────────
 
-function TopRatedSection({ block, profile, onRestaurantSelect, onAdd }: {
+function TopRatedSection({ block, profile, onRestaurantSelect, onAdd, onCategorySelect }: {
   block: HomepageJSON['slot_top_rated']; profile: UserProfile
   onRestaurantSelect?: (info: RestaurantInfo) => void
   onAdd?: (item: HomepageItem) => void
+  onCategorySelect?: (category: string) => void
 }) {
   const raw = block.items.slice(0, 8)
   const items = atLeastThree(raw)
+  const drag = useDragScroll<HTMLDivElement>()
 
   return (
     <div className="bg-white" style={{ paddingBottom: 14 }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', padding: '14px 15px 8px' }}>
         <h2 style={{ fontSize: 14, fontWeight: 700, color: '#3d4152' }}>Top Rated Near You</h2>
-        <button style={{ fontSize: 11, fontWeight: 700, color: '#FC8019' }}>See all →</button>
+        <button
+          onClick={() => onCategorySelect?.(profile.top_cuisines?.[0] ?? 'Biryani')}
+          className="active:opacity-70"
+          style={{ fontSize: 11, fontWeight: 700, color: '#FC8019' }}
+        >See all →</button>
       </div>
 
-      <div className="flex overflow-x-auto" style={{ gap: 10, padding: '0 15px 4px', scrollbarWidth: 'none' }}>
+      <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '0 15px 4px', scrollbarWidth: 'none', ...drag.style }}>
         {items.map((item: HomepageItem, i: number) => {
           const vis = getRestaurantVisual(item.restaurant, i)
           return (
@@ -382,11 +401,8 @@ function TopRatedSection({ block, profile, onRestaurantSelect, onAdd }: {
               style={{ width: 118, border: '1px solid #e0e0e0' }}
               onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
             >
-              <div
-                className="relative flex items-center justify-center"
-                style={{ height: 84, background: `linear-gradient(145deg, ${vis.gradA}, ${vis.gradB})` }}
-              >
-                <FoodPlate3D emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} size="sm" float />
+              <div className="relative" style={{ height: 84 }}>
+                <FoodImg name={item.restaurant} extra={item.name} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
                 <SpringAddButton onAdd={() => onAdd?.(item)} size={24} fontSize={16} bottom={5} right={5} />
               </div>
               <div style={{ padding: '7px 8px 8px' }}>
@@ -451,7 +467,7 @@ export default function HomeFeed({
   const seasonTag = homepage.mood_banner?.theme ?? undefined
   const locationTag = profile.area ?? undefined
 
-  const sharedProps = { onRestaurantSelect, onAdd: handleAdd }
+  const sharedProps = { onRestaurantSelect, onAdd: handleAdd, onCategorySelect }
 
   const footer = (
     <div className="text-center py-6">

@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '@/contexts/CartContext'
+import FoodImg from './FoodImg'
 
 // ─── Static restaurant menu database (cuisine-keyed) ────────────────────────
 
@@ -277,11 +278,8 @@ export default function RestaurantPage({ restaurant, onBack, onGoToCart }: Props
               className="flex items-center gap-3"
               style={{ padding: '11px 15px', borderBottom: '1px solid #ebebeb' }}
             >
-              <div
-                className="flex-shrink-0 rounded-[9px] flex items-center justify-center"
-                style={{ width: 62, height: 62, background: '#f4f4f4', fontSize: 30 }}
-              >
-                {dEmoji}
+              <div className="flex-shrink-0 rounded-[9px] overflow-hidden" style={{ width: 62, height: 62 }}>
+                <FoodImg name={item.dish} extra={restaurant.name} emoji={dEmoji} gradA="#8a6838" gradB="#6a5028" />
               </div>
 
               <div className="flex-1 min-w-0">

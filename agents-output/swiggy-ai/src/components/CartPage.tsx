@@ -70,10 +70,13 @@ export default function CartPage({ onBack, onPlaceOrder }: Props) {
                   }}
                 />
 
-                {/* Emoji + Dish name */}
+                {/* Emoji + Dish name + restaurant */}
                 <div className="flex-1 min-w-0">
                   <p className="font-bold truncate" style={{ fontSize: 12, color: '#3d4152' }}>
                     {item.emoji} {item.dish}
+                  </p>
+                  <p className="truncate" style={{ fontSize: 10, color: '#93959f', marginTop: 1 }}>
+                    {item.restaurant}
                   </p>
                 </div>
 
