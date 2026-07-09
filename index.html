@@ -193,82 +193,152 @@
   }
   .try-live:hover { text-decoration: none; filter: brightness(.97); }
 
-  /* â”€â”€ Phone prototype â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* â”€â”€ Phone prototype â€” 1:1 replica of the live build UI â”€â”€ */
   .phone-wrap { width: 300px; max-width: 100%; }
   .phone {
-    background: var(--bezel); border-radius: 38px; padding: 10px;
+    background: #1d1e23; border-radius: 38px; padding: 10px;
     box-shadow: 0 24px 48px -20px rgba(0,0,0,.35);
   }
   .screen {
-    background: var(--bg); border-radius: 30px; height: 540px; overflow-y: auto;
+    background: #f4f4f4; border-radius: 30px; height: 560px; overflow-y: auto;
     scrollbar-width: none; position: relative;
+    color: #3d4152; /* app is light-theme only â€” matches live build */
   }
   .screen::-webkit-scrollbar { display: none; }
   .notch {
-    position: sticky; top: 0; z-index: 5; display: flex; justify-content: center;
-    padding-top: 8px; background: var(--bg);
+    position: sticky; top: 0; z-index: 6; display: flex; justify-content: center;
+    padding-top: 8px; background: #fff;
   }
-  .notch i { width: 86px; height: 18px; background: var(--bezel); border-radius: 999px; }
-  .scr-pad { padding: 12px 14px 66px; }
-  .scr-addr { display: flex; align-items: center; gap: 7px; margin: 6px 0 10px; }
-  .scr-addr .pin { color: var(--accent); font-size: 13px; }
-  .scr-addr b { font-size: 12px; font-weight: 800; }
-  .scr-addr span { font-size: 10px; color: var(--faint); }
-  .scr-search {
-    display: flex; align-items: center; gap: 7px; background: var(--surface);
-    border: 1px solid var(--line); border-radius: 11px; padding: 9px 11px; margin-bottom: 14px;
-  }
-  .scr-search span { font-size: 11px; color: var(--faint); }
-  .scr-cats { display: flex; gap: 9px; overflow: hidden; margin-bottom: 16px; }
-  .scr-cat { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
-  .scr-cat i { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2);
-    display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 20px; }
-  .scr-cat span { font-size: 9px; color: var(--muted); }
-  .scr-sec {
-    font-size: 12.5px; font-weight: 800; letter-spacing: -.01em; margin: 16px 0 9px; display: flex; gap: 6px; align-items: center;
-  }
-  .scr-sec small { font-size: 9px; font-weight: 700; color: var(--accent); background: var(--accent-soft);
-    padding: 2px 7px; border-radius: 999px; letter-spacing: .04em; }
-  .scr-hero {
-    border-radius: 14px; padding: 13px; background: linear-gradient(140deg, var(--accent-soft), var(--surface));
-    border: 1px solid var(--line); margin-bottom: 4px;
-  }
-  .scr-hero b { font-size: 13.5px; line-height: 1.3; display: block; letter-spacing: -.01em; }
-  .scr-hero p { font-size: 10.5px; color: var(--muted); margin: 5px 0 10px; }
-  .scr-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-  .scr-card { border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--bg); }
-  .scr-img { height: 58px; position: relative; }
-  .scr-img.ga { background: var(--card-grad-a); } .scr-img.gb { background: var(--card-grad-b); } .scr-img.gc { background: var(--card-grad-c); }
-  .scr-img .rate {
-    position: absolute; left: 6px; bottom: 6px; font-size: 8.5px; font-weight: 800; color: #fff;
-    background: rgba(0,0,0,.45); padding: 2px 6px; border-radius: 999px;
-  }
-  .scr-card b { display: block; font-size: 10.5px; padding: 6px 8px 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .scr-card span { display: block; font-size: 9px; color: var(--faint); padding: 0 8px 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .scr-banner {
-    border-radius: 14px; padding: 13px; color: #fff; margin: 4px 0 2px;
-    background: linear-gradient(120deg, #b4561d, #d97b2a 55%, #e8964e);
-  }
-  .scr-banner b { font-size: 12.5px; display: block; }
-  .scr-banner span { font-size: 10px; opacity: .9; }
-  .scr-row { display: flex; gap: 9px; overflow: hidden; }
-  .scr-tile { flex-shrink: 0; width: 96px; border-radius: 11px; border: 1px solid var(--line); background: var(--surface); padding: 8px 9px; }
-  .scr-tile b { font-size: 10px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .scr-tile span { font-size: 8.5px; color: var(--faint); }
-  .scr-list { display: flex; flex-direction: column; gap: 8px; }
-  .scr-li { display: flex; gap: 9px; align-items: center; border: 1px solid var(--line); border-radius: 11px; padding: 7px; }
-  .scr-li i { width: 40px; height: 40px; border-radius: 9px; flex-shrink: 0; }
-  .scr-li i.ga { background: var(--card-grad-a); } .scr-li i.gb { background: var(--card-grad-b); } .scr-li i.gc { background: var(--card-grad-c); }
-  .scr-li b { font-size: 10.5px; display: block; }
-  .scr-li span { font-size: 9px; color: var(--faint); }
-  .scr-nav {
-    position: sticky; bottom: 0; display: flex; justify-content: space-around; align-items: center;
-    background: var(--bg); border-top: 1px solid var(--line); padding: 9px 0 12px; z-index: 5;
-  }
-  .scr-nav span { font-size: 9px; color: var(--faint); display: flex; flex-direction: column; align-items: center; gap: 2px; }
-  .scr-nav span i { font-style: normal; font-size: 15px; }
-  .scr-nav .on { color: var(--accent); font-weight: 700; }
+  .notch i { width: 86px; height: 18px; background: #1d1e23; border-radius: 999px; }
   .scroll-hint { text-align: center; font-size: 11.5px; color: var(--faint); margin-top: 10px; }
+
+  .m-white { background: #fff; }
+  .m-div { height: 6px; background: #f4f4f4; border-top: 1px solid #e8e8e8; border-bottom: 1px solid #e8e8e8; }
+
+  /* top nav */
+  .m-top { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px 6px; }
+  .m-top .m-addr small { display: block; font-size: 7.5px; font-weight: 800; color: #6b7280; letter-spacing: .06em; }
+  .m-top .m-addr b { font-size: 11px; font-weight: 800; color: #17181c; }
+  .m-top .m-ic { display: flex; gap: 8px; align-items: center; font-size: 12px; }
+  .m-ava { width: 21px; height: 21px; border-radius: 50%; background: #ffe3c8; color: #FC8019;
+    font-size: 9.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+
+  /* glass vertical toggle */
+  .m-toggle { margin: 2px 10px 8px; background: #EAEAEC; border-radius: 10px; padding: 3px;
+    display: flex; box-shadow: inset 0 1px 2px rgba(0,0,0,.08); }
+  .m-tg { flex: 1; text-align: center; padding: 5px 0 4px; border-radius: 8px; }
+  .m-tg i { font-style: normal; font-size: 11px; display: block; opacity: .4; }
+  .m-tg span { font-size: 7px; font-weight: 700; color: #9ca3af; }
+  .m-tg.on { background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+  .m-tg.on i { opacity: 1; }
+  .m-tg.on span { color: #3d4152; }
+
+  /* search row + veg toggle */
+  .m-srow { display: flex; gap: 6px; align-items: center; padding: 0 12px 10px; }
+  .m-search { flex: 1; display: flex; align-items: center; gap: 5px; background: #f3f4f6;
+    border-radius: 9px; padding: 6px 8px; }
+  .m-search span { font-size: 8.5px; color: #9ca3af; flex: 1; white-space: nowrap; overflow: hidden; }
+  .m-search i { font-style: normal; font-size: 9px; }
+  .m-veg { display: flex; align-items: center; gap: 3px; }
+  .m-veg small { font-size: 7px; font-weight: 800; color: #4b5563; }
+  .m-veg i { width: 18px; height: 10px; border-radius: 999px; background: #d1d5db; position: relative; display: block; }
+  .m-veg i::after { content: ""; position: absolute; left: 2px; top: 1.5px; width: 7px; height: 7px;
+    border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+
+  /* hero (glass) */
+  .m-hero { background: linear-gradient(135deg, rgba(252,128,25,.07), rgba(255,210,100,.12)); padding: 10px 12px 12px; }
+  .m-eyebrow { font-size: 7px; font-weight: 800; color: #FC8019; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px; }
+  .m-htitle { font-size: 11px; font-weight: 800; color: #3d4152; margin-bottom: 8px; }
+  .m-chips { display: flex; gap: 4px; flex-wrap: wrap; margin: -4px 0 8px; }
+  .m-chip { font-size: 7px; font-weight: 700; color: #3d4152; background: rgba(244,244,244,.95);
+    border: 1px solid #e0e0e0; border-radius: 999px; padding: 2px 7px; }
+  .m-chip.lbl { border: none; background: none; color: #93959f; padding-left: 0; }
+  .m-hrow { display: flex; gap: 8px; overflow: hidden; }
+  .m-hcard { width: 64px; flex-shrink: 0; }
+  .m-ph { position: relative; border-radius: 10px; overflow: hidden;
+    background: linear-gradient(135deg, #e8b04e, #c96a35); }
+  .m-ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .m-hcard .m-ph { width: 64px; height: 64px; }
+  .m-plus { position: absolute; right: 3px; bottom: 3px; width: 15px; height: 15px; border-radius: 50%;
+    background: #FC8019; color: #fff; font-size: 11px; font-weight: 800; line-height: 14px; text-align: center;
+    box-shadow: 0 1px 4px rgba(252,128,25,.5); z-index: 2; }
+  .m-hcard b { display: block; font-size: 7.5px; font-weight: 800; color: #3d4152; margin-top: 3px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-hcard span { font-size: 7.5px; font-weight: 800; color: #FC8019; }
+  .m-dashed { margin-top: 9px; border: 1.2px dashed #bdbdbd; border-radius: 8px; padding: 6px 9px;
+    display: flex; justify-content: space-between; align-items: center; }
+  .m-dashed span { font-size: 8px; font-weight: 700; color: #686b78; }
+  .m-dashed b { font-size: 9px; color: #FC8019; }
+
+  /* promo banner */
+  .m-banner { margin: 10px 12px; border-radius: 12px; padding: 10px 11px;
+    background: linear-gradient(115deg, #2b1a2e, #4a2418 70%); color: #fff;
+    display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .m-banner .m-bl { min-width: 0; }
+  .m-banner .m-bchip { display: inline-block; font-size: 6.5px; font-weight: 800; letter-spacing: .05em;
+    background: rgba(255,255,255,.14); border-radius: 999px; padding: 2px 7px; margin-bottom: 4px; }
+  .m-banner b { display: block; font-size: 10px; font-weight: 800; line-height: 1.25; }
+  .m-banner p { margin: 2px 0 6px; font-size: 7.5px; color: rgba(255,255,255,.65); }
+  .m-banner .m-cta { display: inline-block; font-size: 7.5px; font-weight: 800; color: #201406;
+    background: #ffb45e; border-radius: 999px; padding: 3px 9px; }
+  .m-banner .m-ph { width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,.3); }
+
+  /* sections */
+  .m-sec { padding: 10px 12px 12px; }
+  .m-shead { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .m-shead b { font-size: 10.5px; font-weight: 800; color: #3d4152; }
+  .m-shead small { font-size: 7.5px; color: #93959f; display: block; margin-top: 1px; font-weight: 500; }
+  .m-shead span { font-size: 8px; font-weight: 800; color: #FC8019; }
+  .m-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .m-rcard { border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden; background: #fff; }
+  .m-rcard .m-ph { height: 52px; border-radius: 0; }
+  .m-rcard .m-body { padding: 5px 7px 7px; }
+  .m-rcard b { display: block; font-size: 8.5px; font-weight: 800; color: #3d4152;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-rcard i { display: block; font-style: normal; font-size: 7.5px; color: #686b78;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+  .m-meta { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+  .m-star { font-size: 6.5px; font-weight: 800; color: #fff; background: #3d9b6e; border-radius: 3px; padding: 1px 4px; }
+  .m-meta small { font-size: 7px; color: #93959f; }
+
+  /* trending cards */
+  .m-trow { display: flex; gap: 8px; overflow: hidden; }
+  .m-tcard { width: 92px; flex-shrink: 0; border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden; background: #fff; }
+  .m-tcard .m-ph { height: 58px; border-radius: 0; }
+  .m-rank { position: absolute; top: 4px; left: 4px; z-index: 2; font-size: 6px; font-weight: 800; color: #fff;
+    background: rgba(0,0,0,.6); border-radius: 6px; padding: 1.5px 5px; }
+  .m-dot { position: absolute; top: 5px; right: 5px; z-index: 2; width: 5px; height: 5px; border-radius: 50%; background: #ef4444; }
+  .m-dname { position: absolute; left: 5px; right: 5px; bottom: 4px; z-index: 2; font-size: 7.5px; font-weight: 800;
+    color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-shade { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(0,0,0,.55), transparent 55%); }
+  .m-tcard .m-body { padding: 4px 6px 6px; }
+  .m-tcard i { display: block; font-style: normal; font-size: 6.5px; color: #686b78;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-tcard .m-view { display: block; text-align: center; font-size: 6.5px; font-weight: 800; color: #FC8019; margin-top: 3px; }
+  .m-price { font-size: 7.5px; font-weight: 800; color: #FC8019; margin-left: auto; }
+
+  /* what's on your mind circles */
+  .m-crow { display: flex; gap: 9px; overflow: hidden; }
+  .m-circ { width: 44px; flex-shrink: 0; text-align: center; }
+  .m-circ .m-ph { width: 40px; height: 40px; border-radius: 50%; margin: 0 auto; border: 1px solid #e0e0e0; }
+  .m-circ span { display: block; font-size: 6.5px; font-weight: 700; color: #686b78; margin-top: 3px;
+    white-space: nowrap; overflow: hidden; }
+
+  .m-foot { text-align: center; font-size: 7.5px; color: #93959f; padding: 12px 0 14px; }
+
+  /* bottom nav â€” Food active, rest disabled (as in live build) */
+  .m-nav { position: sticky; bottom: 0; z-index: 6; display: flex; background: #fff;
+    border-top: 1px solid #e5e7eb; padding: 5px 0 9px; }
+  .m-ni { flex: 1; text-align: center; position: relative; padding-top: 4px; }
+  .m-ni i { font-style: normal; font-size: 11px; display: block; }
+  .m-ni span { font-size: 6.5px; font-weight: 700; color: #9ca3af; }
+  .m-ni.on::before { content: ""; position: absolute; top: 0; left: 20%; right: 20%; height: 2px;
+    border-radius: 2px; background: #FC8019; }
+  .m-ni.on span { color: #FC8019; }
+  .m-ni.off { opacity: .35; }
+  .m-badge { position: absolute; top: 0; right: 6%; font-size: 4.5px; font-weight: 900; color: #fff;
+    border-radius: 3px; padding: 1px 3px; line-height: 1.2; }
 
   /* â”€â”€ Steps strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 26px; }
@@ -426,41 +496,73 @@
       <div class="phone-wrap">
         <div class="phone"><div class="screen">
           <div class="notch"><i></i></div>
-          <div class="scr-pad">
-            <div class="scr-addr"><span class="pin">ðŸ“</span><b>T Nagar</b><span>Chennai</span></div>
-            <div class="scr-search">ðŸ”<span>Search for biryaniâ€¦</span></div>
-            <div class="scr-cats">
-              <div class="scr-cat"><i>ðŸ›</i><span>Biryani</span></div>
-              <div class="scr-cat"><i>ðŸ¢</i><span>Kebabs</span></div>
-              <div class="scr-cat"><i>ðŸ¥¤</i><span>Drinks</span></div>
-              <div class="scr-cat"><i>ðŸ°</i><span>Desserts</span></div>
-              <div class="scr-cat"><i>ðŸ¥˜</i><span>Curries</span></div>
+          <div class="m-white">
+            <div class="m-top">
+              <div class="m-addr"><small>HOME â–¾</small><b>T Nagar, Chennai</b></div>
+              <div class="m-ic">ðŸ”” ðŸ›’ <span class="m-ava">K</span></div>
             </div>
-            <div class="scr-sec">Order more from Ss Hyderabad Biryani <small>FOR YOU</small></div>
-            <div class="scr-hero">
-              <b>You always get the Chicken Biryaniâ€¦</b>
-              <p>â€¦these are loved here too â€” and you haven't tried them yet</p>
-              <div class="scr-cards">
-                <div class="scr-card"><div class="scr-img ga"><span class="rate">â˜… 4.3</span></div><b>Mutton Biryani</b><span>chef's signature</span></div>
-                <div class="scr-card"><div class="scr-img gb"><span class="rate">â˜… 4.5</span></div><b>Seekh Kebab</b><span>most reordered</span></div>
+            <div class="m-toggle">
+              <div class="m-tg on"><i>ðŸ”</i><span>Food</span></div>
+              <div class="m-tg"><i>âš¡</i><span>Instamart</span></div>
+              <div class="m-tg"><i>ðŸ½ï¸</i><span>Dineout</span></div>
+              <div class="m-tg"><i>ðŸŽ­</i><span>Scenes</span></div>
+            </div>
+            <div class="m-srow">
+              <div class="m-search"><i>ðŸ”</i><span>Search for restaurants and food</span><i style="color:#FC8019">ðŸŽ™ï¸</i></div>
+              <div class="m-veg"><small>VEG</small><i></i></div>
+            </div>
+            <div class="m-hero">
+              <div class="m-eyebrow">Your usual</div>
+              <div class="m-htitle">Order more from Ss Hyderabad Biryani</div>
+              <div class="m-hrow">
+                <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Mutton Biryani</b><span>â‚¹300</span></div>
+                <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Seekh Kebab</b><span>â‚¹180</span></div>
+                <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Phirni</b><span>â‚¹120</span></div>
               </div>
-            </div>
-            <div class="scr-sec">Your usual, one tap</div>
-            <div class="scr-list">
-              <div class="scr-li"><i class="gc"></i><div><b>Chicken Biryani Â· Ss Hyderabad Biryani</b><span>ordered 8 times Â· â‚¹220 Â· 25 min</span></div></div>
-            </div>
-            <div class="scr-banner"><b>Sweet Treats for a Refreshing Break</b><span>picked for a warm Chennai evening</span></div>
-            <div class="scr-sec">Top rated near you</div>
-            <div class="scr-cards">
-              <div class="scr-card"><div class="scr-img gb"><span class="rate">â˜… 4.6</span></div><b>Dr Bubbles</b><span>Beverages Â· 18 min</span></div>
-              <div class="scr-card"><div class="scr-img ga"><span class="rate">â˜… 4.4</span></div><b>Madras Tiffin Hall</b><span>South Indian Â· 22 min</span></div>
-            </div>
-            <div class="scr-nav">
-              <span class="on"><i>ðŸ </i>Home</span><span><i>ðŸ”</i>Search</span><span><i>ðŸ›’</i>Cart</span><span><i>â†»</i>Reorder</span>
+              <div class="m-dashed"><span>Explore all from Ss Hyderabad Biryani</span><b>â†’</b></div>
             </div>
           </div>
+          <div class="m-div"></div>
+          <div class="m-white">
+            <div class="m-banner">
+              <div class="m-bl">
+                <span class="m-bchip">COOL &amp; SWEET</span>
+                <b>Sweet Treats for a Refreshing Break</b>
+                <p>picked for a warm Chennai evening</p>
+                <span class="m-cta">Explore â†’</span>
+              </div>
+              <div class="m-ph"><img src="https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div>
+            </div>
+          </div>
+          <div class="m-div"></div>
+          <div class="m-white m-sec">
+            <div class="m-shead"><b>Top Rated Near You</b><span>See all â†’</span></div>
+            <div class="m-2col">
+              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Dr Bubbles</b><i>Cold Coffee</i><div class="m-meta"><span class="m-star">â˜… 4.6</span><small>Â· 18m</small></div></div></div>
+              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Madras Tiffin Hall</b><i>Masala Dosa</i><div class="m-meta"><span class="m-star">â˜… 4.4</span><small>Â· 22m</small></div></div></div>
+            </div>
+          </div>
+          <div class="m-div"></div>
+          <div class="m-white m-sec">
+            <div class="m-shead"><b>What's on your mind?</b></div>
+            <div class="m-crow">
+              <div class="m-circ"><div class="m-ph"><img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=120&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div><span>Biryani</span></div>
+              <div class="m-circ"><div class="m-ph"><img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=120&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div><span>Samosa</span></div>
+              <div class="m-circ"><div class="m-ph"><img src="https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=120&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div><span>Chai</span></div>
+              <div class="m-circ"><div class="m-ph"><img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=120&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div><span>Cake</span></div>
+              <div class="m-circ"><div class="m-ph"><img src="https://images.unsplash.com/photo-1585032226651-759b368d7246?w=120&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div><span>Noodles</span></div>
+            </div>
+            <div class="m-foot">Personalised for Kavitha</div>
+          </div>
+          <div class="m-nav">
+            <div class="m-ni on"><i>ðŸ </i><span>Food</span></div>
+            <div class="m-ni off"><i>âš¡</i><span>Bolt</span><span class="m-badge" style="background:#FC8019">15 MIN</span></div>
+            <div class="m-ni off"><i>ðŸ›ï¸</i><span>99 store</span></div>
+            <div class="m-ni off"><i>ðŸŒ¿</i><span>EatRight</span><span class="m-badge" style="background:#22c55e">NEW</span></div>
+            <div class="m-ni off"><i>â†»</i><span>Reorder</span></div>
+          </div>
         </div></div>
-        <p class="scroll-hint">â†• scroll inside the phone</p>
+        <p class="scroll-hint">â†• scroll inside the phone â€” replica of the live build</p>
       </div>
     </div>
 
@@ -486,43 +588,75 @@
       <div class="phone-wrap">
         <div class="phone"><div class="screen">
           <div class="notch"><i></i></div>
-          <div class="scr-pad">
-            <div class="scr-addr"><span class="pin">ðŸ“</span><b>Bandra West</b><span>Mumbai</span></div>
-            <div class="scr-search">ðŸ”<span>Search restaurantsâ€¦</span></div>
-            <div class="scr-cats">
-              <div class="scr-cat"><i>ðŸ”</i><span>Fast Food</span></div>
-              <div class="scr-cat"><i>ðŸ›</i><span>North Ind.</span></div>
-              <div class="scr-cat"><i>ðŸ¥¡</i><span>Chinese</span></div>
-              <div class="scr-cat"><i>ðŸ•</i><span>Pizza</span></div>
-              <div class="scr-cat"><i>ðŸŒ¯</i><span>Rolls</span></div>
+          <div class="m-white">
+            <div class="m-top">
+              <div class="m-addr"><small>HOME â–¾</small><b>Bandra West, Mumbai</b></div>
+              <div class="m-ic">ðŸ”” ðŸ›’ <span class="m-ava">P</span></div>
             </div>
-            <div class="scr-sec">Top-rated places matching your taste <small>NEW TO YOU</small></div>
-            <div class="scr-hero">
-              <b>Your kind of food, places you haven't met</b>
-              <p>matched to your top cuisines: Fast Food Â· North Indian Â· Chinese</p>
-              <div class="scr-cards">
-                <div class="scr-card"><div class="scr-img gb"><span class="rate">â˜… 4.5</span></div><b>Bandra Burger Room</b><span>Fast Food Â· new to you</span></div>
-                <div class="scr-card"><div class="scr-img gc"><span class="rate">â˜… 4.4</span></div><b>Punjabi Rasoi</b><span>North Indian Â· new to you</span></div>
+            <div class="m-toggle">
+              <div class="m-tg on"><i>ðŸ”</i><span>Food</span></div>
+              <div class="m-tg"><i>âš¡</i><span>Instamart</span></div>
+              <div class="m-tg"><i>ðŸ½ï¸</i><span>Dineout</span></div>
+              <div class="m-tg"><i>ðŸŽ­</i><span>Scenes</span></div>
+            </div>
+            <div class="m-srow">
+              <div class="m-search"><i>ðŸ”</i><span>Search for restaurants and food</span><i style="color:#FC8019">ðŸŽ™ï¸</i></div>
+              <div class="m-veg"><small>VEG</small><i></i></div>
+            </div>
+            <div class="m-hero">
+              <div class="m-htitle">Places you'll actually love</div>
+              <div class="m-chips">
+                <span class="m-chip lbl">Matched to:</span>
+                <span class="m-chip">Fast Food</span><span class="m-chip">North Indian</span><span class="m-chip">Chinese</span>
               </div>
-            </div>
-            <div class="scr-sec">Your trusted three</div>
-            <div class="scr-row">
-              <div class="scr-tile"><b>Mumbai Bites</b><span>6 orders Â· 6 dishes</span></div>
-              <div class="scr-tile"><b>Home Plate</b><span>4 orders Â· 4 dishes</span></div>
-              <div class="scr-tile"><b>Chinese Culture</b><span>2 orders Â· 2 dishes</span></div>
-            </div>
-            <div class="scr-banner"><b>Monsoon Comfort Food</b><span>hot, saucy, made for Mumbai rain</span></div>
-            <div class="scr-sec">Explore something new</div>
-            <div class="scr-list">
-              <div class="scr-li"><i class="ga"></i><div><b>Wok This Way</b><span>Chinese Â· â˜… 4.3 Â· 28 min</span></div></div>
-              <div class="scr-li"><i class="gb"></i><div><b>The Paratha Project</b><span>North Indian Â· â˜… 4.5 Â· 24 min</span></div></div>
-            </div>
-            <div class="scr-nav">
-              <span class="on"><i>ðŸ </i>Home</span><span><i>ðŸ”</i>Search</span><span><i>ðŸ›’</i>Cart</span><span><i>â†»</i>Reorder</span>
+              <div class="m-hrow">
+                <div class="m-hcard" style="width:84px"><div class="m-ph" style="width:84px;height:58px"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Bandra Burger Room</b><span style="color:#686b78;font-weight:600">new to you Â· â˜… 4.5</span></div>
+                <div class="m-hcard" style="width:84px"><div class="m-ph" style="width:84px;height:58px"><img src="https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Punjabi Rasoi</b><span style="color:#686b78;font-weight:600">new to you Â· â˜… 4.4</span></div>
+                <div class="m-hcard" style="width:84px"><div class="m-ph" style="width:84px;height:58px"><img src="https://images.unsplash.com/photo-1585032226651-759b368d7246?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Wok This Way</b><span style="color:#686b78;font-weight:600">new to you Â· â˜… 4.3</span></div>
+              </div>
+              <div class="m-dashed"><span>Explore more like these</span><b>â†’</b></div>
             </div>
           </div>
+          <div class="m-div"></div>
+          <div class="m-white m-sec">
+            <div class="m-shead"><div><b>ðŸ”¥ Trending Near You</b><small>What Mumbai is ordering right now</small></div></div>
+            <div class="m-trow">
+              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#1 Trending</span><span class="m-dot"></span><span class="m-dname">Momos</span></div><div class="m-body"><i>viral on reels this week</i><div class="m-meta"><span class="m-star">â˜… 4.4</span><small>28m</small><span class="m-price">â‚¹120</span></div><span class="m-view">View restaurants â†’</span></div></div>
+              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#2 Trending</span><span class="m-dname">Margherita Pizza</span></div><div class="m-body"><i>weekend favourite</i><div class="m-meta"><span class="m-star">â˜… 4.3</span><small>40m</small><span class="m-price">â‚¹280</span></div><span class="m-view">View restaurants â†’</span></div></div>
+              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#3 Trending</span><span class="m-dname">Kunafa</span></div><div class="m-body"><i>rising fast</i><div class="m-meta"><span class="m-star">â˜… 4.5</span><small>32m</small><span class="m-price">â‚¹240</span></div><span class="m-view">View restaurants â†’</span></div></div>
+            </div>
+            <div class="m-dashed" style="margin-top:8px"><span>Explore all trending in Mumbai</span><b>â†’</b></div>
+          </div>
+          <div class="m-div"></div>
+          <div class="m-white m-sec">
+            <div class="m-shead"><b>Top Rated Near You</b><span>See all â†’</span></div>
+            <div class="m-2col">
+              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>The Paratha Project</b><i>Kathi Roll</i><div class="m-meta"><span class="m-star">â˜… 4.5</span><small>Â· 24m</small></div></div></div>
+              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Bowl Story</b><i>Buddha Bowl</i><div class="m-meta"><span class="m-star">â˜… 4.4</span><small>Â· 26m</small></div></div></div>
+            </div>
+          </div>
+          <div class="m-div"></div>
+          <div class="m-white">
+            <div class="m-banner">
+              <div class="m-bl">
+                <span class="m-bchip">MONSOON</span>
+                <b>Monsoon Comfort Food</b>
+                <p>hot, saucy, made for Mumbai rain</p>
+                <span class="m-cta">Explore â†’</span>
+              </div>
+              <div class="m-ph"><img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div>
+            </div>
+            <div class="m-foot">Personalised for Priya</div>
+          </div>
+          <div class="m-nav">
+            <div class="m-ni on"><i>ðŸ </i><span>Food</span></div>
+            <div class="m-ni off"><i>âš¡</i><span>Bolt</span><span class="m-badge" style="background:#FC8019">15 MIN</span></div>
+            <div class="m-ni off"><i>ðŸ›ï¸</i><span>99 store</span></div>
+            <div class="m-ni off"><i>ðŸŒ¿</i><span>EatRight</span><span class="m-badge" style="background:#22c55e">NEW</span></div>
+            <div class="m-ni off"><i>â†»</i><span>Reorder</span></div>
+          </div>
         </div></div>
-        <p class="scroll-hint">â†• scroll inside the phone</p>
+        <p class="scroll-hint">â†• scroll inside the phone â€” replica of the live build</p>
       </div>
     </div>
 
@@ -548,48 +682,72 @@
       <div class="phone-wrap">
         <div class="phone"><div class="screen">
           <div class="notch"><i></i></div>
-          <div class="scr-pad">
-            <div class="scr-addr"><span class="pin">ðŸ“</span><b>Connaught Place</b><span>Delhi</span></div>
-            <div class="scr-search">ðŸ”<span>Search anythingâ€¦</span></div>
-            <div style="display:flex; gap:5px; margin:-6px 0 12px; flex-wrap:wrap;">
-              <span style="font-size:8.5px; color:var(--faint); padding:3px 8px; border:1px solid var(--line); border-radius:999px;">ðŸ• momos</span>
-              <span style="font-size:8.5px; color:var(--faint); padding:3px 8px; border:1px solid var(--line); border-radius:999px;">ðŸ• kunafa</span>
-              <span style="font-size:8.5px; color:var(--faint); padding:3px 8px; border:1px solid var(--line); border-radius:999px;">ðŸ• pizza</span>
+          <div class="m-white">
+            <div class="m-top">
+              <div class="m-addr"><small>HOME â–¾</small><b>Connaught Place, Delhi</b></div>
+              <div class="m-ic">ðŸ”” ðŸ›’ <span class="m-ava">V</span></div>
             </div>
-            <div class="scr-cats">
-              <div class="scr-cat"><i>ðŸ¥Ÿ</i><span>Momos</span></div>
-              <div class="scr-cat"><i>ðŸ§‡</i><span>Waffles</span></div>
-              <div class="scr-cat"><i>ðŸœ</i><span>Thai</span></div>
-              <div class="scr-cat"><i>ðŸ›</i><span>Biryani</span></div>
-              <div class="scr-cat"><i>ðŸ•</i><span>Pizza</span></div>
+            <div class="m-toggle">
+              <div class="m-tg on"><i>ðŸ”</i><span>Food</span></div>
+              <div class="m-tg"><i>âš¡</i><span>Instamart</span></div>
+              <div class="m-tg"><i>ðŸ½ï¸</i><span>Dineout</span></div>
+              <div class="m-tg"><i>ðŸŽ­</i><span>Scenes</span></div>
             </div>
-            <div class="scr-sec">Best dinner near you right now <small>THIS SLOT</small></div>
-            <div class="scr-hero">
-              <b>Tonight's strongest tables</b>
-              <p>quality first â€” 9 cuisines you've loved, 9,000 you haven't</p>
-              <div class="scr-cards">
-                <div class="scr-card"><div class="scr-img gc"><span class="rate">â˜… 4.6</span></div><b>Moti Mahal Delux</b><span>North Indian Â· 26 min</span></div>
-                <div class="scr-card"><div class="scr-img ga"><span class="rate">â˜… 4.4</span></div><b>Biryani Blues</b><span>Biryani Â· 22 min</span></div>
+            <div class="m-srow">
+              <div class="m-search"><i>ðŸ”</i><span>Search for restaurants and food</span><i style="color:#FC8019">ðŸŽ™ï¸</i></div>
+              <div class="m-veg"><small>VEG</small><i></i></div>
+            </div>
+            <div class="m-hero">
+              <div class="m-chips"><span class="m-chip">ðŸŒ™ Dinner time</span></div>
+              <div class="m-htitle">What's for dinner tonight?</div>
+              <div class="m-hrow">
+                <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Biryani</b></div>
+                <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Pizza</b></div>
+                <div class="m-hcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><b>Kebabs</b></div>
               </div>
-            </div>
-            <div class="scr-sec">Trending near you ðŸ”¥ <small>SEARCH-GROUNDED</small></div>
-            <div class="scr-row">
-              <div class="scr-tile"><b>Chicken Biryani</b><span>India's #1 this week</span></div>
-              <div class="scr-tile"><b>Korean Cream Bun</b><span>viral on reels</span></div>
-              <div class="scr-tile"><b>Kunafa Chocolate</b><span>rising fast</span></div>
-            </div>
-            <div class="scr-banner"><b>Cool Treats for a Sweet Escape</b><span>the AI read the Delhi heat</span></div>
-            <div class="scr-sec">More places you'd enjoy</div>
-            <div class="scr-list">
-              <div class="scr-li"><i class="gb"></i><div><b>Wonder Bao</b><span>Chinese Â· â˜… 4.3 Â· 30 min</span></div></div>
-              <div class="scr-li"><i class="gc"></i><div><b>The Good Bowl</b><span>Thai Â· â˜… 4.4 Â· 27 min</span></div></div>
-            </div>
-            <div class="scr-nav">
-              <span class="on"><i>ðŸ </i>Home</span><span><i>ðŸ”</i>Search</span><span><i>ðŸ›’</i>Cart</span><span><i>â†»</i>Reorder</span>
+              <div class="m-dashed"><span>Explore all dinner options</span><b>â†’</b></div>
             </div>
           </div>
+          <div class="m-div"></div>
+          <div class="m-white m-sec">
+            <div class="m-shead"><div><b>ðŸ”¥ Trending Near You</b><small>What Delhi is ordering right now</small></div></div>
+            <div class="m-trow">
+              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#1 Trending</span><span class="m-dot"></span><span class="m-dname">Chicken Biryani</span></div><div class="m-body"><i>India's most ordered dish</i><div class="m-meta"><span class="m-star">â˜… 4.4</span><small>22m</small><span class="m-price">â‚¹270</span></div><span class="m-view">View restaurants â†’</span></div></div>
+              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#2 Trending</span><span class="m-dot"></span><span class="m-dname">Korean Cream Bun</span></div><div class="m-body"><i>viral on reels</i><div class="m-meta"><span class="m-star">â˜… 4.3</span><small>30m</small><span class="m-price">â‚¹160</span></div><span class="m-view">View restaurants â†’</span></div></div>
+              <div class="m-tcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><div class="m-shade"></div><span class="m-rank">#3 Trending</span><span class="m-dname">Kunafa Chocolate</span></div><div class="m-body"><i>rising fast</i><div class="m-meta"><span class="m-star">â˜… 4.5</span><small>28m</small><span class="m-price">â‚¹240</span></div><span class="m-view">View restaurants â†’</span></div></div>
+            </div>
+            <div class="m-dashed" style="margin-top:8px"><span>Explore all trending in Delhi</span><b>â†’</b></div>
+          </div>
+          <div class="m-div"></div>
+          <div class="m-white m-sec">
+            <div class="m-shead"><b>Top Rated Near You</b><span>See all â†’</span></div>
+            <div class="m-2col">
+              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Moti Mahal Delux</b><i>Butter Chicken</i><div class="m-meta"><span class="m-star">â˜… 4.6</span><small>Â· 26m</small></div></div></div>
+              <div class="m-rcard"><div class="m-ph"><img src="https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"><span class="m-plus">+</span></div><div class="m-body"><b>Biryani Blues</b><i>Dum Biryani</i><div class="m-meta"><span class="m-star">â˜… 4.4</span><small>Â· 22m</small></div></div></div>
+            </div>
+          </div>
+          <div class="m-div"></div>
+          <div class="m-white">
+            <div class="m-banner">
+              <div class="m-bl">
+                <span class="m-bchip">SUMMER</span>
+                <b>Cool Treats for a Sweet Escape</b>
+                <p>the AI read the Delhi heat</p>
+                <span class="m-cta">Explore â†’</span>
+              </div>
+              <div class="m-ph"><img src="https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=200&q=60&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div>
+            </div>
+            <div class="m-foot">Personalised for Vikram</div>
+          </div>
+          <div class="m-nav">
+            <div class="m-ni on"><i>ðŸ </i><span>Food</span></div>
+            <div class="m-ni off"><i>âš¡</i><span>Bolt</span><span class="m-badge" style="background:#FC8019">15 MIN</span></div>
+            <div class="m-ni off"><i>ðŸ›ï¸</i><span>99 store</span></div>
+            <div class="m-ni off"><i>ðŸŒ¿</i><span>EatRight</span><span class="m-badge" style="background:#22c55e">NEW</span></div>
+            <div class="m-ni off"><i>â†»</i><span>Reorder</span></div>
+          </div>
         </div></div>
-        <p class="scroll-hint">â†• scroll inside the phone</p>
+        <p class="scroll-hint">â†• scroll inside the phone â€” replica of the live build</p>
       </div>
     </div>
   </section>
