@@ -46,9 +46,19 @@ export default function SearchPage({ city, onBack, onRestaurantSelect }: Props) 
   function saveRecent(q: string) {
     const clean = q.trim()
     if (clean.length < 2) return
-    const next = [clean, ...recent.filter(r => r.toLowerCase() !== clean.toLowerCase())].slice(0, 8)
-    setRecent(next)
-    persistRecent(next)
+    const lower = clean.toLowerCase()
+    setRecent(prev => {
+      const next = [
+        clean,
+        // drop exact duplicates AND half-typed prefixes ("piz" once "pizza" lands)
+        ...prev.filter(r => {
+          const rl = r.toLowerCase()
+          return rl !== lower && !lower.startsWith(rl)
+        }),
+      ].slice(0, 8)
+      persistRecent(next)
+      return next
+    })
   }
 
   function clearRecent() {
@@ -66,7 +76,13 @@ export default function SearchPage({ city, onBack, onRestaurantSelect }: Props) 
       if (city) params.set('city', city)
       fetch(`/api/search?${params}`)
         .then(r => r.json())
-        .then(data => { setResults(data.results ?? []); setSearched(true) })
+        .then(data => {
+          const found = data.results ?? []
+          setResults(found)
+          setSearched(true)
+          // Every real search (one that found something) lands in Recently searched
+          if (found.length > 0) saveRecent(q)
+        })
         .catch(() => { setResults([]); setSearched(true) })
         .finally(() => setSearching(false))
     }, 350)
