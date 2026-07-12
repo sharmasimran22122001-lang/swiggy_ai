@@ -98,6 +98,30 @@ html, body {
 }
 .foot-float { animation: footFloat 2.6s ease-in-out infinite; }
 
+/* Footer cartoon: character bobs, snack lifts for a sip, bubble pops, steam drifts */
+@keyframes charBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+.char-bob { animation: charBob 2.6s ease-in-out infinite; display: inline-block; }
+@keyframes sipCup {
+  0%, 52%, 100% { transform: translate(0, 0) rotate(0deg); }
+  22%, 38%      { transform: translate(-13px, -14px) rotate(-24deg); }
+}
+.sip-cup { animation: sipCup 3.2s ease-in-out infinite; display: inline-block; transform-origin: bottom left; }
+@keyframes bubblePop {
+  0%, 55%      { opacity: 0; transform: scale(0.6); }
+  68%, 92%     { opacity: 1; transform: scale(1); }
+  100%         { opacity: 0; transform: scale(0.9); }
+}
+.sip-bubble { animation: bubblePop 3.2s ease-in-out infinite; transform-origin: bottom left; }
+@keyframes steamUp {
+  0%   { opacity: 0; transform: translateY(2px); }
+  35%  { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+.steam-up { animation: steamUp 2s ease-out infinite; display: inline-block; }
+
 /* VEG toggle celebration */
 @keyframes vegRipple {
   0%   { opacity: 0.5; transform: scale(0.3); }

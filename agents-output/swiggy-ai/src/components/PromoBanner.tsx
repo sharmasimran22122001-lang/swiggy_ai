@@ -175,26 +175,34 @@ export default function PromoBanner({ banner, onExplore }: Props) {
   }
   useEffect(() => () => { if (resumeTimer.current) clearTimeout(resumeTimer.current) }, [])
 
-  // Swipe / drag
+  // Swipe / drag — window-level listeners after pointerdown so the gesture
+  // survives child elements, capture quirks, and fast flicks
   function onPointerDown(e: React.PointerEvent) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return
     pointer.current = { down: true, startX: e.clientX, moved: false }
     pauseAutoplay()
-    trackRef.current?.setPointerCapture(e.pointerId)
-  }
-  function onPointerMove(e: React.PointerEvent) {
-    if (!pointer.current.down) return
-    const dx = e.clientX - pointer.current.startX
-    if (Math.abs(dx) > 6) pointer.current.moved = true
-    setDragPx(dx)
-  }
-  function onPointerUp(e: React.PointerEvent) {
-    if (!pointer.current.down) return
-    pointer.current.down = false
-    const dx = e.clientX - pointer.current.startX
-    setDragPx(0)
-    if (dx <= -SWIPE_THRESHOLD_PX) next()
-    else if (dx >= SWIPE_THRESHOLD_PX) prev()
-    scheduleResume()
+
+    const onMove = (ev: PointerEvent) => {
+      if (!pointer.current.down) return
+      const dx = ev.clientX - pointer.current.startX
+      if (Math.abs(dx) > 6) pointer.current.moved = true
+      setDragPx(dx)
+    }
+    const onUp = (ev: PointerEvent) => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
+      if (!pointer.current.down) return
+      pointer.current.down = false
+      const dx = ev.clientX - pointer.current.startX
+      setDragPx(0)
+      if (dx <= -SWIPE_THRESHOLD_PX) next()
+      else if (dx >= SWIPE_THRESHOLD_PX) prev()
+      scheduleResume()
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
   }
   // A drag shouldn't fire the Explore button underneath
   function onClickCapture(e: React.MouseEvent) {
@@ -213,9 +221,7 @@ export default function PromoBanner({ banner, onExplore }: Props) {
         }}
         ref={trackRef}
         onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
+        onDragStart={e => e.preventDefault()}
         onClickCapture={onClickCapture}
       >
         <div

@@ -42,7 +42,7 @@ export default function FoodCategoryRow({ categories, onCategorySelect }: Props)
       </div>
 
       <div className="flex gap-[9px] overflow-x-auto pb-3" {...drag} style={{ padding: '0 15px 13px', scrollbarWidth: 'none', ...drag.style }}>
-        {categories.slice(0, 7).map((label, i) => (
+        {categories.slice(0, 8).map((label, i) => (
           <motion.button
             key={label}
             initial={{ opacity: 0, y: 8 }}

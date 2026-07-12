@@ -50,7 +50,7 @@ export default function TrendingNearYou({ city, onDishSelect, onSeeAll }: Props)
       if (!existing || item.rating > existing.rating) map.set(item.trending_name, item)
       return map
     }, new Map<string, TrendMatch>()).values()
-  ).slice(0, 8)
+  ).slice(0, 12) // show everything genuinely available in this city (capped for sanity)
 
   function handleCardClick(item: TrendMatch) {
     // Pass ALL restaurants that serve this trending dish (not just the best one)

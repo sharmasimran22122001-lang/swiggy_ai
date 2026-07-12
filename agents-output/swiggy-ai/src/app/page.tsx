@@ -52,6 +52,8 @@ function AppInner() {
   const [error, setError] = useState<string | null>(null)
   const [view, setView] = useState<View>('home')
   const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantInfo | null>(null)
+  // Where the user opened the current restaurant from — back returns exactly there
+  const [restaurantOrigin, setRestaurantOrigin] = useState<View>('home')
   const [categoryState, setCategoryState] = useState<CategoryState | null>(null)
   const [dishState, setDishState] = useState<DishState | null>(null)
   const [trendingAllItems, setTrendingAllItems] = useState<TrendMatch[]>([])
@@ -129,7 +131,14 @@ function AppInner() {
 
   function handleRestaurantSelect(info: RestaurantInfo) {
     setSelectedRestaurant(info)
+    setRestaurantOrigin(view) // remember the entry point, so back returns there
     setView('restaurant')
+  }
+
+  // "View all" opens the section's own list — never a keyword-filtered dump
+  function handleViewAllList(title: string, restaurants: RestaurantInfo[]) {
+    setCategoryState({ name: title, restaurants })
+    setView('category')
   }
 
   function handleCategorySelect(category: string) {
@@ -211,7 +220,13 @@ function AppInner() {
                 <motion.div key="restaurant" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <RestaurantPage
                     restaurant={selectedRestaurant}
-                    onBack={() => setView(categoryState ? 'category' : 'home')}
+                    onBack={() => {
+                      // Return to wherever the user came from — never a page they didn't visit
+                      if (restaurantOrigin === 'category' && categoryState) setView('category')
+                      else if (restaurantOrigin === 'search') setView('search')
+                      else if (restaurantOrigin === 'dish' && dishState) setView('dish')
+                      else setView('home')
+                    }}
                     onGoToCart={() => setView('cart')}
                   />
                 </motion.div>
@@ -304,6 +319,7 @@ function AppInner() {
                           detectedCity={detectedCity}
                           onRestaurantSelect={handleRestaurantSelect}
                           onCategorySelect={handleCategorySelect}
+                          onViewAllList={handleViewAllList}
                           onBannerExplore={handleBannerExplore}
                           onCartClick={() => setView('cart')}
                           onDishSelect={handleDishSelect}

@@ -44,10 +44,14 @@ BANNER (all users):
 
 TOP RATED (all users):
 - Highly-rated restaurants and cafes near the user's location (area match preferred).
-- Return 4 items sorted by avg_rating descending.
+- Return exactly 8 items sorted by avg_rating descending.
+- Never repeat a restaurant that already appears in hero — each section must feel fresh.
 
 WHAT'S ON YOUR MIND (all users):
-- 6 to 7 items maximum. Food category tiles, not restaurants.
+- Exactly 8 items. Food category tiles, not restaurants.
+- The 8 categories must span 8 clearly DIFFERENT cuisines/food worlds. Never let one
+  cuisine dominate (e.g. a dessert-lover must still see biryani, chinese, south indian…) —
+  at most 2 of the 8 may relate to the user's top cuisine.
 - Pick categories that are seasonal, locally famous in the user's area, or highly rated nearby.
 - Examples for Monsoon: Chai & Snacks, Hot Soup, Pakoda, Samosa, Biryani, Maggi.
 

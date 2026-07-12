@@ -14,10 +14,10 @@ interface Props {
 }
 
 const VERTICALS = [
-  { label: 'Food',      icon: '🍔' },
-  { label: 'Instamart', icon: '⚡' },
-  { label: 'Dineout',   icon: '🍽️' },
-  { label: 'Scenes',    icon: '🎭' },
+  { label: 'Food',      icon: '🍔', title: '', sub: '' },
+  { label: 'Instamart', icon: '⚡', title: 'Instamart is still being cooked 🧑‍🍳', sub: "We're stocking these shelves as we speak. Meanwhile, the food's hot →" },
+  { label: 'Dineout',   icon: '🍽️', title: 'Dineout is setting the table 🕯️', sub: "We're reserving you the best seats in town. Until then, dinner delivers →" },
+  { label: 'Scenes',    icon: '🎭', title: 'Scenes is behind the curtain ✨', sub: "The show is still in rehearsal. Tonight's menu, however, is live →" },
 ]
 
 export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, onCartClick, onSearchClick }: Props) {
@@ -33,7 +33,7 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
   const N = VERTICALS.length
 
   // ── Under-construction sheet for unbuilt verticals (feedback #8) ──────────
-  const [blocked, setBlocked] = useState<{ label: string; icon: string } | null>(null)
+  const [blocked, setBlocked] = useState<{ label: string; icon: string; title: string; sub: string } | null>(null)
   const [countdown, setCountdown] = useState(5)
   const returnTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const tickTimer = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -54,7 +54,7 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
     if (i === 0) { clearVerticalTimers(); setBlocked(null); return }
     const v = VERTICALS[i]
     clearVerticalTimers()
-    setBlocked({ label: v.label, icon: v.icon })
+    setBlocked({ label: v.label, icon: v.icon, title: v.title, sub: v.sub })
     setCountdown(5)
     tickTimer.current = setInterval(() => setCountdown(c => Math.max(0, c - 1)), 1000)
     returnTimer.current = setTimeout(backToFood, 5000)
@@ -243,8 +243,7 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
               <span key={vegFx} aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
                 <span className="veg-ripple" />
                 <span className="leaf-burst" style={{ '--lx': '-16px', '--ly': '-20px', '--lr': '-50deg' } as React.CSSProperties}>🍃</span>
-                <span className="leaf-burst" style={{ '--lx': '4px', '--ly': '-26px', '--lr': '25deg', animationDelay: '0.08s' } as React.CSSProperties}>🌱</span>
-                <span className="leaf-burst" style={{ '--lx': '18px', '--ly': '-16px', '--lr': '55deg', animationDelay: '0.16s' } as React.CSSProperties}>🍃</span>
+                <span className="leaf-burst" style={{ '--lx': '16px', '--ly': '-18px', '--lr': '50deg', animationDelay: '0.1s' } as React.CSSProperties}>🍃</span>
               </span>
             )}
           </span>
@@ -272,10 +271,10 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
               <div style={{ width: 36, height: 4, borderRadius: 4, background: '#e0e0e0', margin: '0 auto 16px' }} />
               <div style={{ fontSize: 38, lineHeight: 1 }}>{blocked.icon}</div>
               <p style={{ fontSize: 16, fontWeight: 800, color: '#3d4152', marginTop: 10 }}>
-                {blocked.label} is still being cooked 🧑‍🍳
+                {blocked.title}
               </p>
               <p style={{ fontSize: 12.5, color: '#686b78', marginTop: 5 }}>
-                We're building this aisle. Meanwhile, the food's hot →
+                {blocked.sub}
               </p>
               <div className="flex items-center justify-center" style={{ gap: 10, marginTop: 16 }}>
                 <span style={{ fontSize: 11.5, fontWeight: 700, color: '#93959f', background: '#f4f4f4', borderRadius: 20, padding: '7px 13px' }}>

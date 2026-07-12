@@ -38,26 +38,78 @@ function atLeastThree<T>(arr: T[]): T[] {
   return out
 }
 
-// Hero rows target 8 items so the scroll never dies halfway (feedback #1).
-// The AI is asked for 8; older cached pages get padded from the other sections.
-function eightHeroItems(homepage: HomepageJSON): HomepageItem[] {
+// ── Item selection (feedback round 2) ─────────────────────────────────────────
+// Rules: a restaurant row never repeats a restaurant; dish rows never repeat a
+// dish; and no restaurant appears in both the hero and Top Rated at once.
+
+function dedupeBy<T>(arr: T[], key: (t: T) => string): T[] {
   const seen = new Set<string>()
-  const out: HomepageItem[] = []
+  return arr.filter(t => {
+    const k = key(t).toLowerCase()
+    if (seen.has(k)) return false
+    seen.add(k)
+    return true
+  })
+}
+
+// 2A hero: dishes at the favourite restaurant only — never padded with other
+// restaurants' dishes (the AI is asked for 8; a short row beats a wrong row).
+function heroDishes(homepage: HomepageJSON): HomepageItem[] {
+  return dedupeBy(homepage.hero.items ?? [], i => i.name).slice(0, 8)
+}
+
+// 2B hero: RESTAURANTS. One card per restaurant, padded from the page's other
+// sections when the AI returned fewer than 8 — always deduped by restaurant.
+function heroRestaurants(homepage: HomepageJSON): HomepageItem[] {
   const pools = [
     homepage.hero.items,
+    homepage.discovery.items,
+    homepage.slot_top_rated.items,
+    homepage.mood_banner.items,
+  ].flatMap(p => p ?? [])
+  return dedupeBy(pools, i => i.restaurant).slice(0, 8)
+}
+
+// Top Rated: 8 restaurants that do NOT already appear in the hero.
+function topRatedItems(homepage: HomepageJSON, excludeRestaurants: Set<string>): HomepageItem[] {
+  const pools = [
     homepage.slot_top_rated.items,
     homepage.discovery.items,
     homepage.mood_banner.items,
-  ]
-  for (const pool of pools) {
-    for (const item of pool ?? []) {
-      const key = `${item.restaurant}|${item.name}`
-      if (!seen.has(key)) {
-        seen.add(key)
-        out.push(item)
-        if (out.length === 8) return out
-      }
-    }
+    homepage.hero.items,
+  ].flatMap(p => p ?? [])
+  const unique = dedupeBy(pools, i => i.restaurant)
+  const excluded = new Set([...excludeRestaurants].map(r => r.toLowerCase()))
+  const fresh = unique.filter(i => !excluded.has(i.restaurant.toLowerCase()))
+  // Prefer non-repeating; relax only if there genuinely isn't enough data
+  return (fresh.length >= 4 ? fresh : unique).slice(0, 8)
+}
+
+// What's on your mind: 8 categories with enforced variety — never one cuisine
+// dominating (e.g. a dessert-lover still sees 8 different worlds to explore).
+const MIND_BUCKETS: string[][] = [
+  ['dessert', 'cake', 'ice cream', 'sweet', 'pastry', 'kulfi', 'falooda'],
+  ['pizza', 'italian', 'pasta'],
+  ['biryani', 'hyderabadi'],
+  ['chinese', 'noodle', 'momos', 'manchurian'],
+  ['south indian', 'dosa', 'idli', 'vada'],
+  ['north indian', 'punjabi', 'thali', 'paratha'],
+  ['burger', 'fast food', 'fries', 'sandwich', 'rolls', 'wrap'],
+  ['chai', 'coffee', 'beverage', 'juice', 'shake', 'tea'],
+]
+const MIND_DEFAULTS = ['Biryani', 'Pizza', 'South Indian', 'Chinese', 'Burgers', 'Rolls', 'North Indian', 'Desserts']
+
+function diverseMind(aiCategories: string[]): string[] {
+  const bucketOf = (c: string) => MIND_BUCKETS.findIndex(b => b.some(k => c.toLowerCase().includes(k)))
+  const bucketCount = new Map<number, number>()
+  const out: string[] = []
+  for (const c of dedupeBy([...(aiCategories ?? []), ...MIND_DEFAULTS], x => x)) {
+    const b = bucketOf(c)
+    const n = bucketCount.get(b) ?? 0
+    if (b !== -1 && n >= 2) continue // max 2 per cuisine bucket
+    bucketCount.set(b, n + 1)
+    out.push(c)
+    if (out.length === 8) break
   }
   return out
 }
@@ -187,12 +239,11 @@ function SpringAddButton({ onAdd, size = 26, fontSize = 18, bottom = 5, right = 
 
 // ─── 2A Loyalist Hero ────────────────────────────────────────────────────────
 
-function LoyalistHero({ homepage, profile, onRestaurantSelect, onAdd }: {
-  homepage: HomepageJSON; profile: UserProfile
+function LoyalistHero({ items, homepage, profile, onRestaurantSelect, onAdd }: {
+  items: HomepageItem[]; homepage: HomepageJSON; profile: UserProfile
   onRestaurantSelect?: (info: RestaurantInfo) => void
   onAdd?: (item: HomepageItem) => void
 }) {
-  const items = atLeastThree(eightHeroItems(homepage))
   const restName = profile.favourite_restaurant || homepage.hero.title || 'your go-to spot'
   const drag = useDragScroll<HTMLDivElement>()
 
@@ -238,34 +289,22 @@ function LoyalistHero({ homepage, profile, onRestaurantSelect, onAdd }: {
 
 // ─── 2B Explorer Hero ────────────────────────────────────────────────────────
 
-function ExplorerHero({ homepage, profile, onRestaurantSelect, onAdd, onCategorySelect }: {
-  homepage: HomepageJSON; profile: UserProfile
+function ExplorerHero({ items, profile, onRestaurantSelect, onAdd, onViewAllList }: {
+  items: HomepageItem[]; profile: UserProfile
   onRestaurantSelect?: (info: RestaurantInfo) => void
   onAdd?: (item: HomepageItem) => void
-  onCategorySelect?: (category: string) => void
+  onViewAllList?: (title: string, list: RestaurantInfo[]) => void
 }) {
-  const items = atLeastThree(eightHeroItems(homepage))
-  const topCuisines = profile.top_cuisines?.slice(0, 3) ?? []
   const drag = useDragScroll<HTMLDivElement>()
-
-  function handleViewAll() {
-    const cuisine = topCuisines[0]
-    if (cuisine) onCategorySelect?.(cuisine)
-    else if (items[0]) onRestaurantSelect?.(toRestaurantInfo(items[0], profile))
-  }
 
   return (
     <GlassHero>
       <div style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'rgba(255,255,255,0.72)', borderBottom: '1px solid rgba(252,128,25,0.1)' }}>
-        <SectionHead title="Places you'll actually love" onViewAll={handleViewAll} pad="14px 15px 8px" />
-        {topCuisines.length > 0 && (
-          <div className="flex items-center" style={{ gap: 6, flexWrap: 'wrap', padding: '0 15px 10px' }}>
-            <span style={{ fontSize: 10, color: '#93959f', fontWeight: 600 }}>Matched to:</span>
-            {topCuisines.map(c => (
-              <span key={c} style={{ fontSize: 10, fontWeight: 700, color: '#3d4152', background: 'rgba(244,244,244,0.9)', border: '1px solid #e0e0e0', padding: '2px 8px', borderRadius: 20 }}>{c}</span>
-            ))}
-          </div>
-        )}
+        <SectionHead
+          title="Places you'll actually love"
+          onViewAll={() => onViewAllList?.("Places you'll love", items.map(i => toRestaurantInfo(i, profile)))}
+          pad="14px 15px 10px"
+        />
       </div>
 
       <div className="row-fade-wrap">
@@ -281,15 +320,14 @@ function ExplorerHero({ homepage, profile, onRestaurantSelect, onAdd, onCategory
                 onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
               >
                 <div className="relative" style={{ height: 88 }}>
-                  <FoodImg name={item.restaurant} extra={item.name} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
+                  {/* Restaurant card → restaurant-keyed photo, restaurant rating. Dishes never mix in. */}
+                  <FoodImg name={item.restaurant} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
                   <StarOnPhoto rating={item.rating} />
                   <EtaOnPhoto min={item.delivery_min} />
                   <SpringAddButton onAdd={() => onAdd?.(item)} size={26} fontSize={18} bottom={6} right={6} />
                 </div>
-                <div style={{ padding: '7px 8px 8px' }}>
+                <div style={{ padding: '8px 8px 9px' }}>
                   <p style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.restaurant}</p>
-                  <p style={{ fontSize: 10, color: '#686b78', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
-                  {item.reason && <p style={{ fontSize: 9, fontWeight: 600, color: '#FC8019', marginTop: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.reason}</p>}
                 </div>
               </motion.div>
             )
@@ -403,21 +441,20 @@ function VarietyHero({ profile: _profile, onCategorySelect }: {
 
 // ─── Top Rated Near You — with cuisine images ─────────────────────────────────
 
-function TopRatedSection({ block, profile, onRestaurantSelect, onAdd, onCategorySelect }: {
-  block: HomepageJSON['slot_top_rated']; profile: UserProfile
+function TopRatedSection({ items: rawItems, profile, onRestaurantSelect, onAdd, onViewAllList }: {
+  items: HomepageItem[]; profile: UserProfile
   onRestaurantSelect?: (info: RestaurantInfo) => void
   onAdd?: (item: HomepageItem) => void
-  onCategorySelect?: (category: string) => void
+  onViewAllList?: (title: string, list: RestaurantInfo[]) => void
 }) {
-  const raw = block.items.slice(0, 8)
-  const items = atLeastThree(raw)
+  const items = atLeastThree(rawItems)
   const drag = useDragScroll<HTMLDivElement>()
 
   return (
     <div className="bg-white" style={{ paddingBottom: 14 }}>
       <SectionHead
         title="Top Rated Near You"
-        onViewAll={() => onCategorySelect?.(profile.top_cuisines?.[0] ?? 'Biryani')}
+        onViewAll={() => onViewAllList?.('Top rated near you', items.map(i => toRestaurantInfo(i, profile)))}
       />
 
       <div className="row-fade-wrap">
@@ -433,14 +470,14 @@ function TopRatedSection({ block, profile, onRestaurantSelect, onAdd, onCategory
                 onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
               >
                 <div className="relative" style={{ height: 84 }}>
-                  <FoodImg name={item.restaurant} extra={item.name} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
+                  {/* Restaurant card → restaurant identity only (photo + rating), no dish mixing */}
+                  <FoodImg name={item.restaurant} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
                   <StarOnPhoto rating={item.rating} />
                   <EtaOnPhoto min={item.delivery_min} />
                   <SpringAddButton onAdd={() => onAdd?.(item)} size={24} fontSize={16} bottom={5} right={5} />
                 </div>
-                <div style={{ padding: '7px 8px 8px' }}>
+                <div style={{ padding: '8px 8px 9px' }}>
                   <p style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.restaurant}</p>
-                  <p style={{ fontSize: 10, color: '#686b78', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
                 </div>
               </motion.div>
             )
@@ -451,47 +488,48 @@ function TopRatedSection({ block, profile, onRestaurantSelect, onAdd, onCategory
   )
 }
 
-// ─── Fun footer — slot-aware floating food strip + rotating sign-off ─────────
+// ─── Fun footer — a tiny time-aware cartoon scene (feedback round 2) ─────────
+// A little character enjoys whatever this hour calls for: the snack floats up
+// for a bite/sip, a speech bubble pops, steam drifts. Compact — no dead space.
 
-const FUN_LINES: Array<{ text: string; slots?: MealPart[] }> = [
-  { text: '🍛 Made with extra masala in India' },
-  { text: '🫓 You scrolled this far… that’s basically cardio' },
-  { text: '🍕 0 calories were harmed in the making of this page' },
-  { text: '🥟 Every momo you didn’t order is a momo someone else enjoyed' },
-  { text: '☕ Powered by chai and questionable cravings' },
-  { text: '🌅 Rise, shine, and order breakfast', slots: ['breakfast'] },
-  { text: '☀️ Lunch is calling. It says hurry.', slots: ['lunch'] },
-  { text: '🍵 It’s chai o’clock somewhere. Here, actually.', slots: ['snacks'] },
-  { text: '🌙 Dinner decisions are the hardest decisions', slots: ['dinner'] },
-  { text: '🌙 Late-night scrolls hit different', slots: ['late_night'] },
-]
+const FOOT_SCENES: Record<MealPart, { char: string; prop: string; bubble: string; line: string; steam: boolean }> = {
+  breakfast:  { char: '🥱', prop: '☕', bubble: 'brewing…',      line: 'Mornings are 80% coffee, 20% toast', steam: true },
+  lunch:      { char: '😋', prop: '🍛', bubble: 'nom nom',       line: 'Lunch break — the day’s only real meeting', steam: true },
+  snacks:     { char: '😌', prop: '☕', bubble: 'sip… sip…',     line: 'It’s chai o’clock. Non-negotiable.', steam: true },
+  dinner:     { char: '🤤', prop: '🥘', bubble: 'almost done…',  line: 'Great dinners start with great scrolling', steam: true },
+  late_night: { char: '😴', prop: '🍕', bubble: 'one more bite', line: 'Late-night scrolls hit different', steam: false },
+}
 
 function FunFooter() {
   const hour = new Date().getHours()
   const slot = getMealSlot(hour)
-  const foods = slot.categories.slice(0, 7)
-  // Random pick per mount; slot-specific lines only in their window
-  const [line] = useState(() => {
-    const pool = FUN_LINES.filter(l => !l.slots || l.slots.includes(slot.part))
-    return pool[Math.floor(Math.random() * pool.length)].text
-  })
+  const scene = FOOT_SCENES[slot.part]
 
   return (
-    <div className="text-center" style={{ padding: '20px 0 28px' }}>
-      <div className="flex justify-center overflow-x-auto hide-scrollbar" style={{ gap: 12, padding: '0 15px 14px' }}>
-        {foods.map((cat, i) => (
-          <div key={cat} className="flex-shrink-0 flex flex-col items-center" style={{ gap: 4 }}>
-            <div
-              className="rounded-full overflow-hidden foot-float"
-              style={{ width: 42, height: 42, border: '1.5px solid #ebebeb', animationDelay: `${i * 0.35}s` }}
-            >
-              <FoodImg name={cat} emoji={MEAL_EMOJI[cat] ?? '🍽️'} gradA={MEAL_GRADS[cat]?.a ?? '#8a6838'} gradB={MEAL_GRADS[cat]?.b ?? '#6a5028'} />
-            </div>
-            <span style={{ fontSize: 8.5, fontWeight: 600, color: '#93959f' }}>{cat}</span>
-          </div>
-        ))}
+    <div className="flex items-center justify-center" style={{ padding: '16px 20px 10px', gap: 14 }}>
+      {/* the cartoon */}
+      <div style={{ position: 'relative', width: 74, height: 58, flexShrink: 0 }}>
+        {/* speech bubble */}
+        <span className="sip-bubble" style={{
+          position: 'absolute', top: -2, left: 0,
+          fontSize: 8.5, fontWeight: 700, color: '#93959f',
+          background: '#fff', border: '1px solid #ebebeb', borderRadius: 8, padding: '2px 7px', whiteSpace: 'nowrap',
+        }}>{scene.bubble}</span>
+        {/* character */}
+        <span className="char-bob" style={{ position: 'absolute', bottom: 0, left: 8, fontSize: 30, lineHeight: 1 }}>{scene.char}</span>
+        {/* the snack, lifting up for a sip/bite */}
+        <span className="sip-cup" style={{ position: 'absolute', bottom: 0, right: 8, fontSize: 22, lineHeight: 1 }}>{scene.prop}</span>
+        {/* steam */}
+        {scene.steam && (
+          <>
+            <span className="steam-up" style={{ position: 'absolute', bottom: 24, right: 14, fontSize: 9, color: '#bdbdbd' }}>∿</span>
+            <span className="steam-up" style={{ position: 'absolute', bottom: 24, right: 20, fontSize: 8, color: '#d4d4d4', animationDelay: '0.6s' }}>∿</span>
+          </>
+        )}
       </div>
-      <p style={{ fontSize: 11.5, fontWeight: 600, color: '#93959f' }}>{line}</p>
+      <p style={{ fontSize: 11.5, fontWeight: 600, color: '#93959f', maxWidth: 170, textAlign: 'left', lineHeight: 1.45 }}>
+        {scene.line}
+      </p>
     </div>
   )
 }
@@ -504,6 +542,7 @@ interface Props {
   detectedCity: string | null
   onRestaurantSelect?: (info: RestaurantInfo) => void
   onCategorySelect?: (category: string) => void
+  onViewAllList?: (title: string, list: RestaurantInfo[]) => void
   onBannerExplore?: (theme: string, context: string) => void
   onCartClick?: () => void
   onDishSelect?: (dish: string, cuisine: string, whyTrending: string, searchSignal: string, restaurants: import('@/types').TrendMatch[]) => void
@@ -512,7 +551,7 @@ interface Props {
 
 export default function HomeFeed({
   homepage, profile, detectedCity,
-  onRestaurantSelect, onCategorySelect, onBannerExplore, onCartClick, onDishSelect, onSeeAllTrending,
+  onRestaurantSelect, onCategorySelect, onViewAllList, onBannerExplore, onCartClick, onDishSelect, onSeeAllTrending,
 }: Props) {
   const [, setSelectedMood] = useState<MoodType>(homepage.mood_banner.mood)
   const { add } = useCart()
@@ -539,10 +578,17 @@ export default function HomeFeed({
   const trendingCity = profile.city ?? detectedCity
   const showTrending = (is2B || is2C) && !!trendingCity
 
-  const seasonTag = homepage.mood_banner?.theme ?? undefined
-  const locationTag = profile.area ?? undefined
+  // Persona-correct item selection with cross-section dedupe (feedback round 2)
+  const heroItems = is2B ? heroRestaurants(homepage) : heroDishes(homepage)
+  const heroRestaurantSet = is2A
+    ? new Set(profile.favourite_restaurant ? [profile.favourite_restaurant] : [])
+    : is2B
+      ? new Set(heroItems.map(i => i.restaurant))
+      : new Set<string>()
+  const ratedItems = topRatedItems(homepage, heroRestaurantSet)
+  const mindCategories = diverseMind(homepage.whats_on_your_mind ?? [])
 
-  const sharedProps = { onRestaurantSelect, onAdd: handleAdd, onCategorySelect }
+  const sharedProps = { onRestaurantSelect, onAdd: handleAdd, onViewAllList }
 
   const footer = <FunFooter />
 
@@ -553,13 +599,11 @@ export default function HomeFeed({
     </>
   )
 
-  const categoryBlock = homepage.whats_on_your_mind?.length > 0 && (
+  const categoryBlock = mindCategories.length > 0 && (
     <>
       <div style={{ background: '#fff' }}>
         <FoodCategoryRow
-          categories={homepage.whats_on_your_mind}
-          seasonTag={seasonTag}
-          locationTag={locationTag}
+          categories={mindCategories}
           onCategorySelect={onCategorySelect}
         />
       </div>
@@ -580,12 +624,12 @@ export default function HomeFeed({
   // ── 2A Loyalist ──────────────────────────────────────────────────────────
   if (is2A) {
     return (
-      <div className="pb-28" style={{ background: '#f4f4f4' }}>
-        <LoyalistHero homepage={homepage} profile={profile} {...sharedProps} />
+      <div style={{ background: '#f4f4f4', paddingBottom: 66 }}>
+        <LoyalistHero items={heroItems} homepage={homepage} profile={profile} onRestaurantSelect={onRestaurantSelect} onAdd={handleAdd} />
         <Divider />
         {bannerBlock}
         <Divider />
-        <TopRatedSection block={homepage.slot_top_rated} profile={profile} {...sharedProps} />
+        <TopRatedSection items={ratedItems} profile={profile} {...sharedProps} />
         <Divider />
         {categoryBlock}
         <div style={{ background: '#fff' }}><MoreOnSwiggy /></div>
@@ -598,11 +642,11 @@ export default function HomeFeed({
   // ── 2B Explorer ──────────────────────────────────────────────────────────
   if (is2B) {
     return (
-      <div className="pb-28" style={{ background: '#f4f4f4' }}>
-        <ExplorerHero homepage={homepage} profile={profile} {...sharedProps} />
+      <div style={{ background: '#f4f4f4', paddingBottom: 66 }}>
+        <ExplorerHero items={heroItems} profile={profile} {...sharedProps} />
         <Divider />
         {trendingBlock}
-        <TopRatedSection block={homepage.slot_top_rated} profile={profile} {...sharedProps} />
+        <TopRatedSection items={ratedItems} profile={profile} {...sharedProps} />
         <Divider />
         {bannerBlock}
         <Divider />
@@ -617,11 +661,11 @@ export default function HomeFeed({
   // ── 2C Variety Seeker ────────────────────────────────────────────────────
   if (is2C) {
     return (
-      <div className="pb-28" style={{ background: '#f4f4f4' }}>
+      <div style={{ background: '#f4f4f4', paddingBottom: 66 }}>
         <VarietyHero profile={profile} onCategorySelect={onCategorySelect} />
         <Divider />
         {trendingBlock}
-        <TopRatedSection block={homepage.slot_top_rated} profile={profile} {...sharedProps} />
+        <TopRatedSection items={ratedItems} profile={profile} {...sharedProps} />
         <Divider />
         {bannerBlock}
         <Divider />

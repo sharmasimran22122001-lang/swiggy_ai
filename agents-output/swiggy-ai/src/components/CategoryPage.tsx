@@ -59,7 +59,8 @@ function contextBarText(category: string, context?: string) {
     'Noodles': '🍜 Slurp-worthy noodle spots',
     'Hot Soup': '🍲 Warm your soul',
   }
-  return map[category] ?? `🍽️ Best ${category} places near you`
+  // No invented headers for list titles like "Places you'll love" — keep it clean
+  return map[category] ?? ''
 }
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -108,13 +109,15 @@ export default function CategoryPage({ category, context, restaurants, onBack, o
         </div>
       </div>
 
-      {/* Context bar */}
-      <div
-        className="bg-white"
-        style={{ padding: '10px 15px 11px', borderBottom: '1px solid #ebebeb' }}
-      >
-        <p style={{ fontSize: 12, fontWeight: 600, color: '#3d4152' }}>{contextBarText(category, context)}</p>
-      </div>
+      {/* Context bar — only when there is a real line to show */}
+      {contextBarText(category, context) && (
+        <div
+          className="bg-white"
+          style={{ padding: '10px 15px 11px', borderBottom: '1px solid #ebebeb' }}
+        >
+          <p style={{ fontSize: 12, fontWeight: 600, color: '#3d4152' }}>{contextBarText(category, context)}</p>
+        </div>
+      )}
 
       {/* Sort chips */}
       <div className="flex gap-2 bg-white" style={{ padding: '8px 15px 10px', borderBottom: '1px solid #ebebeb' }}>
@@ -164,7 +167,6 @@ export default function CategoryPage({ category, context, restaurants, onBack, o
                     ★ {r.rating.toFixed(1)}
                   </span>
                   <span style={{ fontSize: 10.5, color: '#93959f' }}>{r.delivery_min}–{r.delivery_min + 5} min</span>
-                  {r.area && <span style={{ fontSize: 10.5, color: '#93959f' }}>· {r.area}</span>}
                 </div>
               </div>
 
