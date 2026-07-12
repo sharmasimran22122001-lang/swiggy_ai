@@ -254,9 +254,23 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
       <AnimatePresence>
         {blocked && (
           <>
-            {/* No backdrop: the sheet is non-modal so the toggle stays fully
-                usable — hop Instamart→Dineout→Scenes freely; each hop swaps the
-                text and restarts the 5s timer; Food closes it instantly. */}
+            {/* Blurred backdrop over the CONTENT only — it sits below the sticky
+                nav (z-40 < z-50), so the toggle stays fully usable: hop
+                Instamart→Dineout→Scenes freely, each hop restarts the 5s timer.
+                Tapping the blurred area returns to Food. */}
+            <motion.div
+              key="uc-blur"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              onClick={backToFood}
+              className="fixed inset-0"
+              style={{
+                zIndex: 40,
+                background: 'rgba(255,255,255,0.35)',
+                backdropFilter: 'blur(7px)',
+                WebkitBackdropFilter: 'blur(7px)',
+              }}
+            />
             <motion.div
               key="uc-sheet"
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
