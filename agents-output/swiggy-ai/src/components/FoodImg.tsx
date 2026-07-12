@@ -1,10 +1,11 @@
 'use client'
 import { useState } from 'react'
-import { getFoodPhoto } from '@/lib/foodPhotos'
+import { getFoodPhoto, getVenuePhoto } from '@/lib/foodPhotos'
 
 interface Props {
   name: string
   extra?: string           // extra keyword context (e.g. cuisine) for photo matching
+  kind?: 'dish' | 'venue'  // venue = restaurant identity → interior/storefront photo
   emoji?: string           // fallback emoji if the photo fails to load
   gradA?: string
   gradB?: string
@@ -12,10 +13,10 @@ interface Props {
   className?: string
 }
 
-/** Real food photo that fills its parent, with a gradient+emoji fallback on load error. */
-export default function FoodImg({ name, extra, emoji = '🍽️', gradA = '#4a5060', gradB = '#585e68', style, className = '' }: Props) {
+/** Real photo that fills its parent, with a gradient+emoji fallback on load error. */
+export default function FoodImg({ name, extra, kind = 'dish', emoji = '🍽️', gradA = '#4a5060', gradB = '#585e68', style, className = '' }: Props) {
   const [failed, setFailed] = useState(false)
-  const src = getFoodPhoto(name, extra)
+  const src = kind === 'venue' ? getVenuePhoto(name) : getFoodPhoto(name, extra)
 
   if (failed) {
     return (

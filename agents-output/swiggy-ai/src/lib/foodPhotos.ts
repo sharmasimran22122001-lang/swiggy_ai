@@ -83,10 +83,33 @@ const FALLBACK_POOL = [
   PHOTOS.restaurant2, PHOTOS.thali, PHOTOS.restaurant3, PHOTOS.noodles,
 ]
 
+// Venue photos — storefronts, interiors, ambience. Used whenever a card shows a
+// RESTAURANT name: restaurant identity gets a restaurant image, never a dish
+// close-up (feedback round 3). All URLs verified reachable.
+const VENUE_PHOTOS = [
+  U('photo-1517248135467-4c7edcad34c4'),
+  U('photo-1552566626-52f8b828add9'),
+  U('photo-1414235077428-338989a2e8c0'),
+  U('photo-1554118811-1e0d58224f24'),
+  U('photo-1521017432531-fbd92d768814'),
+  U('photo-1559339352-11d035aa65de'),
+  U('photo-1537047902294-62a40c20a6ae'),
+  U('photo-1555396273-367ea4eb4db5'),
+  U('photo-1424847651672-bf20a4b0982b'),
+  U('photo-1600891964092-4316c288032e'),
+  U('photo-1590846406792-0adc7f938f1d'),
+  U('photo-1578474846511-04ba529f0b88'),
+]
+
 function hashName(name: string): number {
   let h = 0
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0
   return Math.abs(h)
+}
+
+/** Deterministic venue (restaurant/interior) photo for a restaurant name. */
+export function getVenuePhoto(name: string): string {
+  return VENUE_PHOTOS[hashName(name) % VENUE_PHOTOS.length]
 }
 
 /** Deterministic real photo for a dish, cuisine, or restaurant name. */

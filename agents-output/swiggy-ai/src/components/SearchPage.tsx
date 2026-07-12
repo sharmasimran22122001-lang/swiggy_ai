@@ -230,7 +230,8 @@ export default function SearchPage({ city, onBack, onRestaurantSelect }: Props) 
               style={{ padding: '11px 15px', borderBottom: '1px solid #f0f0f0' }}
             >
               <div className="rounded-[10px] overflow-hidden flex-shrink-0" style={{ width: 58, height: 58 }}>
-                <FoodImg name={r.matched_dish ?? r.name} extra={r.cuisines.join(' ')} />
+                {/* Result row is a restaurant → venue photo; matched dish stays as text below */}
+                <FoodImg name={r.name} kind="venue" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="truncate" style={{ fontSize: 13, fontWeight: 700, color: '#3d4152' }}>{r.name}</p>

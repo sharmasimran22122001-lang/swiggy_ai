@@ -151,9 +151,9 @@ export default function CategoryPage({ category, context, restaurants, onBack, o
               className="bg-white flex items-center gap-3 cursor-pointer active:bg-gray-50"
               style={{ padding: '12px 15px', borderBottom: '1px solid #f0f0f0' }}
             >
-              {/* 64×64 restaurant photo */}
+              {/* 64×64 venue photo — restaurant rows get restaurant imagery */}
               <div className="rounded-[10px] overflow-hidden flex-shrink-0" style={{ width: 64, height: 64 }}>
-                <FoodImg name={r.name} extra={category} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
+                <FoodImg name={r.name} kind="venue" emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
               </div>
 
               {/* Info */}

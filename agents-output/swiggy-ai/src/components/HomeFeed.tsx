@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import FoodCategoryRow from './FoodCategoryRow'
 import PromoBanner from './PromoBanner'
@@ -320,8 +320,8 @@ function ExplorerHero({ items, profile, onRestaurantSelect, onAdd, onViewAllList
                 onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
               >
                 <div className="relative" style={{ height: 88 }}>
-                  {/* Restaurant card → restaurant-keyed photo, restaurant rating. Dishes never mix in. */}
-                  <FoodImg name={item.restaurant} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
+                  {/* Restaurant card → venue photo (interior/storefront), never a dish close-up */}
+                  <FoodImg name={item.restaurant} kind="venue" emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
                   <StarOnPhoto rating={item.rating} />
                   <EtaOnPhoto min={item.delivery_min} />
                   <SpringAddButton onAdd={() => onAdd?.(item)} size={26} fontSize={18} bottom={6} right={6} />
@@ -441,13 +441,38 @@ function VarietyHero({ profile: _profile, onCategorySelect }: {
 
 // ─── Top Rated Near You — with cuisine images ─────────────────────────────────
 
-function TopRatedSection({ items: rawItems, profile, onRestaurantSelect, onAdd, onViewAllList }: {
-  items: HomepageItem[]; profile: UserProfile
+function TopRatedSection({ items: rawItems, excludeRestaurants, profile, onRestaurantSelect, onAdd, onViewAllList }: {
+  items: HomepageItem[]; excludeRestaurants: Set<string>; profile: UserProfile
   onRestaurantSelect?: (info: RestaurantInfo) => void
   onAdd?: (item: HomepageItem) => void
   onViewAllList?: (title: string, list: RestaurantInfo[]) => void
 }) {
-  const items = atLeastThree(rawItems)
+  // The AI page may not contain 8 unique non-hero restaurants — top up from the
+  // real DB (highest-rated in the user's city) so the row always scrolls to 8.
+  const [dbExtra, setDbExtra] = useState<HomepageItem[]>([])
+  useEffect(() => {
+    if (rawItems.length >= 8 || !profile.city) return
+    const taken = new Set([
+      ...rawItems.map(i => i.restaurant.toLowerCase()),
+      ...[...excludeRestaurants].map(r => r.toLowerCase()),
+    ])
+    fetch(`/api/toprated?city=${encodeURIComponent(profile.city)}`)
+      .then(r => r.json())
+      .then(d => {
+        const fill: HomepageItem[] = (d.restaurants ?? [])
+          .filter((r: { name: string }) => !taken.has(r.name.toLowerCase()))
+          .slice(0, 8 - rawItems.length)
+          .map((r: { name: string; avg_rating: number; delivery_time_min: number }) => ({
+            name: r.name, restaurant: r.name, reason: '',
+            veg: true, rating: r.avg_rating, delivery_min: r.delivery_time_min,
+          }))
+        setDbExtra(fill)
+      })
+      .catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawItems.length, profile.city])
+
+  const items = atLeastThree(dedupeBy([...rawItems, ...dbExtra], i => i.restaurant).slice(0, 8))
   const drag = useDragScroll<HTMLDivElement>()
 
   return (
@@ -470,8 +495,8 @@ function TopRatedSection({ items: rawItems, profile, onRestaurantSelect, onAdd, 
                 onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
               >
                 <div className="relative" style={{ height: 84 }}>
-                  {/* Restaurant card → restaurant identity only (photo + rating), no dish mixing */}
-                  <FoodImg name={item.restaurant} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
+                  {/* Restaurant card → venue photo (interior/storefront), never a dish close-up */}
+                  <FoodImg name={item.restaurant} kind="venue" emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
                   <StarOnPhoto rating={item.rating} />
                   <EtaOnPhoto min={item.delivery_min} />
                   <SpringAddButton onAdd={() => onAdd?.(item)} size={24} fontSize={16} bottom={5} right={5} />
@@ -629,7 +654,7 @@ export default function HomeFeed({
         <Divider />
         {bannerBlock}
         <Divider />
-        <TopRatedSection items={ratedItems} profile={profile} {...sharedProps} />
+        <TopRatedSection items={ratedItems} excludeRestaurants={heroRestaurantSet} profile={profile} {...sharedProps} />
         <Divider />
         {categoryBlock}
         <div style={{ background: '#fff' }}><MoreOnSwiggy /></div>
@@ -646,7 +671,7 @@ export default function HomeFeed({
         <ExplorerHero items={heroItems} profile={profile} {...sharedProps} />
         <Divider />
         {trendingBlock}
-        <TopRatedSection items={ratedItems} profile={profile} {...sharedProps} />
+        <TopRatedSection items={ratedItems} excludeRestaurants={heroRestaurantSet} profile={profile} {...sharedProps} />
         <Divider />
         {bannerBlock}
         <Divider />
@@ -665,7 +690,7 @@ export default function HomeFeed({
         <VarietyHero profile={profile} onCategorySelect={onCategorySelect} />
         <Divider />
         {trendingBlock}
-        <TopRatedSection items={ratedItems} profile={profile} {...sharedProps} />
+        <TopRatedSection items={ratedItems} excludeRestaurants={heroRestaurantSet} profile={profile} {...sharedProps} />
         <Divider />
         {bannerBlock}
         <Divider />
