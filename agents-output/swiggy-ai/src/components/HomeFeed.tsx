@@ -527,17 +527,21 @@ function FunFooter({ hasOrdered }: { hasOrdered: boolean }) {
       <div style={{ position: 'relative', height: 64, margin: '0 14px' }}>
         {/* destination house */}
         <span style={{ position: 'absolute', right: 2, bottom: 6, fontSize: 24, lineHeight: 1 }}>🏠</span>
-        {/* rider + scooter */}
+        {/* rider + scooter — mirrored to face RIGHT; waits kerb-side on the right,
+            rides left→right to the house once an order is placed */}
         <span
           key={hasOrdered ? 'riding' : 'waiting'}
           className={hasOrdered ? 'scoot-ride' : 'scoot-idle'}
-          style={{ position: 'absolute', bottom: 6, left: '4%', fontSize: 26, lineHeight: 1 }}
+          style={{
+            position: 'absolute', bottom: 6, fontSize: 26, lineHeight: 1,
+            ...(hasOrdered ? { left: '4%' } : { right: '14%' }),
+          }}
         >
           {/* thought bubble while waiting / exhaust while riding */}
           {hasOrdered
             ? <span className="exhaust" style={{ position: 'absolute', left: -14, bottom: 4, fontSize: 11, color: '#bdbdbd' }}>💨</span>
-            : <span className="thought" style={{ position: 'absolute', left: 20, top: -18, fontSize: 12 }}>💭🍛</span>}
-          🛵
+            : <span className="thought" style={{ position: 'absolute', left: -26, top: -18, fontSize: 12 }}>💭🍛</span>}
+          <span style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>🛵</span>
         </span>
         {/* kerb / road line */}
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, borderBottom: '2px dashed #e0e0e0' }} />

@@ -35,6 +35,8 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
   // ── Under-construction sheet for unbuilt verticals (feedback #8) ──────────
   const [blocked, setBlocked] = useState<{ label: string; icon: string; title: string; sub: string } | null>(null)
   const [countdown, setCountdown] = useState(5)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const [navBottom, setNavBottom] = useState(150) // blur starts below the nav — toggle stays sharp & tappable
   const returnTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const tickTimer = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -54,6 +56,7 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
     if (i === 0) { clearVerticalTimers(); setBlocked(null); return }
     const v = VERTICALS[i]
     clearVerticalTimers()
+    setNavBottom(rootRef.current?.getBoundingClientRect().bottom ?? 150)
     setBlocked({ label: v.label, icon: v.icon, title: v.title, sub: v.sub })
     setCountdown(5)
     tickTimer.current = setInterval(() => setCountdown(c => Math.max(0, c - 1)), 1000)
@@ -89,7 +92,7 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
   }
 
   return (
-    <div className="bg-white sticky top-0 z-50 shadow-sm w-full">
+    <div ref={rootRef} className="bg-white sticky top-0 z-50 shadow-sm w-full">
       {/* Row 1: Address + icons */}
       <div className="flex items-center justify-between px-4 pt-3 pb-2">
         <button className="flex items-start gap-1 flex-1 min-w-0">
@@ -254,18 +257,19 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
       <AnimatePresence>
         {blocked && (
           <>
-            {/* Blurred backdrop over the CONTENT only — it sits below the sticky
-                nav (z-40 < z-50), so the toggle stays fully usable: hop
-                Instamart→Dineout→Scenes freely, each hop restarts the 5s timer.
-                Tapping the blurred area returns to Food. */}
+            {/* Blurred backdrop starting BELOW the nav — the whole top bar
+                (address, toggle, search, veg) stays sharp and tappable, so
+                hopping Instamart→Dineout→Scenes always works. Tapping the
+                blurred content returns to Food. */}
             <motion.div
               key="uc-blur"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
               onClick={backToFood}
-              className="fixed inset-0"
+              className="fixed left-0 right-0 bottom-0"
               style={{
-                zIndex: 40,
+                top: navBottom,
+                zIndex: 60,
                 background: 'rgba(255,255,255,0.35)',
                 backdropFilter: 'blur(7px)',
                 WebkitBackdropFilter: 'blur(7px)',
