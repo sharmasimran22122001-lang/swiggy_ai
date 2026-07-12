@@ -7,6 +7,7 @@ import MoreOnSwiggy from './MoreOnSwiggy'
 import TrendingNearYou from './TrendingNearYou'
 import FoodImg from './FoodImg'
 import { getRestaurantVisual } from './CategoryPage'
+import { StarOnPhoto, EtaOnPhoto } from './CardBadges'
 import { useDragScroll } from '@/hooks/useDragScroll'
 import { useCart } from '@/contexts/CartContext'
 import type { HomepageJSON, UserProfile, MoodType, HomepageItem } from '@/types'
@@ -35,6 +36,51 @@ function atLeastThree<T>(arr: T[]): T[] {
   const out = [...arr]
   while (out.length < 3) out.push(...arr.slice(0, 3 - out.length))
   return out
+}
+
+// Hero rows target 8 items so the scroll never dies halfway (feedback #1).
+// The AI is asked for 8; older cached pages get padded from the other sections.
+function eightHeroItems(homepage: HomepageJSON): HomepageItem[] {
+  const seen = new Set<string>()
+  const out: HomepageItem[] = []
+  const pools = [
+    homepage.hero.items,
+    homepage.slot_top_rated.items,
+    homepage.discovery.items,
+    homepage.mood_banner.items,
+  ]
+  for (const pool of pools) {
+    for (const item of pool ?? []) {
+      const key = `${item.restaurant}|${item.name}`
+      if (!seen.has(key)) {
+        seen.add(key)
+        out.push(item)
+        if (out.length === 8) return out
+      }
+    }
+  }
+  return out
+}
+
+// Section header with a consistent "View all →" at top-right (feedback #1)
+function SectionHead({ title, eyebrow, onViewAll, pad = '14px 15px 8px' }: {
+  title: React.ReactNode; eyebrow?: string; onViewAll?: () => void; pad?: string
+}) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', padding: pad, gap: 10 }}>
+      <div style={{ minWidth: 0 }}>
+        {eyebrow && <p style={{ fontSize: 9.5, fontWeight: 700, color: '#FC8019', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 3 }}>{eyebrow}</p>}
+        <h2 style={{ fontSize: 14, fontWeight: 700, color: '#3d4152' }}>{title}</h2>
+      </div>
+      {onViewAll && (
+        <button
+          onClick={onViewAll}
+          className="active:opacity-70 flex-shrink-0"
+          style={{ fontSize: 11, fontWeight: 700, color: '#FC8019', whiteSpace: 'nowrap', paddingBottom: 1 }}
+        >View all →</button>
+      )}
+    </div>
+  )
 }
 
 function toRestaurantInfo(item: HomepageItem, profile: UserProfile): RestaurantInfo {
@@ -146,47 +192,45 @@ function LoyalistHero({ homepage, profile, onRestaurantSelect, onAdd }: {
   onRestaurantSelect?: (info: RestaurantInfo) => void
   onAdd?: (item: HomepageItem) => void
 }) {
-  const raw = homepage.hero.items.slice(0, 6)
-  const items = atLeastThree(raw)
+  const items = atLeastThree(eightHeroItems(homepage))
   const restName = profile.favourite_restaurant || homepage.hero.title || 'your go-to spot'
   const drag = useDragScroll<HTMLDivElement>()
 
   return (
     <GlassHero>
-      <div style={{ padding: '14px 15px 10px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'rgba(255,255,255,0.72)', borderBottom: '1px solid rgba(252,128,25,0.1)' }}>
-        <p style={{ fontSize: 9.5, fontWeight: 700, color: '#FC8019', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 3 }}>Your usual</p>
-        <h2 style={{ fontSize: 14, fontWeight: 700, color: '#3d4152' }}>Order more from {restName}</h2>
+      <div style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'rgba(255,255,255,0.72)', borderBottom: '1px solid rgba(252,128,25,0.1)' }}>
+        <SectionHead
+          eyebrow="Your usual"
+          title={`Order more from ${restName}`}
+          onViewAll={() => items[0] && onRestaurantSelect?.(toRestaurantInfo(items[0], profile))}
+          pad="14px 15px 10px"
+        />
       </div>
 
-      <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '12px 15px 4px', scrollbarWidth: 'none', ...drag.style }}>
-        {items.map((item, i) => {
-          const vis = getRestaurantVisual(item.restaurant, i)
-          return (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-              className="flex-shrink-0 cursor-pointer active:scale-95 transition-transform"
-              style={{ width: 94 }}
-              onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
-            >
-              <div className="relative rounded-[12px] overflow-hidden" style={{ width: 94, height: 94 }}>
-                <FoodImg name={item.name} extra={item.restaurant} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
-                <SpringAddButton onAdd={() => onAdd?.(item)} size={26} fontSize={18} bottom={5} right={5} />
-              </div>
-              <p className="mt-1.5 leading-tight" style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
-              {item.price && <p style={{ fontSize: 11, fontWeight: 700, color: '#FC8019', marginTop: 1 }}>₹{item.price}</p>}
-            </motion.div>
-          )
-        })}
-      </div>
-
-      <div
-        className="flex items-center justify-center cursor-pointer"
-        style={{ margin: '10px 15px 0', padding: '9px 14px', border: '1.5px dashed #bdbdbd', borderRadius: 10, gap: 6 }}
-        onClick={() => items[0] && onRestaurantSelect?.(toRestaurantInfo(items[0], profile))}
-      >
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#686b78' }}>Explore all from {restName}</span>
-        <span style={{ fontSize: 13, color: '#FC8019', fontWeight: 700 }}>→</span>
+      <div className="row-fade-wrap">
+        <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '12px 15px 6px', scrollbarWidth: 'none', ...drag.style }}>
+          {items.map((item, i) => {
+            const vis = getRestaurantVisual(item.restaurant, i)
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.05, 0.3) }}
+                className="flex-shrink-0 cursor-pointer active:scale-95 transition-transform"
+                style={{ width: 94 }}
+                onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
+              >
+                <div className="relative rounded-[12px] overflow-hidden" style={{ width: 94, height: 94 }}>
+                  <FoodImg name={item.name} extra={item.restaurant} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
+                  <StarOnPhoto rating={item.rating} />
+                  <EtaOnPhoto min={item.delivery_min} />
+                  <SpringAddButton onAdd={() => onAdd?.(item)} size={26} fontSize={18} bottom={5} right={5} />
+                </div>
+                <p className="mt-1.5 leading-tight" style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
+                {item.price && <p style={{ fontSize: 11, fontWeight: 700, color: '#FC8019', marginTop: 1 }}>₹{item.price}</p>}
+              </motion.div>
+            )
+          })}
+        </div>
       </div>
     </GlassHero>
   )
@@ -200,17 +244,22 @@ function ExplorerHero({ homepage, profile, onRestaurantSelect, onAdd, onCategory
   onAdd?: (item: HomepageItem) => void
   onCategorySelect?: (category: string) => void
 }) {
-  const raw = homepage.hero.items.slice(0, 5)
-  const items = atLeastThree(raw)
+  const items = atLeastThree(eightHeroItems(homepage))
   const topCuisines = profile.top_cuisines?.slice(0, 3) ?? []
   const drag = useDragScroll<HTMLDivElement>()
 
+  function handleViewAll() {
+    const cuisine = topCuisines[0]
+    if (cuisine) onCategorySelect?.(cuisine)
+    else if (items[0]) onRestaurantSelect?.(toRestaurantInfo(items[0], profile))
+  }
+
   return (
     <GlassHero>
-      <div style={{ padding: '14px 15px 10px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'rgba(255,255,255,0.72)', borderBottom: '1px solid rgba(252,128,25,0.1)' }}>
-        <h2 style={{ fontSize: 14, fontWeight: 700, color: '#3d4152', marginBottom: 8 }}>Places you&apos;ll actually love</h2>
+      <div style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'rgba(255,255,255,0.72)', borderBottom: '1px solid rgba(252,128,25,0.1)' }}>
+        <SectionHead title="Places you'll actually love" onViewAll={handleViewAll} pad="14px 15px 8px" />
         {topCuisines.length > 0 && (
-          <div className="flex items-center" style={{ gap: 6, flexWrap: 'wrap' }}>
+          <div className="flex items-center" style={{ gap: 6, flexWrap: 'wrap', padding: '0 15px 10px' }}>
             <span style={{ fontSize: 10, color: '#93959f', fontWeight: 600 }}>Matched to:</span>
             {topCuisines.map(c => (
               <span key={c} style={{ fontSize: 10, fontWeight: 700, color: '#3d4152', background: 'rgba(244,244,244,0.9)', border: '1px solid #e0e0e0', padding: '2px 8px', borderRadius: 20 }}>{c}</span>
@@ -219,46 +268,33 @@ function ExplorerHero({ homepage, profile, onRestaurantSelect, onAdd, onCategory
         )}
       </div>
 
-      <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '12px 15px 4px', scrollbarWidth: 'none', ...drag.style }}>
-        {items.map((item, i) => {
-          const vis = getRestaurantVisual(item.restaurant, i)
-          return (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: 14 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
-              className="flex-shrink-0 cursor-pointer active:scale-95 transition-transform rounded-[12px] overflow-hidden"
-              style={{ width: 128, border: '1px solid #e0e0e0', background: 'rgba(255,255,255,0.88)' }}
-              onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
-            >
-              <div className="relative" style={{ height: 88 }}>
-                <FoodImg name={item.restaurant} extra={item.name} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
-                <SpringAddButton onAdd={() => onAdd?.(item)} size={26} fontSize={18} bottom={6} right={6} />
-              </div>
-              <div style={{ padding: '7px 8px 8px' }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.restaurant}</p>
-                <p style={{ fontSize: 10, color: '#686b78', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
-                <div className="flex items-center" style={{ gap: 4, marginTop: 5 }}>
-                  <StarBadge rating={item.rating} />
-                  {item.delivery_min && <span style={{ fontSize: 9.5, color: '#93959f' }}>· {item.delivery_min}m</span>}
+      <div className="row-fade-wrap">
+        <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '12px 15px 6px', scrollbarWidth: 'none', ...drag.style }}>
+          {items.map((item, i) => {
+            const vis = getRestaurantVisual(item.restaurant, i)
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 14 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: Math.min(i * 0.06, 0.36) }}
+                className="flex-shrink-0 cursor-pointer active:scale-95 transition-transform rounded-[12px] overflow-hidden"
+                style={{ width: 128, border: '1px solid #e0e0e0', background: 'rgba(255,255,255,0.88)' }}
+                onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
+              >
+                <div className="relative" style={{ height: 88 }}>
+                  <FoodImg name={item.restaurant} extra={item.name} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
+                  <StarOnPhoto rating={item.rating} />
+                  <EtaOnPhoto min={item.delivery_min} />
+                  <SpringAddButton onAdd={() => onAdd?.(item)} size={26} fontSize={18} bottom={6} right={6} />
                 </div>
-                {item.reason && <p style={{ fontSize: 9, fontWeight: 600, color: '#FC8019', marginTop: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.reason}</p>}
-              </div>
-            </motion.div>
-          )
-        })}
-      </div>
-
-      <div
-        className="flex items-center justify-between cursor-pointer active:opacity-70"
-        style={{ margin: '10px 15px 0', padding: '9px 14px', border: '1.5px solid #bdbdbd', borderRadius: 10 }}
-        onClick={() => {
-          const cuisine = topCuisines[0]
-          if (cuisine) onCategorySelect?.(cuisine)
-          else if (items[0]) onRestaurantSelect?.(toRestaurantInfo(items[0], profile))
-        }}
-      >
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#686b78' }}>Explore more like these</span>
-        <span style={{ fontSize: 13, color: '#FC8019', fontWeight: 700 }}>→</span>
+                <div style={{ padding: '7px 8px 8px' }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.restaurant}</p>
+                  <p style={{ fontSize: 10, color: '#686b78', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
+                  {item.reason && <p style={{ fontSize: 9, fontWeight: 600, color: '#FC8019', marginTop: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.reason}</p>}
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
       </div>
     </GlassHero>
   )
@@ -269,11 +305,11 @@ function ExplorerHero({ homepage, profile, onRestaurantSelect, onAdd, onCategory
 type MealPart = 'breakfast' | 'lunch' | 'snacks' | 'dinner' | 'late_night'
 
 function getMealSlot(hour: number): { part: MealPart; label: string; title: string; categories: string[] } {
-  if (hour >= 6 && hour < 11)  return { part: 'breakfast',  label: '🌅 Breakfast time', title: 'Start your morning right',      categories: ['Idli', 'Dosa', 'Paratha', 'Breakfast', 'Chai & Snacks', 'Bakery'] }
-  if (hour >= 11 && hour < 15) return { part: 'lunch',      label: '☀️ Lunchtime',       title: 'What are you having for lunch?', categories: ['Biryani', 'Thali', 'South Indian', 'North Indian', 'Chinese', 'Rolls'] }
-  if (hour >= 15 && hour < 19) return { part: 'snacks',     label: '🍵 Snack time',       title: 'The 4 PM craving is real',       categories: ['Chai & Snacks', 'Samosa', 'Pakoda', 'Momos', 'Noodles', 'Burgers'] }
-  if (hour >= 19 && hour < 23) return { part: 'dinner',     label: '🌙 Dinner time',       title: "What's for dinner tonight?",     categories: ['Biryani', 'Pizza', 'North Indian', 'Chinese', 'Mughlai', 'Kebabs'] }
-  return                               { part: 'late_night', label: '🌙 Late night',        title: 'Midnight hunger sorted',         categories: ['Pizza', 'Burgers', 'Fast Food', 'Noodles', 'Rolls', 'Snacks'] }
+  if (hour >= 6 && hour < 11)  return { part: 'breakfast',  label: '🌅 Breakfast time', title: 'Start your morning right',      categories: ['Idli', 'Dosa', 'Paratha', 'Breakfast', 'Chai & Snacks', 'Bakery', 'Poha', 'Sandwich'] }
+  if (hour >= 11 && hour < 15) return { part: 'lunch',      label: '☀️ Lunchtime',       title: 'What are you having for lunch?', categories: ['Biryani', 'Thali', 'South Indian', 'North Indian', 'Chinese', 'Rolls', 'Pizza', 'Burgers'] }
+  if (hour >= 15 && hour < 19) return { part: 'snacks',     label: '🍵 Snack time',       title: 'The 4 PM craving is real',       categories: ['Chai & Snacks', 'Samosa', 'Pakoda', 'Momos', 'Noodles', 'Burgers', 'Sandwich', 'Rolls'] }
+  if (hour >= 19 && hour < 23) return { part: 'dinner',     label: '🌙 Dinner time',       title: "What's for dinner tonight?",     categories: ['Biryani', 'Pizza', 'North Indian', 'Chinese', 'Mughlai', 'Kebabs', 'Thali', 'Rolls'] }
+  return                               { part: 'late_night', label: '🌙 Late night',        title: 'Midnight hunger sorted',         categories: ['Pizza', 'Burgers', 'Fast Food', 'Noodles', 'Rolls', 'Snacks', 'Momos', 'Ice Cream'] }
 }
 
 const MEAL_EMOJI: Record<string, string> = {
@@ -281,7 +317,7 @@ const MEAL_EMOJI: Record<string, string> = {
   'Chai & Snacks': '☕', 'Bakery': '🥐', 'Thali': '🍱', 'South Indian': '🥘', 'North Indian': '🫓',
   'Chinese': '🥡', 'Rolls': '🌯', 'Samosa': '🥟', 'Pakoda': '🫓', 'Momos': '🥟',
   'Noodles': '🍜', 'Burgers': '🍔', 'Pizza': '🍕', 'Mughlai': '🍖', 'Kebabs': '🍢',
-  'Fast Food': '🍟', 'Snacks': '🍟',
+  'Fast Food': '🍟', 'Snacks': '🍟', 'Poha': '🍚', 'Sandwich': '🥪', 'Ice Cream': '🍦',
 }
 
 const MEAL_GRADS: Record<string, { a: string; b: string }> = {
@@ -307,6 +343,9 @@ const MEAL_GRADS: Record<string, { a: string; b: string }> = {
   'Kebabs':        { a: '#683838', b: '#7a4848' },
   'Fast Food':     { a: '#6a3a20', b: '#8a5030' },
   'Snacks':        { a: '#5a4820', b: '#7a6030' },
+  'Poha':          { a: '#6a5028', b: '#8a6838' },
+  'Sandwich':      { a: '#3a5068', b: '#385870' },
+  'Ice Cream':     { a: '#4a4a78', b: '#584878' },
 }
 
 function VarietyHero({ profile: _profile, onCategorySelect }: {
@@ -315,53 +354,48 @@ function VarietyHero({ profile: _profile, onCategorySelect }: {
 }) {
   const hour = new Date().getHours()
   const slot = getMealSlot(hour)
-  const categories = slot.categories.slice(0, 6)
+  const categories = slot.categories.slice(0, 8)
   const drag = useDragScroll<HTMLDivElement>()
 
   return (
     <GlassHero>
-      <div style={{ padding: '14px 15px 10px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'rgba(255,255,255,0.72)', borderBottom: '1px solid rgba(252,128,25,0.1)' }}>
-        <div className="inline-flex items-center" style={{ background: 'rgba(244,244,244,0.9)', border: '1px solid #e0e0e0', borderRadius: 20, padding: '3px 10px', marginBottom: 8 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#686b78' }}>{slot.label}</span>
+      <div style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'rgba(255,255,255,0.72)', borderBottom: '1px solid rgba(252,128,25,0.1)' }}>
+        <div style={{ padding: '14px 15px 0' }}>
+          <div className="inline-flex items-center" style={{ background: 'rgba(244,244,244,0.9)', border: '1px solid #e0e0e0', borderRadius: 20, padding: '3px 10px' }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#686b78' }}>{slot.label}</span>
+          </div>
         </div>
-        <h2 style={{ fontSize: 14, fontWeight: 700, color: '#3d4152' }}>{slot.title}</h2>
+        <SectionHead title={slot.title} onViewAll={() => onCategorySelect?.(categories[0])} pad="6px 15px 10px" />
       </div>
 
-      <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '12px 15px 4px', scrollbarWidth: 'none', ...drag.style }}>
-        {categories.map((cat, i) => (
-          <motion.div
-            key={cat}
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-            className="flex-shrink-0 cursor-pointer flex flex-col items-center"
-            style={{ width: 94 }}
-            onClick={() => onCategorySelect?.(cat)}
-          >
-            <div className="relative rounded-[12px] overflow-hidden" style={{ width: 94, height: 94 }}>
-              <FoodImg
-                name={cat}
-                emoji={MEAL_EMOJI[cat] ?? '🍽️'}
-                gradA={MEAL_GRADS[cat]?.a ?? '#4a5060'}
-                gradB={MEAL_GRADS[cat]?.b ?? '#585e68'}
-              />
-              <button
-                onClick={e => { e.stopPropagation(); onCategorySelect?.(cat) }}
-                className="absolute flex items-center justify-center rounded-full active:scale-90 transition-transform"
-                style={{ bottom: 5, right: 5, width: 26, height: 26, background: '#FC8019', color: '#fff', fontSize: 18, fontWeight: 700, boxShadow: '0 2px 6px rgba(252,128,25,0.4)', zIndex: 10 }}
-                aria-label="Explore category"
-              >+</button>
-            </div>
-            <p className="mt-1.5 text-center leading-tight" style={{ fontSize: 11, fontWeight: 700, color: '#3d4152' }}>{cat}</p>
-          </motion.div>
-        ))}
-      </div>
-
-      <div
-        className="flex items-center justify-between cursor-pointer active:opacity-70"
-        style={{ margin: '10px 15px 0', padding: '9px 14px', border: '1.5px solid #bdbdbd', borderRadius: 10 }}
-        onClick={() => onCategorySelect?.(categories[0])}
-      >
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#686b78' }}>Explore all {slot.part} options</span>
-        <span style={{ fontSize: 13, color: '#FC8019', fontWeight: 700 }}>→</span>
+      <div className="row-fade-wrap">
+        <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '12px 15px 6px', scrollbarWidth: 'none', ...drag.style }}>
+          {categories.map((cat, i) => (
+            <motion.div
+              key={cat}
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.05, 0.3) }}
+              className="flex-shrink-0 cursor-pointer flex flex-col items-center"
+              style={{ width: 94 }}
+              onClick={() => onCategorySelect?.(cat)}
+            >
+              <div className="relative rounded-[12px] overflow-hidden" style={{ width: 94, height: 94 }}>
+                <FoodImg
+                  name={cat}
+                  emoji={MEAL_EMOJI[cat] ?? '🍽️'}
+                  gradA={MEAL_GRADS[cat]?.a ?? '#4a5060'}
+                  gradB={MEAL_GRADS[cat]?.b ?? '#585e68'}
+                />
+                <button
+                  onClick={e => { e.stopPropagation(); onCategorySelect?.(cat) }}
+                  className="absolute flex items-center justify-center rounded-full active:scale-90 transition-transform"
+                  style={{ bottom: 5, right: 5, width: 26, height: 26, background: '#FC8019', color: '#fff', fontSize: 18, fontWeight: 700, boxShadow: '0 2px 6px rgba(252,128,25,0.4)', zIndex: 10 }}
+                  aria-label="Explore category"
+                >+</button>
+              </div>
+              <p className="mt-1.5 text-center leading-tight" style={{ fontSize: 11, fontWeight: 700, color: '#3d4152' }}>{cat}</p>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </GlassHero>
   )
@@ -381,42 +415,83 @@ function TopRatedSection({ block, profile, onRestaurantSelect, onAdd, onCategory
 
   return (
     <div className="bg-white" style={{ paddingBottom: 14 }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', padding: '14px 15px 8px' }}>
-        <h2 style={{ fontSize: 14, fontWeight: 700, color: '#3d4152' }}>Top Rated Near You</h2>
-        <button
-          onClick={() => onCategorySelect?.(profile.top_cuisines?.[0] ?? 'Biryani')}
-          className="active:opacity-70"
-          style={{ fontSize: 11, fontWeight: 700, color: '#FC8019' }}
-        >See all →</button>
-      </div>
+      <SectionHead
+        title="Top Rated Near You"
+        onViewAll={() => onCategorySelect?.(profile.top_cuisines?.[0] ?? 'Biryani')}
+      />
 
-      <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '0 15px 4px', scrollbarWidth: 'none', ...drag.style }}>
-        {items.map((item: HomepageItem, i: number) => {
-          const vis = getRestaurantVisual(item.restaurant, i)
-          return (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: 14 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
-              className="flex-shrink-0 cursor-pointer active:scale-95 transition-transform rounded-[12px] overflow-hidden"
-              style={{ width: 118, border: '1px solid #e0e0e0' }}
-              onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
-            >
-              <div className="relative" style={{ height: 84 }}>
-                <FoodImg name={item.restaurant} extra={item.name} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
-                <SpringAddButton onAdd={() => onAdd?.(item)} size={24} fontSize={16} bottom={5} right={5} />
-              </div>
-              <div style={{ padding: '7px 8px 8px' }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.restaurant}</p>
-                <p style={{ fontSize: 10, color: '#686b78', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
-                <div className="flex items-center" style={{ gap: 4, marginTop: 5 }}>
-                  <StarBadge rating={item.rating} />
-                  {item.delivery_min && <span style={{ fontSize: 9.5, color: '#93959f' }}>· {item.delivery_min}m</span>}
+      <div className="row-fade-wrap">
+        <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '0 15px 4px', scrollbarWidth: 'none', ...drag.style }}>
+          {items.map((item: HomepageItem, i: number) => {
+            const vis = getRestaurantVisual(item.restaurant, i)
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 14 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: Math.min(i * 0.05, 0.3) }}
+                className="flex-shrink-0 cursor-pointer active:scale-95 transition-transform rounded-[12px] overflow-hidden"
+                style={{ width: 118, border: '1px solid #e0e0e0' }}
+                onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
+              >
+                <div className="relative" style={{ height: 84 }}>
+                  <FoodImg name={item.restaurant} extra={item.name} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
+                  <StarOnPhoto rating={item.rating} />
+                  <EtaOnPhoto min={item.delivery_min} />
+                  <SpringAddButton onAdd={() => onAdd?.(item)} size={24} fontSize={16} bottom={5} right={5} />
                 </div>
-              </div>
-            </motion.div>
-          )
-        })}
+                <div style={{ padding: '7px 8px 8px' }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.restaurant}</p>
+                  <p style={{ fontSize: 10, color: '#686b78', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
       </div>
+    </div>
+  )
+}
+
+// ─── Fun footer — slot-aware floating food strip + rotating sign-off ─────────
+
+const FUN_LINES: Array<{ text: string; slots?: MealPart[] }> = [
+  { text: '🍛 Made with extra masala in India' },
+  { text: '🫓 You scrolled this far… that’s basically cardio' },
+  { text: '🍕 0 calories were harmed in the making of this page' },
+  { text: '🥟 Every momo you didn’t order is a momo someone else enjoyed' },
+  { text: '☕ Powered by chai and questionable cravings' },
+  { text: '🌅 Rise, shine, and order breakfast', slots: ['breakfast'] },
+  { text: '☀️ Lunch is calling. It says hurry.', slots: ['lunch'] },
+  { text: '🍵 It’s chai o’clock somewhere. Here, actually.', slots: ['snacks'] },
+  { text: '🌙 Dinner decisions are the hardest decisions', slots: ['dinner'] },
+  { text: '🌙 Late-night scrolls hit different', slots: ['late_night'] },
+]
+
+function FunFooter() {
+  const hour = new Date().getHours()
+  const slot = getMealSlot(hour)
+  const foods = slot.categories.slice(0, 7)
+  // Random pick per mount; slot-specific lines only in their window
+  const [line] = useState(() => {
+    const pool = FUN_LINES.filter(l => !l.slots || l.slots.includes(slot.part))
+    return pool[Math.floor(Math.random() * pool.length)].text
+  })
+
+  return (
+    <div className="text-center" style={{ padding: '20px 0 28px' }}>
+      <div className="flex justify-center overflow-x-auto hide-scrollbar" style={{ gap: 12, padding: '0 15px 14px' }}>
+        {foods.map((cat, i) => (
+          <div key={cat} className="flex-shrink-0 flex flex-col items-center" style={{ gap: 4 }}>
+            <div
+              className="rounded-full overflow-hidden foot-float"
+              style={{ width: 42, height: 42, border: '1.5px solid #ebebeb', animationDelay: `${i * 0.35}s` }}
+            >
+              <FoodImg name={cat} emoji={MEAL_EMOJI[cat] ?? '🍽️'} gradA={MEAL_GRADS[cat]?.a ?? '#8a6838'} gradB={MEAL_GRADS[cat]?.b ?? '#6a5028'} />
+            </div>
+            <span style={{ fontSize: 8.5, fontWeight: 600, color: '#93959f' }}>{cat}</span>
+          </div>
+        ))}
+      </div>
+      <p style={{ fontSize: 11.5, fontWeight: 600, color: '#93959f' }}>{line}</p>
     </div>
   )
 }
@@ -469,11 +544,7 @@ export default function HomeFeed({
 
   const sharedProps = { onRestaurantSelect, onAdd: handleAdd, onCategorySelect }
 
-  const footer = (
-    <div className="text-center py-6">
-      <p style={{ fontSize: 11, color: '#93959f' }}>Personalised for {profile.name}</p>
-    </div>
-  )
+  const footer = <FunFooter />
 
   const trendingBlock = showTrending && (
     <>

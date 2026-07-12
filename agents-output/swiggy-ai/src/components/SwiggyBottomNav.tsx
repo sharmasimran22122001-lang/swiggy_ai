@@ -1,10 +1,10 @@
 'use client'
-import { Home, Zap, ShoppingBag, Leaf, RotateCcw } from 'lucide-react'
+import { Compass, Zap, ShoppingBag, Leaf, RotateCcw } from 'lucide-react'
 
-// Only Food is built in this demo — every other tab is intentionally disabled
-// so users aren't led into empty screens.
+// Only the food/explore experience is built in this demo — every other tab is
+// intentionally disabled so users aren't led into empty screens.
 const TABS = [
-  { id: 'food', icon: Home, label: 'Food', badge: null, enabled: true },
+  { id: 'explore', icon: Compass, label: 'Explore', badge: null, enabled: true },
   { id: 'bolt', icon: Zap, label: 'Bolt', badge: '15 MIN', enabled: false },
   { id: '99store', icon: ShoppingBag, label: '99 store', badge: null, enabled: false },
   { id: 'eatright', icon: Leaf, label: 'EatRight', badge: 'NEW', enabled: false },

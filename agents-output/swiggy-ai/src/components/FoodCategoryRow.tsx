@@ -30,8 +30,7 @@ interface Props {
   onCategorySelect?: (category: string) => void
 }
 
-export default function FoodCategoryRow({ categories, seasonTag, locationTag, onCategorySelect }: Props) {
-  const contextLabel = [seasonTag, locationTag ? `${locationTag}` : null].filter(Boolean).join(' picks · ')
+export default function FoodCategoryRow({ categories, onCategorySelect }: Props) {
   const drag = useDragScroll<HTMLDivElement>()
 
   return (
@@ -40,20 +39,7 @@ export default function FoodCategoryRow({ categories, seasonTag, locationTag, on
         <h2 style={{ fontSize: 14, fontWeight: 700, color: '#3d4152' }}>
           What&apos;s on your mind?
         </h2>
-        {seasonTag && (
-          <div className="text-[9.5px] font-bold px-2 py-0.5 rounded" style={{ background: '#f0f0f0', color: '#444' }}>
-            {seasonTag}
-          </div>
-        )}
       </div>
-
-      {contextLabel && (
-        <div className="px-[15px] mb-2.5">
-          <div className="inline-flex items-center gap-1 rounded-full px-2.5 py-1" style={{ background: '#f0f0f0' }}>
-            <span style={{ fontSize: 10, fontWeight: 600, color: '#444' }}>{contextLabel}</span>
-          </div>
-        </div>
-      )}
 
       <div className="flex gap-[9px] overflow-x-auto pb-3" {...drag} style={{ padding: '0 15px 13px', scrollbarWidth: 'none', ...drag.style }}>
         {categories.slice(0, 7).map((label, i) => (

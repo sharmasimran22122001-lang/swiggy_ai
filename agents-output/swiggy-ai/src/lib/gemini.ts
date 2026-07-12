@@ -15,6 +15,8 @@ GLOBAL RULES (all users):
 
 PERSONA HERO LOGIC:
 
+- hero.items must contain EXACTLY 8 items for every persona (users scroll the hero row; fewer items makes the scroll feel broken).
+
 2A_loyalist:
 - Identify the single restaurant the user orders from most recurringly (highest order frequency).
 - Hero title: "Order more from {favourite_restaurant}"

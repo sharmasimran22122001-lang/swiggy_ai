@@ -1,6 +1,5 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import type { MoodType } from '@/types'
 import FoodImg from './FoodImg'
 
@@ -76,205 +75,175 @@ const STATIC_SLIDES: SlideConfig[] = [
 ]
 
 const AUTO_ADVANCE_MS = 4400
+const RESUME_AFTER_TOUCH_MS = 5000
+const SWIPE_THRESHOLD_PX = 45
+const SLIDE_MS = 420
+
+function Slide({ slide, onExplore }: { slide: SlideConfig; onExplore?: (theme: string, context: string) => void }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        height: 172,
+        width: '100%',
+        flexShrink: 0,
+        background: `linear-gradient(135deg, ${slide.gradA} 0%, ${slide.gradB} 100%)`,
+      }}
+    >
+      {/* Left: text */}
+      <div style={{ flex: 1, padding: '18px 0 18px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', zIndex: 2, minWidth: 0 }}>
+        <div style={{ alignSelf: 'flex-start', background: slide.badgeBg, border: `1px solid ${slide.accentColor}44`, borderRadius: 20, padding: '3px 10px', marginBottom: 8 }}>
+          <span style={{ fontSize: 10, fontWeight: 700, color: slide.accentColor, letterSpacing: '0.03em' }}>{slide.eyebrow}</span>
+        </div>
+        <div style={{ flex: 1 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 800, color: '#fff', lineHeight: 1.25, letterSpacing: '-0.02em', marginBottom: 5, textShadow: '0 1px 8px rgba(0,0,0,0.3)' }}>
+            {slide.title}
+          </h3>
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', fontWeight: 500, lineHeight: 1.4 }}>{slide.subtitle}</p>
+        </div>
+        <button
+          onClick={() => onExplore?.(slide.eyebrow, slide.title)}
+          style={{
+            alignSelf: 'flex-start', background: slide.accentColor, color: '#111',
+            fontSize: 11, fontWeight: 800, padding: '7px 14px', borderRadius: 20,
+            border: 'none', cursor: 'pointer', letterSpacing: '0.02em',
+            boxShadow: `0 4px 14px ${slide.accentColor}55`,
+          }}
+        >
+          Explore →
+        </button>
+      </div>
+
+      {/* Right: photo */}
+      <div style={{ width: 140, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ position: 'absolute', width: 110, height: 110, borderRadius: '50%', background: `radial-gradient(circle, ${slide.accentColor}35 0%, transparent 70%)`, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', width: 90, height: 90, borderRadius: '50%', border: '1.5px solid rgba(255,255,255,0.1)', top: -20, right: -20, pointerEvents: 'none' }} />
+        <div className="rounded-full overflow-hidden" style={{ width: 104, height: 104, border: '2.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 24px rgba(0,0,0,0.35)' }}>
+          <FoodImg name={slide.title} extra={slide.eyebrow} emoji={slide.emoji} gradA={slide.gradA} gradB={slide.gradB} />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function PromoBanner({ banner, onExplore }: Props) {
-  const [current, setCurrent] = useState(0)
-  const [progress, setProgress] = useState(0)
-  const progressRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
   const dynamicSlide = getMoodSlide(banner.mood, banner.theme, banner.title)
   const slides: SlideConfig[] = [dynamicSlide, ...STATIC_SLIDES]
   const total = slides.length
 
-  function startProgress() {
-    setProgress(0)
-    if (progressRef.current) clearInterval(progressRef.current)
-    const step = 100 / (AUTO_ADVANCE_MS / 40)
-    progressRef.current = setInterval(() => {
-      setProgress(p => {
-        if (p >= 100) {
-          setCurrent(c => (c + 1) % total)
-          return 0
-        }
-        return p + step
-      })
-    }, 40)
-  }
+  // Infinite strip: [last, ...slides, first]. Virtual index 1..total maps to real slides.
+  // Both neighbours are always mounted, so a transition never shows an empty frame.
+  const extended = [slides[total - 1], ...slides, slides[0]]
+  const [vi, setVi] = useState(1)
+  const [animate, setAnimate] = useState(true)   // transition on/off (off = instant snap for the loop)
+  const [dragPx, setDragPx] = useState(0)
 
+  const trackRef = useRef<HTMLDivElement>(null)
+  const pointer = useRef({ down: false, startX: 0, moved: false })
+  const paused = useRef(false)
+  const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const next = useCallback(() => { setAnimate(true); setVi(v => v + 1) }, [])
+  const prev = useCallback(() => { setAnimate(true); setVi(v => v - 1) }, [])
+
+  // Auto-advance (skips while the user is interacting)
   useEffect(() => {
-    startProgress()
-    return () => { if (progressRef.current) clearInterval(progressRef.current) }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current, total])
+    const id = setInterval(() => { if (!paused.current) next() }, AUTO_ADVANCE_MS)
+    return () => clearInterval(id)
+  }, [next])
 
-  function goTo(i: number) {
-    setCurrent(i)
-    setProgress(0)
+  // Seam handling: after sliding onto a clone, snap (no transition) to the real slide
+  function handleTransitionEnd() {
+    if (vi === total + 1) { setAnimate(false); setVi(1) }
+    else if (vi === 0) { setAnimate(false); setVi(total) }
+  }
+  // Re-enable animation right after an instant snap
+  useEffect(() => {
+    if (!animate) {
+      const id = requestAnimationFrame(() => setAnimate(true))
+      return () => cancelAnimationFrame(id)
+    }
+  }, [animate])
+
+  function pauseAutoplay() {
+    paused.current = true
+    if (resumeTimer.current) clearTimeout(resumeTimer.current)
+  }
+  function scheduleResume() {
+    if (resumeTimer.current) clearTimeout(resumeTimer.current)
+    resumeTimer.current = setTimeout(() => { paused.current = false }, RESUME_AFTER_TOUCH_MS)
+  }
+  useEffect(() => () => { if (resumeTimer.current) clearTimeout(resumeTimer.current) }, [])
+
+  // Swipe / drag
+  function onPointerDown(e: React.PointerEvent) {
+    pointer.current = { down: true, startX: e.clientX, moved: false }
+    pauseAutoplay()
+    trackRef.current?.setPointerCapture(e.pointerId)
+  }
+  function onPointerMove(e: React.PointerEvent) {
+    if (!pointer.current.down) return
+    const dx = e.clientX - pointer.current.startX
+    if (Math.abs(dx) > 6) pointer.current.moved = true
+    setDragPx(dx)
+  }
+  function onPointerUp(e: React.PointerEvent) {
+    if (!pointer.current.down) return
+    pointer.current.down = false
+    const dx = e.clientX - pointer.current.startX
+    setDragPx(0)
+    if (dx <= -SWIPE_THRESHOLD_PX) next()
+    else if (dx >= SWIPE_THRESHOLD_PX) prev()
+    scheduleResume()
+  }
+  // A drag shouldn't fire the Explore button underneath
+  function onClickCapture(e: React.MouseEvent) {
+    if (pointer.current.moved) { e.preventDefault(); e.stopPropagation(); pointer.current.moved = false }
   }
 
-  const slide = slides[current]
+  const realIndex = (vi - 1 + total) % total
 
   return (
     <div style={{ padding: '10px 14px 8px' }}>
-      {/* ── Main card ── */}
       <div
         style={{
-          borderRadius: 18,
-          overflow: 'hidden',
+          borderRadius: 18, overflow: 'hidden',
           boxShadow: '0 8px 28px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1)',
-          position: 'relative',
+          position: 'relative', touchAction: 'pan-y', cursor: 'grab',
         }}
+        ref={trackRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onClickCapture={onClickCapture}
       >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={current}
-            initial={{ opacity: 0, x: 28 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -28 }}
-            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              display: 'flex',
-              height: 172,
-              background: `linear-gradient(135deg, ${slide.gradA} 0%, ${slide.gradB} 100%)`,
-            }}
-          >
-            {/* ── Left: text content ── */}
-            <div
-              style={{
-                flex: 1,
-                padding: '18px 0 18px 18px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                position: 'relative',
-                zIndex: 2,
-              }}
-            >
-              {/* Eyebrow badge */}
-              <div
-                style={{
-                  alignSelf: 'flex-start',
-                  background: slide.badgeBg,
-                  border: `1px solid ${slide.accentColor}44`,
-                  borderRadius: 20,
-                  padding: '3px 10px',
-                  marginBottom: 8,
-                }}
-              >
-                <span style={{ fontSize: 10, fontWeight: 700, color: slide.accentColor, letterSpacing: '0.03em' }}>
-                  {slide.eyebrow}
-                </span>
-              </div>
-
-              {/* Title */}
-              <div style={{ flex: 1 }}>
-                <h3 style={{
-                  fontSize: 16, fontWeight: 800, color: '#fff',
-                  lineHeight: 1.25, letterSpacing: '-0.02em',
-                  marginBottom: 5,
-                  textShadow: '0 1px 8px rgba(0,0,0,0.3)',
-                }}>
-                  {slide.title}
-                </h3>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', fontWeight: 500, lineHeight: 1.4 }}>
-                  {slide.subtitle}
-                </p>
-              </div>
-
-              {/* CTA */}
-              <button
-                onClick={() => onExplore?.(slide.eyebrow, slide.title)}
-                style={{
-                  alignSelf: 'flex-start',
-                  background: slide.accentColor,
-                  color: '#111',
-                  fontSize: 11, fontWeight: 800,
-                  padding: '7px 14px',
-                  borderRadius: 20,
-                  border: 'none',
-                  cursor: 'pointer',
-                  letterSpacing: '0.02em',
-                  boxShadow: `0 4px 14px ${slide.accentColor}55`,
-                }}
-              >
-                Explore →
-              </button>
-            </div>
-
-            {/* ── Right: food plate visual ── */}
-            <div
-              style={{
-                width: 140,
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
-              {/* Glow behind plate */}
-              <div style={{
-                position: 'absolute',
-                width: 110, height: 110,
-                borderRadius: '50%',
-                background: `radial-gradient(circle, ${slide.accentColor}35 0%, transparent 70%)`,
-                pointerEvents: 'none',
-              }} />
-              {/* Large decorative circle top-right */}
-              <div style={{
-                position: 'absolute',
-                width: 90, height: 90,
-                borderRadius: '50%',
-                border: `1.5px solid rgba(255,255,255,0.1)`,
-                top: -20, right: -20,
-                pointerEvents: 'none',
-              }} />
-              <div style={{
-                position: 'absolute',
-                width: 50, height: 50,
-                borderRadius: '50%',
-                border: `1px solid rgba(255,255,255,0.07)`,
-                bottom: 10, left: 10,
-                pointerEvents: 'none',
-              }} />
-
-              <div
-                className="rounded-full overflow-hidden"
-                style={{ width: 104, height: 104, border: '2.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 24px rgba(0,0,0,0.35)' }}
-              >
-                <FoodImg name={slide.title} extra={slide.eyebrow} emoji={slide.emoji} gradA={slide.gradA} gradB={slide.gradB} />
-              </div>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-
-        {/* ── Progress bar ── */}
-        <div style={{ height: 3, background: 'rgba(255,255,255,0.12)', position: 'relative' }}>
-          <motion.div
-            style={{
-              height: '100%',
-              background: slide.accentColor,
-              width: `${progress}%`,
-              boxShadow: `0 0 6px ${slide.accentColor}`,
-            }}
-          />
+        <div
+          onTransitionEnd={handleTransitionEnd}
+          style={{
+            display: 'flex',
+            width: '100%',
+            transform: `translateX(calc(-${vi * 100}% + ${dragPx}px))`,
+            transition: animate && dragPx === 0 ? `transform ${SLIDE_MS}ms cubic-bezier(0.22, 1, 0.36, 1)` : 'none',
+          }}
+        >
+          {extended.map((s, i) => <Slide key={i} slide={s} onExplore={onExplore} />)}
         </div>
       </div>
 
-      {/* ── Dot indicators ── */}
+      {/* Dot indicators */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: 5, paddingTop: 8 }}>
         {slides.map((_, i) => (
           <button
             key={i}
-            onClick={() => goTo(i)}
+            onClick={() => { setAnimate(true); setVi(i + 1); pauseAutoplay(); scheduleResume() }}
+            aria-label={`Banner ${i + 1}`}
             style={{
-              width: i === current ? 16 : 5,
+              width: i === realIndex ? 16 : 5,
               height: 5,
               borderRadius: 9999,
-              background: i === current ? '#FC8019' : '#d1d5db',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
+              background: i === realIndex ? '#FC8019' : '#d1d5db',
+              border: 'none', cursor: 'pointer', padding: 0,
               transition: 'all 0.3s ease',
             }}
           />

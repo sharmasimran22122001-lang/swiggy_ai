@@ -1,6 +1,6 @@
 'use client'
-import { useState, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useRef, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, Search, Mic, Bell, ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
 
@@ -22,6 +22,7 @@ const VERTICALS = [
 
 export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, onCartClick, onSearchClick }: Props) {
   const [vegMode, setVegMode] = useState(false)
+  const [vegFx, setVegFx] = useState(0)          // increments on each veg-ON to retrigger the celebration
   const [activeIdx, setActiveIdx] = useState(0)
   // While dragging: fractional slot position the pill follows; null when idle
   const [dragPos, setDragPos] = useState<number | null>(null)
@@ -30,6 +31,36 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
   const { totalItems } = useCart()
 
   const N = VERTICALS.length
+
+  // ── Under-construction sheet for unbuilt verticals (feedback #8) ──────────
+  const [blocked, setBlocked] = useState<{ label: string; icon: string } | null>(null)
+  const [countdown, setCountdown] = useState(5)
+  const returnTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const tickTimer = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  function clearVerticalTimers() {
+    if (returnTimer.current) clearTimeout(returnTimer.current)
+    if (tickTimer.current) clearInterval(tickTimer.current)
+  }
+
+  function backToFood() {
+    clearVerticalTimers()
+    setBlocked(null)
+    setActiveIdx(0)
+  }
+
+  function engageVertical(i: number) {
+    setActiveIdx(i)
+    if (i === 0) { clearVerticalTimers(); setBlocked(null); return }
+    const v = VERTICALS[i]
+    clearVerticalTimers()
+    setBlocked({ label: v.label, icon: v.icon })
+    setCountdown(5)
+    tickTimer.current = setInterval(() => setCountdown(c => Math.max(0, c - 1)), 1000)
+    returnTimer.current = setTimeout(backToFood, 5000)
+  }
+
+  useEffect(() => clearVerticalTimers, [])
 
   // Pointer x → fractional slot index (0 … N-1), pill centred under the pointer
   function slotFromPointer(clientX: number): number {
@@ -53,7 +84,7 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
   function onTrackPointerUp(e: React.PointerEvent) {
     if (!dragging.current) return
     dragging.current = false
-    setActiveIdx(Math.round(slotFromPointer(e.clientX)))
+    engageVertical(Math.round(slotFromPointer(e.clientX)))
     setDragPos(null)
   }
 
@@ -188,18 +219,79 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
         </button>
         <div className="flex items-center gap-1 shrink-0">
           <span className="text-[11px] font-bold text-gray-600">VEG</span>
-          <button
-            onClick={() => setVegMode(v => !v)}
-            className={`relative w-9 h-5 rounded-full transition-colors duration-300 ${vegMode ? 'bg-green-500' : 'bg-gray-300'}`}
-          >
-            <motion.span
-              animate={{ x: vegMode ? 18 : 2 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-              className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow block"
-            />
-          </button>
+          <span className="relative inline-block">
+            <button
+              onClick={() => setVegMode(v => {
+                const next = !v
+                if (next) setVegFx(x => x + 1)
+                return next
+              })}
+              className={`relative w-9 h-5 rounded-full transition-colors duration-300 ${vegMode ? 'bg-green-500' : 'bg-gray-300'}`}
+              aria-label="Toggle veg-only mode"
+            >
+              <motion.span
+                animate={{ x: vegMode ? 18 : 2 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow flex items-center justify-center"
+                style={{ fontSize: 9, lineHeight: 1 }}
+              >
+                {vegMode ? '🌿' : ''}
+              </motion.span>
+            </button>
+            {/* Subtle celebration on turning veg ON: one ripple + three leaves */}
+            {vegMode && vegFx > 0 && (
+              <span key={vegFx} aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                <span className="veg-ripple" />
+                <span className="leaf-burst" style={{ '--lx': '-16px', '--ly': '-20px', '--lr': '-50deg' } as React.CSSProperties}>🍃</span>
+                <span className="leaf-burst" style={{ '--lx': '4px', '--ly': '-26px', '--lr': '25deg', animationDelay: '0.08s' } as React.CSSProperties}>🌱</span>
+                <span className="leaf-burst" style={{ '--lx': '18px', '--ly': '-16px', '--lr': '55deg', animationDelay: '0.16s' } as React.CSSProperties}>🍃</span>
+              </span>
+            )}
+          </span>
         </div>
       </div>
+
+      {/* ── Under construction sheet — Instamart / Dineout / Scenes ── */}
+      <AnimatePresence>
+        {blocked && (
+          <>
+            <motion.div
+              key="uc-backdrop"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={backToFood}
+              className="fixed inset-0"
+              style={{ background: 'rgba(20,20,25,0.35)', zIndex: 90 }}
+            />
+            <motion.div
+              key="uc-sheet"
+              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+              className="fixed left-0 right-0 bottom-0"
+              style={{ background: '#fff', borderRadius: '18px 18px 0 0', zIndex: 91, padding: '22px 20px 26px', textAlign: 'center', boxShadow: '0 -8px 30px rgba(0,0,0,0.18)' }}
+            >
+              <div style={{ width: 36, height: 4, borderRadius: 4, background: '#e0e0e0', margin: '0 auto 16px' }} />
+              <div style={{ fontSize: 38, lineHeight: 1 }}>{blocked.icon}</div>
+              <p style={{ fontSize: 16, fontWeight: 800, color: '#3d4152', marginTop: 10 }}>
+                {blocked.label} is still being cooked 🧑‍🍳
+              </p>
+              <p style={{ fontSize: 12.5, color: '#686b78', marginTop: 5 }}>
+                We're building this aisle. Meanwhile, the food's hot →
+              </p>
+              <div className="flex items-center justify-center" style={{ gap: 10, marginTop: 16 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 700, color: '#93959f', background: '#f4f4f4', borderRadius: 20, padding: '7px 13px' }}>
+                  ⏳ Back to food in {countdown}s
+                </span>
+                <button
+                  onClick={backToFood}
+                  style={{ fontSize: 12, fontWeight: 800, color: '#fff', background: '#FC8019', border: 'none', borderRadius: 20, padding: '8px 18px', cursor: 'pointer' }}
+                >
+                  Take me back →
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
