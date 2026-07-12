@@ -13,6 +13,7 @@ import CategoryPage from '@/components/CategoryPage'
 import DishPage from '@/components/DishPage'
 import TrendingAllPage from '@/components/TrendingAllPage'
 import SearchPage from '@/components/SearchPage'
+import SlotAllPage from '@/components/SlotAllPage'
 import { CartProvider, useCart } from '@/contexts/CartContext'
 import { useLocation } from '@/hooks/useLocation'
 import type { HomepageJSON, UserProfile, TimeSlot, TrendMatch } from '@/types'
@@ -27,7 +28,7 @@ interface PipelineResult {
   fromCache: boolean
 }
 
-type View = 'home' | 'restaurant' | 'cart' | 'success' | 'category' | 'dish' | 'trendingAll' | 'search'
+type View = 'home' | 'restaurant' | 'cart' | 'success' | 'category' | 'dish' | 'trendingAll' | 'search' | 'slotAll'
 
 interface CategoryState {
   name: string
@@ -56,6 +57,9 @@ function AppInner() {
   const [restaurantOrigin, setRestaurantOrigin] = useState<View>('home')
   // When was the last order placed? (drives the footer scooter's 30-min journey)
   const [orderedAt, setOrderedAt] = useState<number | null>(null)
+  // 2C "View all" slot page + where a category list was opened from
+  const [slotAllState, setSlotAllState] = useState<{ title: string; categories: string[] } | null>(null)
+  const [categoryOrigin, setCategoryOrigin] = useState<View>('home')
   const [categoryState, setCategoryState] = useState<CategoryState | null>(null)
   const [dishState, setDishState] = useState<DishState | null>(null)
   const [trendingAllItems, setTrendingAllItems] = useState<TrendMatch[]>([])
@@ -141,7 +145,14 @@ function AppInner() {
   // "View all" opens the section's own list — never a keyword-filtered dump
   function handleViewAllList(title: string, restaurants: RestaurantInfo[]) {
     setCategoryState({ name: title, restaurants })
+    setCategoryOrigin(view)
     setView('category')
+  }
+
+  // 2C hero "View all" → the slot's full craving list (~20 food items)
+  function handleSlotViewAll(title: string, categories: string[]) {
+    setSlotAllState({ title, categories })
+    setView('slotAll')
   }
 
   function handleCategorySelect(category: string) {
@@ -154,6 +165,7 @@ function AppInner() {
       name: category,
       restaurants: filtered.length >= 2 ? filtered : restaurantPool,
     })
+    setCategoryOrigin(view)
     setView('category')
   }
 
@@ -183,6 +195,7 @@ function AppInner() {
     setSelectedRestaurant(null)
     setCategoryState(null)
     setDishState(null)
+    setSlotAllState(null)
     setTrendingAllItems([])
   }
 
@@ -276,6 +289,18 @@ function AppInner() {
                 </motion.div>
               )}
 
+              {/* ── Slot craving list (2C View all) ── */}
+              {view === 'slotAll' && slotAllState && (
+                <motion.div key="slotAll" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                  <SlotAllPage
+                    title={slotAllState.title}
+                    categories={slotAllState.categories}
+                    onBack={() => setView('home')}
+                    onCategorySelect={handleCategorySelect}
+                  />
+                </motion.div>
+              )}
+
               {/* ── Category results ── */}
               {view === 'category' && categoryState && (
                 <motion.div key="category" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
@@ -283,7 +308,7 @@ function AppInner() {
                     category={categoryState.name}
                     context={categoryState.context}
                     restaurants={categoryState.restaurants}
-                    onBack={() => setView('home')}
+                    onBack={() => setView(categoryOrigin === 'slotAll' && slotAllState ? 'slotAll' : 'home')}
                     onRestaurantSelect={handleRestaurantSelect}
                   />
                 </motion.div>
@@ -328,6 +353,7 @@ function AppInner() {
                           onCartClick={() => setView('cart')}
                           onDishSelect={handleDishSelect}
                           onSeeAllTrending={handleSeeAllTrending}
+                          onSlotViewAll={handleSlotViewAll}
                           orderedAt={orderedAt}
                         />
                       </motion.div>

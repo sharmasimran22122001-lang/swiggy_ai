@@ -352,6 +352,15 @@ function getMealSlot(hour: number): { part: MealPart; label: string; title: stri
   return                               { part: 'late_night', label: '🌙 Late night',        title: 'Midnight hunger sorted',         categories: ['Pizza', 'Burgers', 'Fast Food', 'Noodles', 'Rolls', 'Snacks', 'Momos', 'Ice Cream'] }
 }
 
+// Full craving list per slot — powers the 2C hero's "View all" page (~20 items)
+export const SLOT_ALL: Record<MealPart, string[]> = {
+  breakfast:  ['Idli', 'Dosa', 'Vada', 'Upma', 'Poha', 'Paratha', 'Uttapam', 'Omelette', 'Pancakes', 'Waffles', 'Sandwich', 'Croissant', 'Bakery', 'Filter Coffee', 'Chai', 'Juice', 'Smoothie', 'Fruit Bowl', 'Thepla', 'Puri Bhaji'],
+  lunch:      ['Biryani', 'Thali', 'North Indian', 'South Indian', 'Chinese', 'Rolls', 'Pizza', 'Burgers', 'Dal Makhani', 'Paneer', 'Fried Rice', 'Noodles', 'Kebabs', 'Fish Curry', 'Salad', 'Sandwich', 'Pasta', 'Paratha', 'Curd Rice', 'Juice'],
+  snacks:     ['Chai', 'Samosa', 'Pakoda', 'Momos', 'Chaat', 'Vada Pav', 'Sandwich', 'Fries', 'Burgers', 'Rolls', 'Maggi', 'Noodles', 'Waffles', 'Cake', 'Coffee', 'Milkshake', 'Ice Cream', 'Pav Bhaji', 'Kebabs', 'Pizza'],
+  dinner:     ['Biryani', 'Pizza', 'North Indian', 'Chinese', 'Mughlai', 'Kebabs', 'Thali', 'Rolls', 'Paneer', 'Dal Makhani', 'Butter Chicken', 'Noodles', 'Fried Rice', 'Pasta', 'Burgers', 'Momos', 'Fish Curry', 'Salad', 'Desserts', 'Ice Cream'],
+  late_night: ['Pizza', 'Burgers', 'Momos', 'Noodles', 'Fried Rice', 'Rolls', 'Maggi', 'Fries', 'Sandwich', 'Pasta', 'Fried Chicken', 'Biryani', 'Kebabs', 'Ice Cream', 'Milkshake', 'Brownie', 'Desserts', 'Waffles', 'Chai', 'Coffee'],
+}
+
 const MEAL_EMOJI: Record<string, string> = {
   'Biryani': '🍛', 'Idli': '🍙', 'Dosa': '🥞', 'Paratha': '🥙', 'Breakfast': '🍳',
   'Chai & Snacks': '☕', 'Bakery': '🥐', 'Thali': '🍱', 'South Indian': '🥘', 'North Indian': '🫓',
@@ -388,9 +397,10 @@ const MEAL_GRADS: Record<string, { a: string; b: string }> = {
   'Ice Cream':     { a: '#4a4a78', b: '#584878' },
 }
 
-function VarietyHero({ profile: _profile, onCategorySelect }: {
+function VarietyHero({ profile: _profile, onCategorySelect, onSlotViewAll }: {
   profile: UserProfile
   onCategorySelect?: (category: string) => void
+  onSlotViewAll?: (title: string, categories: string[]) => void
 }) {
   const hour = new Date().getHours()
   const slot = getMealSlot(hour)
@@ -405,7 +415,7 @@ function VarietyHero({ profile: _profile, onCategorySelect }: {
             <span style={{ fontSize: 10, fontWeight: 700, color: '#686b78' }}>{slot.label}</span>
           </div>
         </div>
-        <SectionHead title={slot.title} onViewAll={() => onCategorySelect?.(categories[0])} pad="6px 15px 10px" />
+        <SectionHead title={slot.title} onViewAll={() => onSlotViewAll?.(slot.title, SLOT_ALL[slot.part])} pad="6px 15px 10px" />
       </div>
 
       <div className="row-fade-wrap">
@@ -576,12 +586,13 @@ interface Props {
   onCartClick?: () => void
   onDishSelect?: (dish: string, cuisine: string, whyTrending: string, searchSignal: string, restaurants: import('@/types').TrendMatch[]) => void
   onSeeAllTrending?: (items: import('@/types').TrendMatch[]) => void
+  onSlotViewAll?: (title: string, categories: string[]) => void
   orderedAt?: number | null
 }
 
 export default function HomeFeed({
   homepage, profile, detectedCity,
-  onRestaurantSelect, onCategorySelect, onViewAllList, onBannerExplore, onCartClick, onDishSelect, onSeeAllTrending,
+  onRestaurantSelect, onCategorySelect, onViewAllList, onBannerExplore, onCartClick, onDishSelect, onSeeAllTrending, onSlotViewAll,
   orderedAt = null,
 }: Props) {
   const [, setSelectedMood] = useState<MoodType>(homepage.mood_banner.mood)
@@ -693,7 +704,7 @@ export default function HomeFeed({
   if (is2C) {
     return (
       <div style={{ background: '#f4f4f4', paddingBottom: 66 }}>
-        <VarietyHero profile={profile} onCategorySelect={onCategorySelect} />
+        <VarietyHero profile={profile} onCategorySelect={onCategorySelect} onSlotViewAll={onSlotViewAll} />
         <Divider />
         {trendingBlock}
         <TopRatedSection items={ratedItems} excludeRestaurants={heroRestaurantSet} profile={profile} {...sharedProps} />

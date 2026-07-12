@@ -6,6 +6,18 @@ function sanitize(term: string) {
   return term.replace(/[%_\\]/g, '')
 }
 
+// The trend agent occasionally returns category-style names like
+// "Millet-based dishes (e.g., Millet Dosa, Millet Khichdi)" — a raw ILIKE on
+// that matches nothing. Reduce every trending name to a concrete, matchable
+// dish term: drop parentheticals, take the shortest concrete phrase.
+function matchableTerm(name: string): string {
+  const base = name.split('(')[0].trim()          // "Millet-based dishes"
+  const inParens = name.match(/\(e\.g\.,?\s*([^)]+)\)/i)?.[1]?.split(/,|;/)[0]?.trim() // "Millet Dosa"
+  const candidate = (inParens && inParens.length >= 4 ? inParens : base)
+  // keep it short: ILIKE works best on 1–3 word dish terms
+  return sanitize(candidate.split(/\s+/).slice(0, 3).join(' '))
+}
+
 export async function matchTrendingToMenus(
   trendingItems: TrendingItem[],
   city: string
@@ -14,7 +26,7 @@ export async function matchTrendingToMenus(
 
   // Single query: restaurants in city, joined with menu_items that match any trending term
   const orFilter = trendingItems
-    .map(t => `dish.ilike.%${sanitize(t.name)}%`)
+    .map(t => `dish.ilike.%${matchableTerm(t.name)}%`)
     .join(',')
 
   const { data, error } = await supabaseAdmin
@@ -41,7 +53,7 @@ export async function matchTrendingToMenus(
       seen.add(key)
 
       const trend = trendingItems.find(t =>
-        menuItem.dish.toLowerCase().includes(sanitize(t.name).toLowerCase())
+        menuItem.dish.toLowerCase().includes(matchableTerm(t.name).toLowerCase())
       )
       if (!trend) continue
 
@@ -72,7 +84,16 @@ export async function matchTrendingToMenus(
   const final: TrendMatch[] = []
   for (const matches of grouped.values()) {
     matches.sort((a, b) => b.rating - a.rating)
-    final.push(...matches.slice(0, 3))
+    // One entry per restaurant per trending dish (a place selling two matching
+    // dosa variants must not appear twice in the same list)
+    const seenRestaurants = new Set<string>()
+    const unique = matches.filter(m => {
+      const k = m.restaurant.toLowerCase()
+      if (seenRestaurants.has(k)) return false
+      seenRestaurants.add(k)
+      return true
+    })
+    final.push(...unique.slice(0, 3))
   }
 
   return final

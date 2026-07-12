@@ -8,6 +8,17 @@ Search the web right now for what food dishes and food items are trending across
 Look for: viral foods on Instagram/YouTube/Zomato, dishes people are suddenly searching for,
 new food categories blowing up nationally, and anything going viral on Indian social media related to food.
 
+CRITICAL rules for each "name":
+- ONE specific, orderable dish of 1–3 words — like "Chicken Biryani",
+  "Korean Cream Bun", "Masala Dosa", "Kunafa Chocolate".
+- NEVER categories, umbrella terms, parentheses, or "e.g." lists
+  (bad: "Millet-based dishes (e.g., Millet Dosa)" — good: "Millet Dosa").
+- Only items restaurants actually sell on Indian food delivery apps
+  (Swiggy/Zomato). NO alcohol, NO cocktails, family-friendly names only.
+- Prefer viral dishes that mainstream restaurants serve (biryani styles, momos,
+  buns, rolls, dosas, desserts, shakes) over ultra-niche foreign items nobody
+  nearby delivers.
+
 Return ONLY valid JSON — no prose, no markdown fences. Exactly 10 items:
 {
   "trending": [
