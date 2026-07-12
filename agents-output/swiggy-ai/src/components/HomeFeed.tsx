@@ -322,11 +322,11 @@ function ExplorerHero({ items, profile, onRestaurantSelect, onAdd, onViewAllList
                 onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
               >
                 <div className="relative" style={{ height: 88 }}>
-                  {/* Restaurant card → venue photo, unique within this row */}
+                  {/* Restaurant card → venue photo, unique within this row.
+                      No + button: a restaurant can't be added to the cart. */}
                   <FoodImg name={item.restaurant} kind="venue" src={venuePhotos[item.restaurant]} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
                   <StarOnPhoto rating={item.rating} />
                   <EtaOnPhoto min={item.delivery_min} />
-                  <SpringAddButton onAdd={() => onAdd?.(item)} size={26} fontSize={18} bottom={6} right={6} />
                 </div>
                 <div style={{ padding: '8px 8px 9px' }}>
                   <p style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.restaurant}</p>
@@ -498,11 +498,11 @@ function TopRatedSection({ items: rawItems, excludeRestaurants, profile, onResta
                 onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
               >
                 <div className="relative" style={{ height: 84 }}>
-                  {/* Restaurant card → venue photo, unique within this row */}
+                  {/* Restaurant card → venue photo, unique within this row.
+                      No + button: a restaurant can't be added to the cart. */}
                   <FoodImg name={item.restaurant} kind="venue" src={venuePhotos[item.restaurant]} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
                   <StarOnPhoto rating={item.rating} />
                   <EtaOnPhoto min={item.delivery_min} />
-                  <SpringAddButton onAdd={() => onAdd?.(item)} size={24} fontSize={16} bottom={5} right={5} />
                 </div>
                 <div style={{ padding: '8px 8px 9px' }}>
                   <p style={{ fontSize: 11, fontWeight: 700, color: '#3d4152', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.restaurant}</p>
