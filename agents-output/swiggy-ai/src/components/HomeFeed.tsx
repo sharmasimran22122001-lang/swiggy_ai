@@ -419,18 +419,14 @@ function VarietyHero({ profile: _profile, onCategorySelect }: {
               onClick={() => onCategorySelect?.(cat)}
             >
               <div className="relative rounded-[12px] overflow-hidden" style={{ width: 94, height: 94 }}>
+                {/* No + icon: a category isn't a cart item, and no ETA badge either —
+                    Pizza comes from many places, so one number would be a lie. */}
                 <FoodImg
                   name={cat}
                   emoji={MEAL_EMOJI[cat] ?? '🍽️'}
                   gradA={MEAL_GRADS[cat]?.a ?? '#4a5060'}
                   gradB={MEAL_GRADS[cat]?.b ?? '#585e68'}
                 />
-                <button
-                  onClick={e => { e.stopPropagation(); onCategorySelect?.(cat) }}
-                  className="absolute flex items-center justify-center rounded-full active:scale-90 transition-transform"
-                  style={{ bottom: 5, right: 5, width: 26, height: 26, background: '#FC8019', color: '#fff', fontSize: 18, fontWeight: 700, boxShadow: '0 2px 6px rgba(252,128,25,0.4)', zIndex: 10 }}
-                  aria-label="Explore category"
-                >+</button>
               </div>
               <p className="mt-1.5 text-center leading-tight" style={{ fontSize: 11, fontWeight: 700, color: '#3d4152' }}>{cat}</p>
             </motion.div>

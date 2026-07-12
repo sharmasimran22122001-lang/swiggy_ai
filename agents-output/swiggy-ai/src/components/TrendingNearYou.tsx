@@ -73,7 +73,9 @@ export default function TrendingNearYou({ city, onDishSelect, onSeeAll }: Props)
         >View all →</button>
       </div>
 
-      {/* Dish cards — same badge system as every other card: ★ + ETA on photo */}
+      {/* Dish cards — same badge system as every other card: ★ + ETA on photo.
+          A dish is served by many places: the card carries the BEST-rated
+          match's rating/ETA, and the count below is explicit about the rest. */}
       <div className="row-fade-wrap">
         <div className="flex overflow-x-auto" {...drag} style={{ gap: 10, padding: '0 15px 4px', scrollbarWidth: 'none', ...drag.style }}>
           {unique.map((item, i) => (
@@ -115,7 +117,9 @@ export default function TrendingNearYou({ city, onDishSelect, onSeeAll }: Props)
                   {item.why_trending}
                 </p>
                 <div className="flex items-center justify-between" style={{ marginTop: 6 }}>
-                  <span style={{ fontSize: 9.5, fontWeight: 600, color: '#FC8019', letterSpacing: '0.02em' }}>View restaurants</span>
+                  <span style={{ fontSize: 9.5, fontWeight: 600, color: '#FC8019', letterSpacing: '0.02em' }}>
+                    {(() => { const n = items.filter(x => x.trending_name === item.trending_name).length; return n > 1 ? `At ${n} places` : 'View restaurant' })()}
+                  </span>
                   <span style={{ fontSize: 10, fontWeight: 700, color: '#FC8019' }}>→</span>
                 </div>
               </div>
