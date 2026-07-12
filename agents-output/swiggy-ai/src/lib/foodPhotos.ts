@@ -99,6 +99,24 @@ const VENUE_PHOTOS = [
   U('photo-1600891964092-4316c288032e'),
   U('photo-1590846406792-0adc7f938f1d'),
   U('photo-1578474846511-04ba529f0b88'),
+  U('photo-1466978913421-dad2ebd01d17'),
+  U('photo-1493857671505-72967e2e2760'),
+  U('photo-1445116572660-236099ec97a0'),
+  U('photo-1481833761820-0509d3217039'),
+  U('photo-1554679665-f5537f187268'),
+  U('photo-1508766917616-d22f3f1eea14'),
+  U('photo-1519690889869-e705e59f72e1'),
+  U('photo-1533777857889-4be7c70b33f7'),
+  U('photo-1528605248644-14dd04022da1'),
+  U('photo-1543007630-9710e4a00a20'),
+  U('photo-1592861956120-e524fc739696'),
+  U('photo-1552321554-5fefe8c9ef14'),
+  U('photo-1550966871-3ed3cdb5ed0c'),
+  U('photo-1559925393-8be0ec4767c8'),
+  U('photo-1522336572468-97b06e8ef143'),
+  U('photo-1525610553991-2bede1a236e2'),
+  U('photo-1521305916504-4a1121188589'),
+  U('photo-1554306297-0c86e837d24b'),
 ]
 
 function hashName(name: string): number {
@@ -110,6 +128,25 @@ function hashName(name: string): number {
 /** Deterministic venue (restaurant/interior) photo for a restaurant name. */
 export function getVenuePhoto(name: string): string {
   return VENUE_PHOTOS[hashName(name) % VENUE_PHOTOS.length]
+}
+
+/**
+ * Assign venue photos to a whole row/list of restaurant names with NO
+ * duplicates within the list (linear probing on hash collisions).
+ * Deterministic for the same list. Works for lists up to the pool size (30).
+ */
+export function assignVenuePhotos(names: string[]): Record<string, string> {
+  const taken = new Set<number>()
+  const out: Record<string, string> = {}
+  for (const name of names) {
+    if (out[name]) continue
+    let i = hashName(name) % VENUE_PHOTOS.length
+    let hops = 0
+    while (taken.has(i) && hops < VENUE_PHOTOS.length) { i = (i + 1) % VENUE_PHOTOS.length; hops++ }
+    taken.add(i)
+    out[name] = VENUE_PHOTOS[i]
+  }
+  return out
 }
 
 /** Deterministic real photo for a dish, cuisine, or restaurant name. */

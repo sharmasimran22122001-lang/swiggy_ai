@@ -114,9 +114,10 @@ export default function TrendingNearYou({ city, onDishSelect, onSeeAll }: Props)
                 <p style={{ fontSize: 9.5, color: '#686b78', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {item.why_trending}
                 </p>
-                <p style={{ fontSize: 9.5, fontWeight: 600, color: '#FC8019', marginTop: 6, textAlign: 'center', letterSpacing: '0.02em' }}>
-                  View restaurants →
-                </p>
+                <div className="flex items-center justify-between" style={{ marginTop: 6 }}>
+                  <span style={{ fontSize: 9.5, fontWeight: 600, color: '#FC8019', letterSpacing: '0.02em' }}>View restaurants</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#FC8019' }}>→</span>
+                </div>
               </div>
             </motion.div>
           ))}

@@ -6,6 +6,7 @@ interface Props {
   name: string
   extra?: string           // extra keyword context (e.g. cuisine) for photo matching
   kind?: 'dish' | 'venue'  // venue = restaurant identity → interior/storefront photo
+  src?: string             // explicit photo (used by rows that pre-assign unique venue photos)
   emoji?: string           // fallback emoji if the photo fails to load
   gradA?: string
   gradB?: string
@@ -14,9 +15,9 @@ interface Props {
 }
 
 /** Real photo that fills its parent, with a gradient+emoji fallback on load error. */
-export default function FoodImg({ name, extra, kind = 'dish', emoji = '🍽️', gradA = '#4a5060', gradB = '#585e68', style, className = '' }: Props) {
+export default function FoodImg({ name, extra, kind = 'dish', src: srcOverride, emoji = '🍽️', gradA = '#4a5060', gradB = '#585e68', style, className = '' }: Props) {
   const [failed, setFailed] = useState(false)
-  const src = kind === 'venue' ? getVenuePhoto(name) : getFoodPhoto(name, extra)
+  const src = srcOverride ?? (kind === 'venue' ? getVenuePhoto(name) : getFoodPhoto(name, extra))
 
   if (failed) {
     return (

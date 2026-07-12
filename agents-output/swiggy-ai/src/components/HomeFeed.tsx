@@ -6,6 +6,7 @@ import PromoBanner from './PromoBanner'
 import MoreOnSwiggy from './MoreOnSwiggy'
 import TrendingNearYou from './TrendingNearYou'
 import FoodImg from './FoodImg'
+import { assignVenuePhotos } from '@/lib/foodPhotos'
 import { getRestaurantVisual } from './CategoryPage'
 import { StarOnPhoto, EtaOnPhoto } from './CardBadges'
 import { useDragScroll } from '@/hooks/useDragScroll'
@@ -296,6 +297,7 @@ function ExplorerHero({ items, profile, onRestaurantSelect, onAdd, onViewAllList
   onViewAllList?: (title: string, list: RestaurantInfo[]) => void
 }) {
   const drag = useDragScroll<HTMLDivElement>()
+  const venuePhotos = assignVenuePhotos(items.map(i => i.restaurant))
 
   return (
     <GlassHero>
@@ -320,8 +322,8 @@ function ExplorerHero({ items, profile, onRestaurantSelect, onAdd, onViewAllList
                 onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
               >
                 <div className="relative" style={{ height: 88 }}>
-                  {/* Restaurant card → venue photo (interior/storefront), never a dish close-up */}
-                  <FoodImg name={item.restaurant} kind="venue" emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
+                  {/* Restaurant card → venue photo, unique within this row */}
+                  <FoodImg name={item.restaurant} kind="venue" src={venuePhotos[item.restaurant]} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
                   <StarOnPhoto rating={item.rating} />
                   <EtaOnPhoto min={item.delivery_min} />
                   <SpringAddButton onAdd={() => onAdd?.(item)} size={26} fontSize={18} bottom={6} right={6} />
@@ -474,6 +476,7 @@ function TopRatedSection({ items: rawItems, excludeRestaurants, profile, onResta
 
   const items = atLeastThree(dedupeBy([...rawItems, ...dbExtra], i => i.restaurant).slice(0, 8))
   const drag = useDragScroll<HTMLDivElement>()
+  const venuePhotos = assignVenuePhotos(items.map(i => i.restaurant))
 
   return (
     <div className="bg-white" style={{ paddingBottom: 14 }}>
@@ -495,8 +498,8 @@ function TopRatedSection({ items: rawItems, excludeRestaurants, profile, onResta
                 onClick={() => onRestaurantSelect?.(toRestaurantInfo(item, profile))}
               >
                 <div className="relative" style={{ height: 84 }}>
-                  {/* Restaurant card → venue photo (interior/storefront), never a dish close-up */}
-                  <FoodImg name={item.restaurant} kind="venue" emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
+                  {/* Restaurant card → venue photo, unique within this row */}
+                  <FoodImg name={item.restaurant} kind="venue" src={venuePhotos[item.restaurant]} emoji={vis.emoji} gradA={vis.gradA} gradB={vis.gradB} />
                   <StarOnPhoto rating={item.rating} />
                   <EtaOnPhoto min={item.delivery_min} />
                   <SpringAddButton onAdd={() => onAdd?.(item)} size={24} fontSize={16} bottom={5} right={5} />
@@ -513,47 +516,36 @@ function TopRatedSection({ items: rawItems, excludeRestaurants, profile, onResta
   )
 }
 
-// ─── Fun footer — a tiny time-aware cartoon scene (feedback round 2) ─────────
-// A little character enjoys whatever this hour calls for: the snack floats up
-// for a bite/sip, a speech bubble pops, steam drifts. Compact — no dead space.
+// ─── Fun footer — the delivery scooter scene (feedback round 4, option C+) ───
+// Before an order: the rider idles at the kerb, daydreaming about your craving.
+// After an order: the scooter rides across the footer to your house. 🛵💨
 
-const FOOT_SCENES: Record<MealPart, { char: string; prop: string; bubble: string; line: string; steam: boolean }> = {
-  breakfast:  { char: '🥱', prop: '☕', bubble: 'brewing…',      line: 'Mornings are 80% coffee, 20% toast', steam: true },
-  lunch:      { char: '😋', prop: '🍛', bubble: 'nom nom',       line: 'Lunch break — the day’s only real meeting', steam: true },
-  snacks:     { char: '😌', prop: '☕', bubble: 'sip… sip…',     line: 'It’s chai o’clock. Non-negotiable.', steam: true },
-  dinner:     { char: '🤤', prop: '🥘', bubble: 'almost done…',  line: 'Great dinners start with great scrolling', steam: true },
-  late_night: { char: '😴', prop: '🍕', bubble: 'one more bite', line: 'Late-night scrolls hit different', steam: false },
-}
-
-function FunFooter() {
-  const hour = new Date().getHours()
-  const slot = getMealSlot(hour)
-  const scene = FOOT_SCENES[slot.part]
-
+function FunFooter({ hasOrdered }: { hasOrdered: boolean }) {
   return (
-    <div className="flex items-center justify-center" style={{ padding: '16px 20px 10px', gap: 14 }}>
-      {/* the cartoon */}
-      <div style={{ position: 'relative', width: 74, height: 58, flexShrink: 0 }}>
-        {/* speech bubble */}
-        <span className="sip-bubble" style={{
-          position: 'absolute', top: -2, left: 0,
-          fontSize: 8.5, fontWeight: 700, color: '#93959f',
-          background: '#fff', border: '1px solid #ebebeb', borderRadius: 8, padding: '2px 7px', whiteSpace: 'nowrap',
-        }}>{scene.bubble}</span>
-        {/* character */}
-        <span className="char-bob" style={{ position: 'absolute', bottom: 0, left: 8, fontSize: 30, lineHeight: 1 }}>{scene.char}</span>
-        {/* the snack, lifting up for a sip/bite */}
-        <span className="sip-cup" style={{ position: 'absolute', bottom: 0, right: 8, fontSize: 22, lineHeight: 1 }}>{scene.prop}</span>
-        {/* steam */}
-        {scene.steam && (
-          <>
-            <span className="steam-up" style={{ position: 'absolute', bottom: 24, right: 14, fontSize: 9, color: '#bdbdbd' }}>∿</span>
-            <span className="steam-up" style={{ position: 'absolute', bottom: 24, right: 20, fontSize: 8, color: '#d4d4d4', animationDelay: '0.6s' }}>∿</span>
-          </>
-        )}
+    <div style={{ padding: '14px 0 6px' }}>
+      {/* the road */}
+      <div style={{ position: 'relative', height: 64, margin: '0 14px' }}>
+        {/* destination house */}
+        <span style={{ position: 'absolute', right: 2, bottom: 6, fontSize: 24, lineHeight: 1 }}>🏠</span>
+        {/* rider + scooter */}
+        <span
+          key={hasOrdered ? 'riding' : 'waiting'}
+          className={hasOrdered ? 'scoot-ride' : 'scoot-idle'}
+          style={{ position: 'absolute', bottom: 6, left: '4%', fontSize: 26, lineHeight: 1 }}
+        >
+          {/* thought bubble while waiting / exhaust while riding */}
+          {hasOrdered
+            ? <span className="exhaust" style={{ position: 'absolute', left: -14, bottom: 4, fontSize: 11, color: '#bdbdbd' }}>💨</span>
+            : <span className="thought" style={{ position: 'absolute', left: 20, top: -18, fontSize: 12 }}>💭🍛</span>}
+          🛵
+        </span>
+        {/* kerb / road line */}
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, borderBottom: '2px dashed #e0e0e0' }} />
       </div>
-      <p style={{ fontSize: 11.5, fontWeight: 600, color: '#93959f', maxWidth: 170, textAlign: 'left', lineHeight: 1.45 }}>
-        {scene.line}
+      <p className="text-center" style={{ fontSize: 11.5, fontWeight: 600, color: '#93959f', padding: '8px 20px 6px' }}>
+        {hasOrdered
+          ? 'Order placed — your cravings are en route! 🛵💨'
+          : 'Your delivery partner is ready. The craving is missing.'}
       </p>
     </div>
   )
@@ -572,11 +564,13 @@ interface Props {
   onCartClick?: () => void
   onDishSelect?: (dish: string, cuisine: string, whyTrending: string, searchSignal: string, restaurants: import('@/types').TrendMatch[]) => void
   onSeeAllTrending?: (items: import('@/types').TrendMatch[]) => void
+  hasOrdered?: boolean
 }
 
 export default function HomeFeed({
   homepage, profile, detectedCity,
   onRestaurantSelect, onCategorySelect, onViewAllList, onBannerExplore, onCartClick, onDishSelect, onSeeAllTrending,
+  hasOrdered = false,
 }: Props) {
   const [, setSelectedMood] = useState<MoodType>(homepage.mood_banner.mood)
   const { add } = useCart()
@@ -615,7 +609,7 @@ export default function HomeFeed({
 
   const sharedProps = { onRestaurantSelect, onAdd: handleAdd, onViewAllList }
 
-  const footer = <FunFooter />
+  const footer = <FunFooter hasOrdered={hasOrdered} />
 
   const trendingBlock = showTrending && (
     <>

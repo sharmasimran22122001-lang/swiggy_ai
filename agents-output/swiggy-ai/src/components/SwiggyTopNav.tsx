@@ -254,13 +254,9 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
       <AnimatePresence>
         {blocked && (
           <>
-            <motion.div
-              key="uc-backdrop"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={backToFood}
-              className="fixed inset-0"
-              style={{ background: 'rgba(20,20,25,0.35)', zIndex: 90 }}
-            />
+            {/* No backdrop: the sheet is non-modal so the toggle stays fully
+                usable — hop Instamart→Dineout→Scenes freely; each hop swaps the
+                text and restarts the 5s timer; Food closes it instantly. */}
             <motion.div
               key="uc-sheet"
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}

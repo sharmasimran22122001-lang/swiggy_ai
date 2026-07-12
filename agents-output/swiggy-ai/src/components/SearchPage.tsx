@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Search, X, Clock, TrendingUp } from 'lucide-react'
 import FoodImg from './FoodImg'
+import { assignVenuePhotos } from '@/lib/foodPhotos'
 import type { RestaurantInfo } from './RestaurantPage'
 
 const RECENT_KEY = 'swiggy_recent_searches'
@@ -210,7 +211,7 @@ export default function SearchPage({ city, onBack, onRestaurantSelect }: Props) 
           <p style={{ padding: '12px 15px 4px', fontSize: 11, color: '#93959f' }}>
             {results.length} result{results.length === 1 ? '' : 's'} for “{query.trim()}”
           </p>
-          {results.map((r, i) => (
+          {(() => { const venuePhotos = assignVenuePhotos(results.map(r => r.name)); return results.map((r, i) => (
             <motion.div
               key={r.name}
               initial={{ opacity: 0, y: 8 }}
@@ -230,8 +231,8 @@ export default function SearchPage({ city, onBack, onRestaurantSelect }: Props) 
               style={{ padding: '11px 15px', borderBottom: '1px solid #f0f0f0' }}
             >
               <div className="rounded-[10px] overflow-hidden flex-shrink-0" style={{ width: 58, height: 58 }}>
-                {/* Result row is a restaurant → venue photo; matched dish stays as text below */}
-                <FoodImg name={r.name} kind="venue" />
+                {/* Result row is a restaurant → venue photo, unique within the list */}
+                <FoodImg name={r.name} kind="venue" src={venuePhotos[r.name]} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="truncate" style={{ fontSize: 13, fontWeight: 700, color: '#3d4152' }}>{r.name}</p>
@@ -252,7 +253,7 @@ export default function SearchPage({ city, onBack, onRestaurantSelect }: Props) 
                 <path d="M9 18l6-6-6-6" />
               </svg>
             </motion.div>
-          ))}
+          )) })()}
         </div>
       )}
 
