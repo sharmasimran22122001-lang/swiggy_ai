@@ -54,8 +54,8 @@ function AppInner() {
   const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantInfo | null>(null)
   // Where the user opened the current restaurant from — back returns exactly there
   const [restaurantOrigin, setRestaurantOrigin] = useState<View>('home')
-  // Has this session placed an order? (drives the footer scooter scene)
-  const [hasOrdered, setHasOrdered] = useState(false)
+  // When was the last order placed? (drives the footer scooter's 30-min journey)
+  const [orderedAt, setOrderedAt] = useState<number | null>(null)
   const [categoryState, setCategoryState] = useState<CategoryState | null>(null)
   const [dishState, setDishState] = useState<DishState | null>(null)
   const [trendingAllItems, setTrendingAllItems] = useState<TrendMatch[]>([])
@@ -118,7 +118,7 @@ function AppInner() {
     setSelectedRestaurant(null)
     setCategoryState(null)
     setDishState(null)
-    setHasOrdered(false)
+    setOrderedAt(null)
     clear()
   }
 
@@ -174,7 +174,7 @@ function AppInner() {
 
   function handlePlaceOrder() {
     setView('success')
-    setHasOrdered(true)
+    setOrderedAt(Date.now())
     clear()
   }
 
@@ -328,7 +328,7 @@ function AppInner() {
                           onCartClick={() => setView('cart')}
                           onDishSelect={handleDishSelect}
                           onSeeAllTrending={handleSeeAllTrending}
-                          hasOrdered={hasOrdered}
+                          orderedAt={orderedAt}
                         />
                       </motion.div>
                     )}

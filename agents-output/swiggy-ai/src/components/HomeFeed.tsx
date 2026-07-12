@@ -516,39 +516,51 @@ function TopRatedSection({ items: rawItems, excludeRestaurants, profile, onResta
   )
 }
 
-// ─── Fun footer — the delivery scooter scene (feedback round 4, option C+) ───
-// Before an order: the rider idles at the kerb, daydreaming about your craving.
-// After an order: the scooter rides across the footer to your house. 🛵💨
+// ─── Fun footer — real-time delivery scooter (feedback round 5) ──────────────
+// Waits at the LEFT kerb facing right. After an order, it travels toward the
+// house over the real 30-minute delivery window. At ETA it arrives, then resets
+// to the left kerb until the next order.
 
-function FunFooter({ hasOrdered }: { hasOrdered: boolean }) {
+const DELIVERY_MS = 30 * 60 * 1000
+
+function FunFooter({ orderedAt }: { orderedAt: number | null }) {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 20_000) // position creeps forward every 20s
+    return () => clearInterval(id)
+  }, [])
+
+  const progress = orderedAt ? Math.min(1, (now - orderedAt) / DELIVERY_MS) : null
+  const riding = progress !== null && progress < 1
+  const leftPct = riding ? 4 + progress! * 80 : 4 // 4% → 84%, house sits past 84%
+  const minsLeft = riding ? Math.max(1, Math.ceil((DELIVERY_MS - (now - orderedAt!)) / 60_000)) : 0
+
   return (
     <div style={{ padding: '14px 0 6px' }}>
       {/* the road */}
       <div style={{ position: 'relative', height: 64, margin: '0 14px' }}>
         {/* destination house */}
         <span style={{ position: 'absolute', right: 2, bottom: 6, fontSize: 24, lineHeight: 1 }}>🏠</span>
-        {/* rider + scooter — mirrored to face RIGHT; waits kerb-side on the right,
-            rides left→right to the house once an order is placed */}
+        {/* rider + scooter — always faces RIGHT; position = delivery progress */}
         <span
-          key={hasOrdered ? 'riding' : 'waiting'}
-          className={hasOrdered ? 'scoot-ride' : 'scoot-idle'}
+          className="scoot-idle"
           style={{
             position: 'absolute', bottom: 6, fontSize: 26, lineHeight: 1,
-            ...(hasOrdered ? { left: '4%' } : { right: '14%' }),
+            left: `${leftPct}%`,
+            transition: 'left 1.2s linear',
           }}
         >
-          {/* thought bubble while waiting / exhaust while riding */}
-          {hasOrdered
+          {riding
             ? <span className="exhaust" style={{ position: 'absolute', left: -14, bottom: 4, fontSize: 11, color: '#bdbdbd' }}>💨</span>
-            : <span className="thought" style={{ position: 'absolute', left: -26, top: -18, fontSize: 12 }}>💭🍛</span>}
+            : <span className="thought" style={{ position: 'absolute', left: 22, top: -18, fontSize: 12 }}>💭🍛</span>}
           <span style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>🛵</span>
         </span>
         {/* kerb / road line */}
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, borderBottom: '2px dashed #e0e0e0' }} />
       </div>
       <p className="text-center" style={{ fontSize: 11.5, fontWeight: 600, color: '#93959f', padding: '8px 20px 6px' }}>
-        {hasOrdered
-          ? 'Order placed — your cravings are en route! 🛵💨'
+        {riding
+          ? `Your order is on its way — arriving in ~${minsLeft} min 🛵💨`
           : 'Your delivery partner is ready. The craving is missing.'}
       </p>
     </div>
@@ -568,13 +580,13 @@ interface Props {
   onCartClick?: () => void
   onDishSelect?: (dish: string, cuisine: string, whyTrending: string, searchSignal: string, restaurants: import('@/types').TrendMatch[]) => void
   onSeeAllTrending?: (items: import('@/types').TrendMatch[]) => void
-  hasOrdered?: boolean
+  orderedAt?: number | null
 }
 
 export default function HomeFeed({
   homepage, profile, detectedCity,
   onRestaurantSelect, onCategorySelect, onViewAllList, onBannerExplore, onCartClick, onDishSelect, onSeeAllTrending,
-  hasOrdered = false,
+  orderedAt = null,
 }: Props) {
   const [, setSelectedMood] = useState<MoodType>(homepage.mood_banner.mood)
   const { add } = useCart()
@@ -613,7 +625,7 @@ export default function HomeFeed({
 
   const sharedProps = { onRestaurantSelect, onAdd: handleAdd, onViewAllList }
 
-  const footer = <FunFooter hasOrdered={hasOrdered} />
+  const footer = <FunFooter orderedAt={orderedAt} />
 
   const trendingBlock = showTrending && (
     <>
