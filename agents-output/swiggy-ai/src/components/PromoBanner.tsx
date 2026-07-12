@@ -1,7 +1,8 @@
 'use client'
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { MoodType } from '@/types'
 import FoodImg from './FoodImg'
+import { useDragScroll } from '@/hooks/useDragScroll'
 
 interface BannerData {
   mood: MoodType
@@ -76,8 +77,6 @@ const STATIC_SLIDES: SlideConfig[] = [
 
 const AUTO_ADVANCE_MS = 4400
 const RESUME_AFTER_TOUCH_MS = 5000
-const SWIPE_THRESHOLD_PX = 45
-const SLIDE_MS = 420
 
 function Slide({ slide, onExplore }: { slide: SlideConfig; onExplore?: (theme: string, context: string) => void }) {
   return (
@@ -131,39 +130,39 @@ export default function PromoBanner({ banner, onExplore }: Props) {
   const slides: SlideConfig[] = [dynamicSlide, ...STATIC_SLIDES]
   const total = slides.length
 
-  // Infinite strip: [last, ...slides, first]. Virtual index 1..total maps to real slides.
-  // Both neighbours are always mounted, so a transition never shows an empty frame.
+  // NATIVE scroll-snap carousel: the browser owns the gesture, so dragging can
+  // never break. Clones at both ends ([last, …slides, first]) give the infinite
+  // loop — after settling on a clone we jump instantly to the real slide.
   const extended = [slides[total - 1], ...slides, slides[0]]
-  const [vi, setVi] = useState(1)
-  const [animate, setAnimate] = useState(true)   // transition on/off (off = instant snap for the loop)
-  const [dragPx, setDragPx] = useState(0)
-
-  const trackRef = useRef<HTMLDivElement>(null)
-  const pointer = useRef({ down: false, startX: 0, moved: false })
+  const [idx, setIdx] = useState(1)          // index in the extended strip
+  const idxRef = useRef(1)
+  const scrollerRef = useRef<HTMLDivElement>(null)
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const paused = useRef(false)
   const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const autoScrolling = useRef(false)
 
-  const next = useCallback(() => { setAnimate(true); setVi(v => v + 1) }, [])
-  const prev = useCallback(() => { setAnimate(true); setVi(v => v - 1) }, [])
+  // Mouse drag-to-scroll (touch drags natively) — same proven hook as the card rows
+  const drag = useDragScroll<HTMLDivElement>()
 
-  // Auto-advance (skips while the user is interacting)
-  useEffect(() => {
-    const id = setInterval(() => { if (!paused.current) next() }, AUTO_ADVANCE_MS)
-    return () => clearInterval(id)
-  }, [next])
-
-  // Seam handling: after sliding onto a clone, snap (no transition) to the real slide
-  function handleTransitionEnd() {
-    if (vi === total + 1) { setAnimate(false); setVi(1) }
-    else if (vi === 0) { setAnimate(false); setVi(total) }
+  function scrollToSlide(i: number, smooth: boolean) {
+    const el = scrollerRef.current
+    if (!el) return
+    autoScrolling.current = smooth
+    el.scrollTo({ left: el.clientWidth * i, behavior: smooth ? 'smooth' : ('instant' as ScrollBehavior) })
   }
-  // Re-enable animation right after an instant snap
+
+  // Start on the first real slide (after the leading clone)
+  useEffect(() => { scrollToSlide(1, false) }, [])
+
+  // Auto-advance — skipped while the user is interacting
   useEffect(() => {
-    if (!animate) {
-      const id = requestAnimationFrame(() => setAnimate(true))
-      return () => cancelAnimationFrame(id)
-    }
-  }, [animate])
+    const id = setInterval(() => {
+      if (!paused.current) scrollToSlide(idxRef.current + 1, true)
+    }, AUTO_ADVANCE_MS)
+    return () => clearInterval(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function pauseAutoplay() {
     paused.current = true
@@ -173,43 +172,28 @@ export default function PromoBanner({ banner, onExplore }: Props) {
     if (resumeTimer.current) clearTimeout(resumeTimer.current)
     resumeTimer.current = setTimeout(() => { paused.current = false }, RESUME_AFTER_TOUCH_MS)
   }
-  useEffect(() => () => { if (resumeTimer.current) clearTimeout(resumeTimer.current) }, [])
+  useEffect(() => () => {
+    if (resumeTimer.current) clearTimeout(resumeTimer.current)
+    if (settleTimer.current) clearTimeout(settleTimer.current)
+  }, [])
 
-  // Swipe / drag — window-level listeners after pointerdown so the gesture
-  // survives child elements, capture quirks, and fast flicks
-  function onPointerDown(e: React.PointerEvent) {
-    if (e.pointerType === 'mouse' && e.button !== 0) return
-    pointer.current = { down: true, startX: e.clientX, moved: false }
-    pauseAutoplay()
-
-    const onMove = (ev: PointerEvent) => {
-      if (!pointer.current.down) return
-      const dx = ev.clientX - pointer.current.startX
-      if (Math.abs(dx) > 6) pointer.current.moved = true
-      setDragPx(dx)
-    }
-    const onUp = (ev: PointerEvent) => {
-      window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerup', onUp)
-      window.removeEventListener('pointercancel', onUp)
-      if (!pointer.current.down) return
-      pointer.current.down = false
-      const dx = ev.clientX - pointer.current.startX
-      setDragPx(0)
-      if (dx <= -SWIPE_THRESHOLD_PX) next()
-      else if (dx >= SWIPE_THRESHOLD_PX) prev()
-      scheduleResume()
-    }
-    window.addEventListener('pointermove', onMove)
-    window.addEventListener('pointerup', onUp)
-    window.addEventListener('pointercancel', onUp)
-  }
-  // A drag shouldn't fire the Explore button underneath
-  function onClickCapture(e: React.MouseEvent) {
-    if (pointer.current.moved) { e.preventDefault(); e.stopPropagation(); pointer.current.moved = false }
+  // After every scroll settles: fix up the infinite seam + update the dots
+  function onScroll() {
+    if (settleTimer.current) clearTimeout(settleTimer.current)
+    settleTimer.current = setTimeout(() => {
+      const el = scrollerRef.current
+      if (!el || el.clientWidth === 0) return
+      let i = Math.round(el.scrollLeft / el.clientWidth)
+      if (i >= total + 1) { scrollToSlide(1, false); i = 1 }
+      else if (i <= 0) { scrollToSlide(total, false); i = total }
+      idxRef.current = i
+      setIdx(i)
+      if (autoScrolling.current) autoScrolling.current = false
+      else scheduleResume() // user-driven scroll → resume autoplay later
+    }, 140)
   }
 
-  const realIndex = (vi - 1 + total) % total
+  const realIndex = (idx - 1 + total) % total
 
   return (
     <div style={{ padding: '10px 14px 8px' }}>
@@ -217,23 +201,32 @@ export default function PromoBanner({ banner, onExplore }: Props) {
         style={{
           borderRadius: 18, overflow: 'hidden',
           boxShadow: '0 8px 28px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1)',
-          position: 'relative', touchAction: 'pan-y', cursor: 'grab',
         }}
-        ref={trackRef}
-        onPointerDown={onPointerDown}
-        onDragStart={e => e.preventDefault()}
-        onClickCapture={onClickCapture}
       >
         <div
-          onTransitionEnd={handleTransitionEnd}
+          {...drag}
+          ref={el => {
+            scrollerRef.current = el
+            drag.ref.current = el
+          }}
+          onScroll={onScroll}
+          onPointerDownCapture={pauseAutoplay}
+          onTouchStart={pauseAutoplay}
+          onDragStart={e => e.preventDefault()}
+          className="hide-scrollbar"
           style={{
             display: 'flex',
-            width: '100%',
-            transform: `translateX(calc(-${vi * 100}% + ${dragPx}px))`,
-            transition: animate && dragPx === 0 ? `transform ${SLIDE_MS}ms cubic-bezier(0.22, 1, 0.36, 1)` : 'none',
+            overflowX: 'auto',
+            scrollSnapType: 'x mandatory',
+            overscrollBehaviorX: 'contain',
+            cursor: 'grab',
           }}
         >
-          {extended.map((s, i) => <Slide key={i} slide={s} onExplore={onExplore} />)}
+          {extended.map((s, i) => (
+            <div key={i} style={{ width: '100%', flexShrink: 0, scrollSnapAlign: 'start' }}>
+              <Slide slide={s} onExplore={onExplore} />
+            </div>
+          ))}
         </div>
       </div>
 
@@ -242,7 +235,7 @@ export default function PromoBanner({ banner, onExplore }: Props) {
         {slides.map((_, i) => (
           <button
             key={i}
-            onClick={() => { setAnimate(true); setVi(i + 1); pauseAutoplay(); scheduleResume() }}
+            onClick={() => { pauseAutoplay(); scrollToSlide(i + 1, true); scheduleResume() }}
             aria-label={`Banner ${i + 1}`}
             style={{
               width: i === realIndex ? 16 : 5,
