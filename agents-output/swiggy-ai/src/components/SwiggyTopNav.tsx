@@ -283,7 +283,14 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
               className="fixed left-0 right-0 bottom-0"
-              style={{ background: '#fff', borderRadius: '18px 18px 0 0', zIndex: 91, padding: '22px 20px 26px', textAlign: 'center', boxShadow: '0 -8px 30px rgba(0,0,0,0.18)' }}
+              style={{
+                background: '#fff', borderRadius: '18px 18px 0 0', zIndex: 91,
+                textAlign: 'center', boxShadow: '0 -8px 30px rgba(0,0,0,0.18)',
+                // safe-area padding: keeps the sheet's content above mobile
+                // browser bars / home indicators instead of being cut by them
+                padding: '22px 20px calc(26px + env(safe-area-inset-bottom, 0px))',
+                maxWidth: 560, margin: '0 auto',
+              }}
             >
               <div style={{ width: 36, height: 4, borderRadius: 4, background: '#e0e0e0', margin: '0 auto 16px' }} />
               <div style={{ fontSize: 38, lineHeight: 1 }}>{blocked.icon}</div>
