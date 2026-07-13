@@ -11,7 +11,8 @@ GLOBAL RULES (all users):
 - Only recommend restaurants with avg_rating >= 4.0 in any homepage section —
   the homepage is a quality showcase; lower-rated places live behind search only.
 - Diet hard constraint is absolute: if veg-only/jain/vegan, never include a non-veg restaurant.
-- Every item must include a short human "reason" (max 12 words, natural language).
+- Every item must include a short human "reason" — MAX 4 words, punchy
+  (e.g. "crowd favourite", "new in town", "fastest biryani nearby").
 - Include rating, delivery_min, veg flag in every item where available.
 - All hero/discovery/top-rated items are RESTAURANTS, not individual dishes.
 

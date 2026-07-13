@@ -536,38 +536,104 @@ const DELIVERY_MS = 30 * 60 * 1000
 // gets a spinning craving wheel. An ACTIVE order always shows the scooter
 // journey — that's order tracking, universal to everyone.
 
-function ExplorerWalkScene() {
+// 2B footer: the runaway momo chase — hungry explorer sprints after a bouncing
+// momo across the street, forever. 🥟💨
+function ExplorerChaseScene() {
   return (
-    <div style={{ position: 'relative', height: 64, margin: '0 14px' }}>
-      {/* food stops along the street */}
-      <span style={{ position: 'absolute', left: '30%', bottom: 8, fontSize: 16 }}>🍜</span>
-      <span style={{ position: 'absolute', left: '55%', bottom: 8, fontSize: 16 }}>🍕</span>
-      <span style={{ position: 'absolute', left: '80%', bottom: 8, fontSize: 16 }}>🥘</span>
-      {/* the explorer, strolling between them */}
-      <span className="walk-go" style={{ position: 'absolute', bottom: 6, fontSize: 24, lineHeight: 1 }}>
-        <span className="walk-face" style={{ display: 'inline-block' }}>🚶</span>
+    <div style={{ position: 'relative', height: 64, margin: '0 14px', overflow: 'hidden' }}>
+      {/* the momo, always just out of reach */}
+      <span className="chase-run chase-momo" style={{ position: 'absolute', bottom: 8, fontSize: 18, lineHeight: 1 }}>
+        <span className="momo-bounce" style={{ display: 'inline-block' }}>🥟</span>
+      </span>
+      {/* the chaser */}
+      <span className="chase-run" style={{ position: 'absolute', bottom: 6, fontSize: 24, lineHeight: 1 }}>
+        <span className="exhaust" style={{ position: 'absolute', left: -12, bottom: 3, fontSize: 10, color: '#bdbdbd' }}>💨</span>
+        <span style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>🏃</span>
       </span>
       <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, borderBottom: '2px dashed #e0e0e0' }} />
     </div>
   )
 }
 
+// 2C footer: the craving roulette — spins fast, lands on a dish, announces it
+// ("Pizza it is! 🍕"), rests a moment, then spins again.
+const WHEEL = [
+  { emoji: '🍕', name: 'Pizza' },
+  { emoji: '🍛', name: 'Biryani' },
+  { emoji: '🥟', name: 'Momos' },
+  { emoji: '🍜', name: 'Noodles' },
+  { emoji: '🍰', name: 'Cake' },
+  { emoji: '🌯', name: 'Rolls' },
+]
+const SPIN_MS = 2600
+const REST_MS = 2600
+
 function CravingWheelScene() {
-  const wheel = ['🍕', '🍛', '🥟', '🍜', '🍰', '🌯']
+  const [rot, setRot] = useState(0)
+  const [landed, setLanded] = useState<{ emoji: string; name: string } | null>(null)
+
+  useEffect(() => {
+    let alive = true
+    let timer: ReturnType<typeof setTimeout>
+    function cycle() {
+      if (!alive) return
+      const idx = Math.floor(Math.random() * WHEEL.length)
+      setLanded(null)
+      // land item idx under the top pointer, plus two dramatic full spins
+      setRot(r => {
+        const current = ((r % 360) + 360) % 360
+        const target = (360 - idx * 60) % 360
+        return r + 720 + ((target - current + 360) % 360)
+      })
+      timer = setTimeout(() => {
+        if (!alive) return
+        setLanded(WHEEL[idx])
+        timer = setTimeout(() => { if (alive) cycle() }, REST_MS)
+      }, SPIN_MS)
+    }
+    cycle()
+    return () => { alive = false; clearTimeout(timer) }
+  }, [])
+
   return (
-    <div className="flex items-center justify-center" style={{ height: 74, position: 'relative' }}>
-      <span style={{ position: 'absolute', top: -2, fontSize: 11, color: '#FC8019' }}>▼</span>
-      <div className="wheel-spin" style={{ position: 'relative', width: 60, height: 60 }}>
-        {wheel.map((w, i) => (
+    <div className="flex items-center justify-center" style={{ height: 84, position: 'relative' }}>
+      {/* result popup */}
+      {landed && (
+        <span
+          className="bounce-in"
+          style={{
+            position: 'absolute', top: 0, zIndex: 2,
+            fontSize: 10.5, fontWeight: 800, color: '#FC8019',
+            background: '#fff', border: '1.5px solid #FC8019', borderRadius: 999,
+            padding: '3px 11px', whiteSpace: 'nowrap',
+          }}
+        >
+          {landed.name} it is! {landed.emoji}
+        </span>
+      )}
+      <span style={{ position: 'absolute', top: 16, fontSize: 10, color: '#FC8019', zIndex: 1 }}>▼</span>
+      <div
+        style={{
+          position: 'relative', width: 58, height: 58, marginTop: 18,
+          transform: `rotate(${rot}deg)`,
+          transition: `transform ${SPIN_MS}ms cubic-bezier(0.15, 0.85, 0.25, 1)`,
+        }}
+      >
+        {WHEEL.map((w, i) => (
           <span
-            key={w}
+            key={w.name}
             style={{
-              position: 'absolute', left: '50%', top: '50%', fontSize: 15, lineHeight: 1,
-              transform: `translate(-50%, -50%) rotate(${i * 60}deg) translateY(-24px)`,
+              position: 'absolute', left: '50%', top: '50%', fontSize: 14, lineHeight: 1,
+              transform: `translate(-50%, -50%) rotate(${i * 60}deg) translateY(-23px) rotate(${-i * 60}deg)`,
             }}
-          >{w}</span>
+          >
+            {/* counter-rotate so the food stays upright while the wheel spins */}
+            <span style={{ display: 'inline-block', transform: `rotate(${-rot}deg)`, transition: `transform ${SPIN_MS}ms cubic-bezier(0.15, 0.85, 0.25, 1)` }}>
+              {w.emoji}
+            </span>
+          </span>
         ))}
-        <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', fontSize: 13 }}>🎯</span>
+        <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', fontSize: 12 }}>🎯</span>
       </div>
     </div>
   )
@@ -616,11 +682,11 @@ function FunFooter({ orderedAt, persona }: { orderedAt: number | null; persona: 
     scene = <ScooterScene riding leftPct={leftPct} />
     line = `Your order is on its way — arriving in ~${minsLeft} min 🛵💨`
   } else if (is2B) {
-    scene = <ExplorerWalkScene />
-    line = 'Exploring the neighbourhood, one bite at a time 🧭'
+    scene = <ExplorerChaseScene />
+    line = 'Chasing the next great bite 🥟💨'
   } else if (is2C) {
     scene = <CravingWheelScene />
-    line = 'Can’t decide? Spin a craving 🎲'
+    line = 'Can’t decide? The wheel knows 🎲'
   } else {
     scene = <ScooterScene riding={false} leftPct={4} />
     line = 'Your delivery partner is ready. The craving is missing.'

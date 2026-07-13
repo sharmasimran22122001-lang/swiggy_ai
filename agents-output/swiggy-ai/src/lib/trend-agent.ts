@@ -25,7 +25,7 @@ Return ONLY valid JSON — no prose, no markdown fences. Exactly 10 items:
     {
       "name": "exact dish or food item name",
       "cuisine": "cuisine type (e.g. Indian, Chinese, Mexican, Korean)",
-      "why_trending": "one sentence — why this is viral or popular right now across India",
+      "why_trending": "MAX 4 words, punchy — e.g. 'viral on reels', 'monsoon favourite', 'India's most ordered'",
       "search_signal": "high or medium"
     }
   ]

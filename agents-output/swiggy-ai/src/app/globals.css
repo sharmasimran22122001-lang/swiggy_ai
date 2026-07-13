@@ -144,22 +144,19 @@ html, body {
 }
 .thought { animation: thoughtPulse 2.4s ease-in-out infinite; }
 
-/* 2B footer: explorer strolls between food stops (and faces where he's going) */
-@keyframes walkGo {
-  0%, 6%   { left: 6%; }
-  44%, 56% { left: 70%; }
-  94%, 100% { left: 6%; }
+/* 2B footer: the runaway momo chase */
+@keyframes chaseAcross {
+  0%   { left: -14%; }
+  100% { left: 104%; }
 }
-.walk-go { animation: walkGo 14s ease-in-out infinite; }
-@keyframes walkFace {
-  0%, 49%  { transform: scaleX(-1); }  /* 🚶 faces left natively — mirror to walk right */
-  50%, 100% { transform: scaleX(1); }
+.chase-run { animation: chaseAcross 6.5s linear infinite; }
+.chase-momo { animation-delay: -0.8s; } /* the momo stays just ahead */
+@keyframes momoBounce {
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  35%      { transform: translateY(-9px) scale(0.95, 1.05); }
+  55%      { transform: translateY(0) scale(1.15, 0.85); }
 }
-.walk-face { animation: walkFace 14s step-end infinite; }
-
-/* 2C footer: the craving wheel */
-@keyframes wheelSpin { to { transform: rotate(360deg); } }
-.wheel-spin { animation: wheelSpin 14s linear infinite; }
+.momo-bounce { animation: momoBounce 0.65s ease-in-out infinite; }
 
 /* VEG toggle celebration */
 @keyframes vegRipple {

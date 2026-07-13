@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import type { TrendMatch } from '@/types'
 import FoodImage from './FoodImage'
-import { StarOnPhoto, EtaOnPhoto, TrendingBadge } from './CardBadges'
+import { StarOnPhoto, EtaOnPhoto, TrendingBadge, fewWords } from './CardBadges'
 import { useDragScroll } from '@/hooks/useDragScroll'
 
 function buildFallback(city: string): TrendMatch[] {
@@ -114,7 +114,7 @@ export default function TrendingNearYou({ city, onDishSelect, onSeeAll }: Props)
                   {item.dish}
                 </p>
                 <p style={{ fontSize: 9.5, color: '#686b78', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {item.why_trending}
+                  {fewWords(item.why_trending)}
                 </p>
                 <div className="flex items-center justify-between" style={{ marginTop: 6 }}>
                   <span style={{ fontSize: 9.5, fontWeight: 600, color: '#FC8019', letterSpacing: '0.02em' }}>

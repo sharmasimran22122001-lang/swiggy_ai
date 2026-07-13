@@ -4,7 +4,7 @@ import type { TrendMatch } from '@/types'
 import type { RestaurantInfo } from './RestaurantPage'
 import FoodImage from './FoodImage'
 import { getRestaurantVisual } from './CategoryPage'
-import { ratingShade } from './CardBadges'
+import { ratingShade, fewWords } from './CardBadges'
 
 interface Props {
   dish: string
@@ -94,7 +94,7 @@ export default function DishPage({ dish, cuisine, whyTrending, searchSignal, res
       >
         <span style={{ fontSize: 14 }}>🔥</span>
         <div>
-          <p style={{ fontSize: 11, fontWeight: 700, color: '#3d4152' }}>{whyTrending}</p>
+          <p style={{ fontSize: 11, fontWeight: 700, color: '#3d4152' }}>{fewWords(whyTrending)}</p>
           <p style={{ fontSize: 10, color: '#93959f', marginTop: 1 }}>India trending · {cuisine} cuisine</p>
         </div>
       </div>

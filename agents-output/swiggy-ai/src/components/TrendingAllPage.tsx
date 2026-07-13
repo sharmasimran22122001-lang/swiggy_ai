@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion'
 import type { TrendMatch } from '@/types'
 import FoodImage from './FoodImage'
+import { fewWords } from './CardBadges'
 
 interface Props {
   city: string
@@ -74,7 +75,7 @@ export default function TrendingAllPage({ city, items, onBack, onDishSelect }: P
               {/* Info */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: '#3d4152' }}>{item.dish}</p>
-                <p style={{ fontSize: 11, color: '#686b78', marginTop: 2 }}>{item.why_trending}</p>
+                <p style={{ fontSize: 11, color: '#686b78', marginTop: 2 }}>{fewWords(item.why_trending)}</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 5 }}>
                   <span style={{ fontSize: 10.5, color: '#93959f' }}>{item.cuisine}</span>
                   <span style={{ fontSize: 10, color: '#d1d5db' }}>·</span>

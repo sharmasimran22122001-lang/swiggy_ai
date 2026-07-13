@@ -8,6 +8,13 @@ export function etaRange(min?: number): string {
   return `${m}–${m + 5} min`
 }
 
+/** Cap any AI-written blurb at n words — subtexts must be readable at a glance. */
+export function fewWords(text: string | undefined, n = 4): string {
+  if (!text) return ''
+  const words = text.replace(/[.!]+$/, '').split(/\s+/)
+  return words.length <= n ? words.join(' ') : words.slice(0, n).join(' ') + '…'
+}
+
 // Upfront cards only show ratings ≥ 4.0 — the badge colour deepens with quality:
 // lightest green at ★4.0 → darkest green at ★5.0. White text stays readable on all steps.
 export const MIN_UPFRONT_RATING = 4.0
