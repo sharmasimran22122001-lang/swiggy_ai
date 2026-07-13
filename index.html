@@ -419,6 +419,35 @@
   }
   footer b { color: var(--ink); }
 
+  /* ── Deep-dive additions ─────────────── */
+  .dd-note {
+    border-left: 3px solid var(--accent); background: var(--surface);
+    border-radius: 0 12px 12px 0; padding: 13px 17px; font-size: 13.5px;
+    color: var(--muted); margin: 18px 0 0; max-width: 68ch;
+  }
+  .dd-note strong { color: var(--ink); }
+  .dd-scroll { overflow-x: auto; margin-top: 22px; border: 1px solid var(--line); border-radius: 12px; }
+  table.dd { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 560px; }
+  table.dd th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--faint); padding: 11px 14px; border-bottom: 1px solid var(--line); background: var(--surface); }
+  table.dd td { padding: 10px 14px; border-bottom: 1px solid var(--line); color: var(--muted); vertical-align: top; }
+  table.dd tr:last-child td { border-bottom: none; }
+  table.dd td:first-child { color: var(--ink); font-weight: 650; white-space: nowrap; }
+  .swatches { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; align-items: center; }
+  .sw { font-size: 11px; font-weight: 800; color: #fff; border-radius: 999px; padding: 4px 11px; }
+  .ux-item { margin-top: 26px; max-width: 70ch; }
+  .ux-item h3 { font-size: 17px; font-weight: 800; letter-spacing: -.015em; margin: 0 0 7px; }
+  .ux-item h3 i { font-style: normal; color: var(--accent); margin-right: 8px; }
+  .ux-item p { font-size: 14.5px; color: var(--muted); margin: 0 0 8px; }
+  .ux-item p strong { color: var(--ink); }
+  .minitog { display: flex; background: var(--surface-2); border-radius: 12px; padding: 4px; width: 300px; max-width: 100%;
+    margin-top: 12px; position: relative; }
+  .minitog i { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px)/4);
+    background: var(--bg); border-radius: 9px; box-shadow: 0 2px 8px rgba(0,0,0,.14); }
+  .minitog span { flex: 1; text-align: center; font-size: 11px; font-weight: 700; color: var(--faint);
+    padding: 8px 0; position: relative; z-index: 1; }
+  .minitog span:first-child { color: var(--ink); }
+
   /* ── Small-phone polish ───────────────── */
   /* No overflow rules on html/body — they break scrolling inside the
      artifact frame. Horizontal overflow is prevented at the layout level. */
@@ -642,6 +671,168 @@
       <div class="cell"><h3><b>Diet is sacred</b></h3><p>A declared diet is an unbreakable constraint. Jain and vegan are never guessed — guessing wrong is real harm.</p></div>
       <div class="cell"><h3><b>Location is consent</b></h3><p>Listings need live GPS permission — no quiet fallback to a stored address you may not be at.</p></div>
       <div class="cell"><h3><b>Cost by design</b></h3><p>30-min homepage cache per user per slot; 24-hour trend cache. AI cost scales with people, not page loads.</p></div>
+    </div>
+  </section>
+
+  <!-- ── DEEP DIVE 1: PERSONA ENGINE ──────── -->
+  <section>
+    <p class="kicker">Deep dive · 01</p>
+    <h2>The persona engine, quantified</h2>
+    <p>
+      Three behaviours, computed with plain arithmetic from order history — no black box. The dominant
+      dial names the persona; all three keep their influence, because real people are blends, not boxes.
+    </p>
+    <div class="dd-scroll"><table class="dd">
+      <tr><th></th><th>2A · Loyalist</th><th>2B · Explorer</th><th>2C · Variety Seeker</th></tr>
+      <tr><td>Signal in the data</td><td>Repeats the same (restaurant, dish) pair — high <b>repeat</b> score</td><td>Few restaurants, new dish every visit — high <b>variety-at-place</b> score</td><td>New restaurant almost every order — high <b>exploration</b> score</td></tr>
+      <tr><td>What loyalty means</td><td>Loyal to one kitchen &amp; one dish</td><td>Loyal to a <em>taste</em>, not a menu item</td><td>Loyal to the platform, not any kitchen</td></tr>
+      <tr><td>Hero strategy</td><td>"Order more from {favourite}" — untried dishes at the trusted place (prices shown here, and only here)</td><td>"Places you'll actually love" — new restaurants matching their proven cuisines</td><td>"What's for dinner tonight?" — slot-aware discovery; taste is a minor factor</td></tr>
+      <tr><td>Recommendation basis</td><td>Their own history, deepened</td><td>Exploration <b>anchored to</b> their taste</td><td>Discovery <b>beyond</b> their taste — trending &amp; best-of-now</td></tr>
+      <tr><td>Section differences</td><td>No trending row (habit first)</td><td>Trending shown</td><td>Trending shown + 20-item craving grid behind View all</td></tr>
+      <tr><td>Footer easter egg</td><td>Waiting delivery scooter</td><td>The momo chase 🥟💨</td><td>The craving roulette 🎯</td></tr>
+    </table></div>
+    <div class="dd-note">
+      <strong>The end goal — why these three:</strong> segments were sized by profit (returning regulars ≈ 80%), and the
+      product's north star is migrating users up the exploration ladder <strong>2A → 2B → 2C</strong>, because exploration
+      drives incremental orders. Every homepage is a nudge one rung up: the Loyalist sees one new dish at a trusted place;
+      the Explorer sees one new restaurant in a trusted cuisine; the Variety Seeker gets the whole world, curated.
+      A reliability guard applies throughout — behaviour scores need ~8–10 orders before they're trusted.
+    </div>
+  </section>
+
+  <!-- ── DEEP DIVE 2: QUANTIFYING QUALITY ─── -->
+  <section>
+    <p class="kicker">Deep dive · 02</p>
+    <h2>Quantifying quality on every card</h2>
+    <p>
+      Every number a user sees follows three rules: it must be <strong>real</strong> (re-verified from the database, never
+      the model's word), it must be <strong>readable</strong> ("25–30 min", never "28m"), and it must be
+      <strong>worth showing</strong> — the homepage carries nothing rated below ★4.0.
+    </p>
+    <div class="ux-item">
+      <h3><i>—</i>The green tells you how safe the bet is</h3>
+      <p>Rating badges deepen with quality — a five-step ramp from lightest green at ★4.0 to darkest at ★5.0,
+      consistent on every card, list, and page. A row becomes scannable without reading a single number:</p>
+      <div class="swatches">
+        <span class="sw" style="background:#55ab80">★ 4.0</span>
+        <span class="sw" style="background:#3d9b6e">★ 4.3</span>
+        <span class="sw" style="background:#2a8656">★ 4.5</span>
+        <span class="sw" style="background:#1b7048">★ 4.7</span>
+        <span class="sw" style="background:#0d5c3c">★ 5.0</span>
+      </div>
+    </div>
+    <div class="ux-item">
+      <h3><i>—</i>The gate has one honest exception</h3>
+      <p>Sub-4.0 restaurants aren't erased — they live behind search and inside their own pages. And a dish with
+      an ordinary rating still appears <em>inside</em> its restaurant's menu; it just never gets homepage real estate.
+      The homepage is a showcase, not a directory.</p>
+    </div>
+  </section>
+
+  <!-- ── DEEP DIVE 3: TRENDING ENGINE ─────── -->
+  <section>
+    <p class="kicker">Deep dive · 03</p>
+    <h2>The trending engine, end to end</h2>
+    <div class="steps">
+      <div class="stepc"><div class="n">1</div><h3>Search the real web</h3><p>A second Gemini agent with Google Search grounding finds what's viral across India — constrained to specific, orderable, family-friendly dishes (1–3 words, no categories).</p></div>
+      <div class="stepc"><div class="n">2</div><h3>Cache nationally</h3><p>One India-wide list, refreshed every 24 hours — trending is national; availability is local.</p></div>
+      <div class="stepc"><div class="n">3</div><h3>Match to menus</h3><p>Each dish is matched against 86,800 real menu items in the user's city (★4.0+ kitchens only, one entry per restaurant).</p></div>
+      <div class="stepc"><div class="n">4</div><h3>Gate &amp; show</h3><p>The section renders only when ≥4 trending dishes are genuinely orderable nearby. No inventory, no section.</p></div>
+    </div>
+    <div class="dd-note">
+      <strong>The multi-restaurant answer:</strong> when Chicken Biryani is served at five places, the card carries the
+      <strong>best-rated match's</strong> rating and ETA — a real restaurant's numbers, never an average — and says
+      <strong>"At 5 places →"</strong>. Tapping opens all five, best first. And there are no "#1 / #2" ranks: the visible
+      list is availability-filtered, so numbering it would imply a national order that isn't true. One uniform
+      🔥 badge; the red pulse marks genuinely viral search signals.
+    </div>
+  </section>
+
+  <!-- ── DEEP DIVE 4: ARCHITECTURE ────────── -->
+  <section>
+    <p class="kicker">Deep dive · 04</p>
+    <h2>How front, back, data &amp; AI connect</h2>
+    <div class="formula">
+Next.js app (Vercel)                                                 <span class="c">// React 19, client views</span><br>
+&nbsp;&nbsp;└─ /api/personalize ──► pipeline:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;① load user + orders ────────── Supabase (Postgres)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;② score dials → persona&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c">// pure arithmetic, no AI</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;③ fresh cache? ──► serve (&lt;1s)&nbsp;<span class="c">// 30-min TTL per user × meal-slot</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;④ stale cache? ──► serve (~1s) + regenerate in background<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⑤ retrieve top-15 real candidates&nbsp;<span class="c">// the "R" in RAG — city, diet, rating</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⑥ Gemini 2.5 Flash ──► homepage as strict JSON<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⑦ re-verify numbers from DB → cache → render<br>
+&nbsp;&nbsp;└─ /api/trending ─── search-grounded agent&nbsp;&nbsp;<span class="c">// 24h national cache</span><br>
+&nbsp;&nbsp;└─ /api/search ───── live ILIKE over names + dishes<br>
+&nbsp;&nbsp;└─ /api/toprated ── DB top-up so rows always reach 8
+    </div>
+    <div class="dd-scroll"><table class="dd">
+      <tr><th>Resilience layer</th><th>What happens</th></tr>
+      <tr><td>Model waterfall</td><td>Gemini 2.5 Flash → 2.5 Flash-Lite, with retries and exponential backoff on 429/503</td></tr>
+      <tr><td>Stale-on-error</td><td>Quota exhausted? Serve the user's last real AI page — indistinguishable from fresh</td></tr>
+      <tr><td>Static fallback</td><td>Never had a page? A non-AI homepage built from real top-rated places. No visitor ever sees an error</td></tr>
+      <tr><td>Cost by design</td><td>AI cost scales with distinct users per slot, not with traffic — thousands of views ≈ a handful of generations</td></tr>
+    </table></div>
+    <div class="dd-note">
+      <strong>The performance story:</strong> login originally waited 5–10s for live generation. Switching to
+      stale-while-revalidate — serve the last page instantly, refresh silently in the background — brought measured
+      login time to <strong>~0.7s</strong>, while pages still stay at most one visit old.
+    </div>
+  </section>
+
+  <!-- ── DEEP DIVE 5: UX IDEOLOGY ─────────── -->
+  <section>
+    <p class="kicker">Deep dive · 05</p>
+    <h2>The UX ideology — psychology first</h2>
+    <p>Every interface decision came from asking what the user's mind expects, not what was easy to build.</p>
+
+    <div class="ux-item">
+      <h3><i>01</i>If it looks like a slider, it must slide</h3>
+      <p>The Food · Instamart · Dineout · Scenes control is a pill in a track — visually, that's a slider, and
+      users' fingers treat it as one. Tap-only handling broke that expectation. So the pill genuinely
+      <strong>drags under the finger</strong> and snaps to the nearest tab. Affordance honoured, no manual needed.</p>
+      <div class="minitog"><i></i><span>Food</span><span>Instamart</span><span>Dineout</span><span>Scenes</span></div>
+      <p style="margin-top:10px">And when a user slides into an unbuilt vertical, there's no dead screen: the feed blurs
+      <em>below the nav</em> (the toggle stays sharp and usable), a friendly "still being cooked 🧑‍🍳" sheet appears with
+      per-vertical copy, hopping between verticals restarts the message, and after 5 idle seconds the pill glides home on its own.</p>
+    </div>
+
+    <div class="ux-item">
+      <h3><i>02</i>Identity is sacred: a restaurant is not a dish</h3>
+      <p>Cards never mix identities. A restaurant card shows a <strong>venue photo</strong> (interior/storefront — unique
+      within its row), the restaurant's rating, and <strong>no + button</strong> — you can't add a restaurant to a cart.
+      A dish card shows the dish's photo and its + button. Prices appear only where a purchase is one tap away
+      (the Loyalist hero). Ratings always belong to the thing that was rated.</p>
+    </div>
+
+    <div class="ux-item">
+      <h3><i>03</i>A scroll must never die halfway</h3>
+      <p>Users flick a row expecting momentum; four items kill it. Every carousel carries <strong>8 items</strong>, a
+      right-edge fade whispers "there's more", every section's <strong>View all</strong> sits in the same top-right spot and
+      opens <em>that section's own list</em> — never a keyword dump. AI-written blurbs are capped at
+      <strong>4 words</strong>: decision info, not paragraphs.</p>
+    </div>
+
+    <div class="ux-item">
+      <h3><i>04</i>No dead ends, no fake doors</h3>
+      <p>Unbuilt things look unbuilt: bottom tabs and the bell are visibly disabled, not booby-trapped. The back button
+      always returns <strong>exactly where you came from</strong> — home, a list, search, or a dish page — never through a screen
+      you didn't visit. An empty cart isn't a dead grey button; it's a warm state with an "Explore food →" way forward.</p>
+    </div>
+
+    <div class="ux-item">
+      <h3><i>05</i>Delight in small doses — and personalised too</h3>
+      <p>Even the easter eggs follow the persona thesis: the Loyalist's footer has a delivery scooter waiting at the kerb;
+      the Explorer's has a runner forever chasing a bouncing momo; the Variety Seeker gets a craving roulette that spins,
+      lands ("Pizza it is! 🍕"), and spins again. Place an order and everyone gets the scooter —
+      riding toward the house over the <strong>real 30-minute ETA</strong>, its caption counting down. Peak-end rule, applied.</p>
+    </div>
+
+    <div class="dd-note">
+      <strong>Shipped like a product, not a prototype:</strong> the build went through <strong>10 rounds of user-review
+      iteration</strong>. Reviews caught real flaws — "#4 Trending" implying a false national rank, prices cluttering discovery,
+      dish photos on restaurant cards — and each fix became one of the rules above. The process is the point:
+      decisions here are argued from user psychology, tested on a live build, and revised on evidence.
     </div>
   </section>
 
