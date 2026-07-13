@@ -230,6 +230,7 @@ function AppInner() {
                   <CartPage
                     onBack={() => setView(selectedRestaurant ? 'restaurant' : 'home')}
                     onPlaceOrder={handlePlaceOrder}
+                    onExplore={handleBackToHome}
                   />
                 </motion.div>
               )}

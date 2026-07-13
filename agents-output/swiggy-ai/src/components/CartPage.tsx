@@ -6,15 +6,17 @@ import { useCart } from '@/contexts/CartContext'
 interface Props {
   onBack: () => void
   onPlaceOrder: () => void
+  onExplore?: () => void
 }
 
-export default function CartPage({ onBack, onPlaceOrder }: Props) {
+export default function CartPage({ onBack, onPlaceOrder, onExplore }: Props) {
   const { items, updateQty, restaurantName, totalItems, totalPrice } = useCart()
 
   const deliveryFee = totalPrice > 300 ? 0 : 30
   const platformFee = 5
   const gst = Math.round(totalPrice * 0.05)
   const grandTotal = totalPrice + deliveryFee + platformFee + gst
+  const isEmpty = items.length === 0
 
   return (
     <motion.div
@@ -52,8 +54,23 @@ export default function CartPage({ onBack, onPlaceOrder }: Props) {
 
       {/* Items list */}
       <div className="bg-white px-4 py-3">
-        {items.length === 0 ? (
-          <p className="text-center py-8 text-sm" style={{ color: '#686b78' }}>Your cart is empty</p>
+        {isEmpty ? (
+          <div className="text-center" style={{ padding: '48px 20px 52px' }}>
+            <div style={{ fontSize: 44, lineHeight: 1 }}>🛒</div>
+            <p className="font-bold" style={{ fontSize: 15, color: '#3d4152', marginTop: 14 }}>
+              Your cart is craving something
+            </p>
+            <p style={{ fontSize: 12, color: '#93959f', marginTop: 5 }}>
+              Nothing here yet — let&apos;s fix that
+            </p>
+            <button
+              onClick={onExplore ?? onBack}
+              className="font-bold text-white rounded-full active:scale-95 transition-transform"
+              style={{ background: '#FC8019', fontSize: 13, padding: '12px 30px', marginTop: 18 }}
+            >
+              Explore food →
+            </button>
+          </div>
         ) : (
           <div className="flex flex-col gap-4">
             {items.map(item => (
@@ -117,6 +134,7 @@ export default function CartPage({ onBack, onPlaceOrder }: Props) {
         )}
       </div>
 
+      {!isEmpty && (<>
       <div style={{ height: 8, background: '#f4f4f4' }} />
 
       {/* Coupon row */}
@@ -189,16 +207,13 @@ export default function CartPage({ onBack, onPlaceOrder }: Props) {
       >
         <button
           onClick={onPlaceOrder}
-          disabled={items.length === 0}
           className="w-full rounded-[12px] py-4 font-bold text-white text-sm flex items-center justify-center"
-          style={{
-            background: items.length === 0 ? '#bdbdbd' : '#FC8019',
-            transition: 'background 0.2s',
-          }}
+          style={{ background: '#FC8019', transition: 'background 0.2s' }}
         >
           Place Order · ₹{grandTotal}
         </button>
       </div>
+      </>)}
     </motion.div>
   )
 }

@@ -107,7 +107,10 @@ export default function SwiggyTopNav({ userName, userArea, userCity, onLogout, o
           </div>
         </button>
         <div className="flex items-center gap-3 shrink-0 ml-2">
-          <Bell className="w-5 h-5 text-gray-600" />
+          {/* Notifications aren't built — bell is visibly disabled */}
+          <span title="Not available in this demo" style={{ opacity: 0.3, cursor: 'not-allowed', display: 'inline-flex' }}>
+            <Bell className="w-5 h-5 text-gray-600" />
+          </span>
           <button onClick={onCartClick} className="relative" aria-label="Open cart">
             <ShoppingCart className="w-5 h-5 text-gray-600" />
             {totalItems > 0 && (

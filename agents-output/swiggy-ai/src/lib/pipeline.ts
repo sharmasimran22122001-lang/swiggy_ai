@@ -1,3 +1,4 @@
+import { after } from 'next/server'
 import { supabaseAdmin } from './supabase'
 import { scoreUser, getTimeSlot, pickMood } from './scoring'
 import { retrieve } from './retrieval'
@@ -170,6 +171,22 @@ function buildFallback(profile: UserProfile, restaurants: Restaurant[]): Homepag
 
 // ─── Pipeline ─────────────────────────────────────────────────────────────────
 
+// Full generation: load → retrieve → Gemini → enrich → cache
+async function generateFresh(
+  userId: string,
+  profile: UserProfile,
+  slot: ReturnType<typeof getTimeSlot>,
+  mood: ReturnType<typeof pickMood>,
+): Promise<HomepageJSON> {
+  const allRestaurants = await loadRestaurantsFromDB(profile.city)
+  const candidates = retrieve(allRestaurants, profile, slot, 15)
+  const prompt = buildPrompt(profile, slot, mood, candidates)
+  let homepage = await callGemini(prompt)
+  homepage = enrichItems(homepage, allRestaurants)
+  await cacheHomepage(userId, slot.part, homepage)
+  return homepage
+}
+
 export async function runPipeline(userId: string): Promise<{
   homepage: HomepageJSON
   profile: ReturnType<typeof scoreUser>
@@ -181,52 +198,37 @@ export async function runPipeline(userId: string): Promise<{
   const slot = getTimeSlot()
   const mood = pickMood(slot)
 
-  // ① Serve from cache if fresh
+  // ① Fresh cache (< 30 min) → instant
   const cached = await getCachedHomepage(userId, slot.part)
   if (cached) {
     return { homepage: cached, profile, slot, fromCache: true }
   }
 
-  // ② Load restaurants
-  const allRestaurants = await loadRestaurantsFromDB(profile.city)
-
-  // ③ RAG: top 15 candidates
-  const candidates = retrieve(allRestaurants, profile, slot, 15)
-
-  // ④ Try Gemini — fall back to static homepage if all models fail
-  let homepage: HomepageJSON
-  let fromCache = false
-
-  try {
-    const prompt = buildPrompt(profile, slot, mood, candidates)
-    homepage = await callGemini(prompt)
-  } catch (geminiErr) {
-    console.error('[pipeline] Gemini unavailable:', geminiErr)
-
-    // ① Stale-on-error: serve this user's last real AI homepage, however old.
-    //    Looks identical to a fresh page — ideal when free-tier quota is exhausted.
-    const stale = await getStaleHomepage(userId, slot.part)
-    if (stale) {
-      console.warn('[pipeline] serving stale cached homepage for', userId)
-      return { homepage: stale, profile, slot, fromCache: true }
-    }
-
-    // ② User has never had a page generated — static fallback from real top-rated places.
-    homepage = buildFallback(profile, allRestaurants)
-    fromCache = false
-
-    // Return immediately — don't attempt to cache the fallback
-    const enriched = enrichItems(homepage, allRestaurants)
-    return { homepage: enriched, profile, slot, fromCache }
+  // ② Stale-while-revalidate: ANY previous page renders in ~1s, and a fresh
+  //    one is generated in the background for the next visit. This removes the
+  //    5–10s login wait for every user who has ever had a page.
+  const stale = await getStaleHomepage(userId, slot.part)
+  if (stale) {
+    after(async () => {
+      try {
+        await generateFresh(userId, profile, slot, mood)
+      } catch (err) {
+        console.error('[pipeline] background refresh failed:', err)
+      }
+    })
+    return { homepage: stale, profile, slot, fromCache: true }
   }
 
-  // ⑤ Enrich items with DB metadata (rating, delivery_min)
-  homepage = enrichItems(homepage, allRestaurants)
-
-  // ⑥ Cache for next 30 min
-  await cacheHomepage(userId, slot.part, homepage)
-
-  return { homepage, profile, slot, fromCache }
+  // ③ First-ever visit for this user+slot: generate now, fall back gracefully
+  try {
+    const homepage = await generateFresh(userId, profile, slot, mood)
+    return { homepage, profile, slot, fromCache: false }
+  } catch (geminiErr) {
+    console.error('[pipeline] Gemini unavailable — static fallback:', geminiErr)
+    const allRestaurants = await loadRestaurantsFromDB(profile.city)
+    const homepage = enrichItems(buildFallback(profile, allRestaurants), allRestaurants)
+    return { homepage, profile, slot, fromCache: false }
+  }
 }
 
 // ─── Enrichment helper ────────────────────────────────────────────────────────

@@ -56,21 +56,21 @@ export default function DishPage({ dish, cuisine, whyTrending, searchSignal, res
           </svg>
         </button>
 
-        {/* Trending badge */}
-        {isHighSignal && (
-          <div
-            className="absolute flex items-center gap-1"
-            style={{
-              top: 16, right: 14,
-              background: 'rgba(239,68,68,0.9)', backdropFilter: 'blur(6px)',
-              color: '#fff', fontSize: 10, fontWeight: 700,
-              padding: '4px 9px', borderRadius: 20,
-            }}
-          >
+        {/* Trending badge — same badge as the homepage card, always shown here */}
+        <div
+          className="absolute flex items-center gap-1"
+          style={{
+            top: 16, right: 14,
+            background: 'linear-gradient(120deg, #ff5d3a, #e8321e)',
+            color: '#fff', fontSize: 10, fontWeight: 800,
+            padding: '4px 10px', borderRadius: 20, letterSpacing: '0.02em',
+          }}
+        >
+          {isHighSignal && (
             <span className="animate-pulse" style={{ width: 6, height: 6, borderRadius: '50%', background: '#fff', display: 'inline-block' }} />
-            Trending Now
-          </div>
-        )}
+          )}
+          🔥 Trending
+        </div>
 
         {/* Dish name + meta on image */}
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 16px 18px' }}>

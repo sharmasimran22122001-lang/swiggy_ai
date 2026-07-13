@@ -416,12 +416,8 @@ function VarietyHero({ profile: _profile, onCategorySelect, onSlotViewAll }: {
   return (
     <GlassHero>
       <div style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'rgba(255,255,255,0.72)', borderBottom: '1px solid rgba(252,128,25,0.1)' }}>
-        <div style={{ padding: '14px 15px 0' }}>
-          <div className="inline-flex items-center" style={{ background: 'rgba(244,244,244,0.9)', border: '1px solid #e0e0e0', borderRadius: 20, padding: '3px 10px' }}>
-            <span style={{ fontSize: 10, fontWeight: 700, color: '#686b78' }}>{slot.label}</span>
-          </div>
-        </div>
-        <SectionHead title={slot.title} onViewAll={() => onSlotViewAll?.(slot.title, SLOT_ALL[slot.part])} pad="6px 15px 10px" />
+        {/* No slot chip: "🌙 Dinner time" + "What's for dinner tonight?" said the same thing twice */}
+        <SectionHead title={slot.title} onViewAll={() => onSlotViewAll?.(slot.title, SLOT_ALL[slot.part])} pad="14px 15px 10px" />
       </div>
 
       <div className="row-fade-wrap">
@@ -535,7 +531,71 @@ function TopRatedSection({ items: rawItems, excludeRestaurants, profile, onResta
 
 const DELIVERY_MS = 30 * 60 * 1000
 
-function FunFooter({ orderedAt }: { orderedAt: number | null }) {
+// Persona-specific idle scenes (feedback round 9): the scooter wait belongs to
+// the Loyalist; the Explorer gets a neighbourhood food-walk; the Variety Seeker
+// gets a spinning craving wheel. An ACTIVE order always shows the scooter
+// journey — that's order tracking, universal to everyone.
+
+function ExplorerWalkScene() {
+  return (
+    <div style={{ position: 'relative', height: 64, margin: '0 14px' }}>
+      {/* food stops along the street */}
+      <span style={{ position: 'absolute', left: '30%', bottom: 8, fontSize: 16 }}>🍜</span>
+      <span style={{ position: 'absolute', left: '55%', bottom: 8, fontSize: 16 }}>🍕</span>
+      <span style={{ position: 'absolute', left: '80%', bottom: 8, fontSize: 16 }}>🥘</span>
+      {/* the explorer, strolling between them */}
+      <span className="walk-go" style={{ position: 'absolute', bottom: 6, fontSize: 24, lineHeight: 1 }}>
+        <span className="walk-face" style={{ display: 'inline-block' }}>🚶</span>
+      </span>
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, borderBottom: '2px dashed #e0e0e0' }} />
+    </div>
+  )
+}
+
+function CravingWheelScene() {
+  const wheel = ['🍕', '🍛', '🥟', '🍜', '🍰', '🌯']
+  return (
+    <div className="flex items-center justify-center" style={{ height: 74, position: 'relative' }}>
+      <span style={{ position: 'absolute', top: -2, fontSize: 11, color: '#FC8019' }}>▼</span>
+      <div className="wheel-spin" style={{ position: 'relative', width: 60, height: 60 }}>
+        {wheel.map((w, i) => (
+          <span
+            key={w}
+            style={{
+              position: 'absolute', left: '50%', top: '50%', fontSize: 15, lineHeight: 1,
+              transform: `translate(-50%, -50%) rotate(${i * 60}deg) translateY(-24px)`,
+            }}
+          >{w}</span>
+        ))}
+        <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', fontSize: 13 }}>🎯</span>
+      </div>
+    </div>
+  )
+}
+
+function ScooterScene({ riding, leftPct }: { riding: boolean; leftPct: number }) {
+  return (
+    <div style={{ position: 'relative', height: 64, margin: '0 14px' }}>
+      <span style={{ position: 'absolute', right: 2, bottom: 6, fontSize: 24, lineHeight: 1 }}>🏠</span>
+      <span
+        className="scoot-idle"
+        style={{
+          position: 'absolute', bottom: 6, fontSize: 26, lineHeight: 1,
+          left: `${leftPct}%`,
+          transition: 'left 1.2s linear',
+        }}
+      >
+        {riding
+          ? <span className="exhaust" style={{ position: 'absolute', left: -14, bottom: 4, fontSize: 11, color: '#bdbdbd' }}>💨</span>
+          : <span className="thought" style={{ position: 'absolute', left: 22, top: -18, fontSize: 12 }}>💭🍛</span>}
+        <span style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>🛵</span>
+      </span>
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, borderBottom: '2px dashed #e0e0e0' }} />
+    </div>
+  )
+}
+
+function FunFooter({ orderedAt, persona }: { orderedAt: number | null; persona: string }) {
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 20_000) // position creeps forward every 20s
@@ -544,36 +604,33 @@ function FunFooter({ orderedAt }: { orderedAt: number | null }) {
 
   const progress = orderedAt ? Math.min(1, (now - orderedAt) / DELIVERY_MS) : null
   const riding = progress !== null && progress < 1
-  const leftPct = riding ? 4 + progress! * 80 : 4 // 4% → 84%, house sits past 84%
+  const leftPct = riding ? 4 + progress! * 80 : 4
   const minsLeft = riding ? Math.max(1, Math.ceil((DELIVERY_MS - (now - orderedAt!)) / 60_000)) : 0
+
+  const is2B = persona === '2B_restaurant_loyal_explorer'
+  const is2C = persona === '2C_variety_seeker'
+
+  let scene: React.ReactNode
+  let line: string
+  if (riding) {
+    scene = <ScooterScene riding leftPct={leftPct} />
+    line = `Your order is on its way — arriving in ~${minsLeft} min 🛵💨`
+  } else if (is2B) {
+    scene = <ExplorerWalkScene />
+    line = 'Exploring the neighbourhood, one bite at a time 🧭'
+  } else if (is2C) {
+    scene = <CravingWheelScene />
+    line = 'Can’t decide? Spin a craving 🎲'
+  } else {
+    scene = <ScooterScene riding={false} leftPct={4} />
+    line = 'Your delivery partner is ready. The craving is missing.'
+  }
 
   return (
     <div style={{ padding: '14px 0 6px' }}>
-      {/* the road */}
-      <div style={{ position: 'relative', height: 64, margin: '0 14px' }}>
-        {/* destination house */}
-        <span style={{ position: 'absolute', right: 2, bottom: 6, fontSize: 24, lineHeight: 1 }}>🏠</span>
-        {/* rider + scooter — always faces RIGHT; position = delivery progress */}
-        <span
-          className="scoot-idle"
-          style={{
-            position: 'absolute', bottom: 6, fontSize: 26, lineHeight: 1,
-            left: `${leftPct}%`,
-            transition: 'left 1.2s linear',
-          }}
-        >
-          {riding
-            ? <span className="exhaust" style={{ position: 'absolute', left: -14, bottom: 4, fontSize: 11, color: '#bdbdbd' }}>💨</span>
-            : <span className="thought" style={{ position: 'absolute', left: 22, top: -18, fontSize: 12 }}>💭🍛</span>}
-          <span style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>🛵</span>
-        </span>
-        {/* kerb / road line */}
-        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, borderBottom: '2px dashed #e0e0e0' }} />
-      </div>
+      {scene}
       <p className="text-center" style={{ fontSize: 11.5, fontWeight: 600, color: '#93959f', padding: '8px 20px 6px' }}>
-        {riding
-          ? `Your order is on its way — arriving in ~${minsLeft} min 🛵💨`
-          : 'Your delivery partner is ready. The craving is missing.'}
+        {line}
       </p>
     </div>
   )
@@ -638,7 +695,7 @@ export default function HomeFeed({
 
   const sharedProps = { onRestaurantSelect, onAdd: handleAdd, onViewAllList }
 
-  const footer = <FunFooter orderedAt={orderedAt} />
+  const footer = <FunFooter orderedAt={orderedAt} persona={profile.label} />
 
   const trendingBlock = showTrending && (
     <>
