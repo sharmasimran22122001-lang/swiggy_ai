@@ -15,7 +15,6 @@ import TrendingAllPage from '@/components/TrendingAllPage'
 import SearchPage from '@/components/SearchPage'
 import SlotAllPage from '@/components/SlotAllPage'
 import { CartProvider, useCart } from '@/contexts/CartContext'
-import { useLocation } from '@/hooks/useLocation'
 import type { HomepageJSON, UserProfile, TimeSlot, TrendMatch } from '@/types'
 import type { RestaurantInfo } from '@/components/RestaurantPage'
 
@@ -65,7 +64,6 @@ function AppInner() {
   const [trendingAllItems, setTrendingAllItems] = useState<TrendMatch[]>([])
 
   const { clear, restaurantName } = useCart()
-  const location = useLocation()
 
   // Pool of all restaurants from the homepage result (deduplicated)
   const restaurantPool = useMemo<RestaurantInfo[]>(() => {
@@ -156,14 +154,17 @@ function AppInner() {
   }
 
   function handleCategorySelect(category: string) {
-    // Filter pool by loose keyword match, fall back to full pool
-    const filtered = restaurantPool.filter(r =>
+    // Filter pool by loose keyword match, fall back to full pool.
+    // Upfront lists only carry well-rated places (≥ 4.0).
+    const wellRated = restaurantPool.filter(r => r.rating >= 4.0)
+    const pool = wellRated.length >= 2 ? wellRated : restaurantPool
+    const filtered = pool.filter(r =>
       r.name.toLowerCase().includes(category.toLowerCase()) ||
       r.cuisines.some(c => c.toLowerCase().includes(category.toLowerCase()))
     )
     setCategoryState({
       name: category,
-      restaurants: filtered.length >= 2 ? filtered : restaurantPool,
+      restaurants: filtered.length >= 2 ? filtered : pool,
     })
     setCategoryOrigin(view)
     setView('category')
@@ -199,7 +200,8 @@ function AppInner() {
     setTrendingAllItems([])
   }
 
-  const detectedCity = location.status === 'detected' ? location.city : null
+  // No GPS prompt: demo personas carry a prefilled city — that drives everything
+  const detectedCity = null
 
   return (
     <div className="phone-shell">

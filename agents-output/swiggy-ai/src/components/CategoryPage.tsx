@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import type { RestaurantInfo } from './RestaurantPage'
 import FoodImg from './FoodImg'
 import { assignVenuePhotos } from '@/lib/foodPhotos'
+import { ratingShade } from './CardBadges'
 
 // ─── Cuisine → visual ─────────────────────────────────────────────────────────
 
@@ -164,7 +165,7 @@ export default function CategoryPage({ category, context, restaurants, onBack, o
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                   <span
                     className="flex items-center gap-0.5 px-1.5 py-0.5 rounded"
-                    style={{ background: '#3d9b6e', fontSize: 10, fontWeight: 700, color: '#fff' }}
+                    style={{ background: ratingShade(r.rating), fontSize: 10, fontWeight: 700, color: '#fff' }}
                   >
                     ★ {r.rating.toFixed(1)}
                   </span>

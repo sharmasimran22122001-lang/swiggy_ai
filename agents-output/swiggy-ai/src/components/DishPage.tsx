@@ -4,6 +4,7 @@ import type { TrendMatch } from '@/types'
 import type { RestaurantInfo } from './RestaurantPage'
 import FoodImage from './FoodImage'
 import { getRestaurantVisual } from './CategoryPage'
+import { ratingShade } from './CardBadges'
 
 interface Props {
   dish: string
@@ -160,7 +161,7 @@ export default function DishPage({ dish, cuisine, whyTrending, searchSignal, res
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 5, flexWrap: 'wrap' }}>
                   <span
                     style={{
-                      background: r.rating >= 4.3 ? '#3d9b6e' : r.rating >= 4.0 ? '#5a8a47' : '#888',
+                      background: ratingShade(r.rating),
                       color: '#fff', fontSize: 10, fontWeight: 700,
                       padding: '2px 6px', borderRadius: 4,
                     }}

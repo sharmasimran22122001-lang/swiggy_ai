@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, Search, X, Clock, TrendingUp } from 'lucide-react'
 import FoodImg from './FoodImg'
 import { assignVenuePhotos } from '@/lib/foodPhotos'
+import { ratingShade } from './CardBadges'
 import type { RestaurantInfo } from './RestaurantPage'
 
 const RECENT_KEY = 'swiggy_recent_searches'
@@ -242,7 +243,7 @@ export default function SearchPage({ city, onBack, onRestaurantSelect }: Props) 
                   </p>
                 )}
                 <div className="flex items-center gap-2 flex-wrap" style={{ marginTop: 3 }}>
-                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded" style={{ background: '#3d9b6e', fontSize: 9.5, fontWeight: 700, color: '#fff' }}>
+                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded" style={{ background: ratingShade(r.rating ?? 4), fontSize: 9.5, fontWeight: 700, color: '#fff' }}>
                     ★ {r.rating?.toFixed(1)}
                   </span>
                   <span style={{ fontSize: 10.5, color: '#93959f' }}>{r.delivery_min} min</span>

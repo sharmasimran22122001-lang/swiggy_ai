@@ -8,12 +8,24 @@ export function etaRange(min?: number): string {
   return `${m}–${m + 5} min`
 }
 
+// Upfront cards only show ratings ≥ 4.0 — the badge colour deepens with quality:
+// lightest green at ★4.0 → darkest green at ★5.0. White text stays readable on all steps.
+export const MIN_UPFRONT_RATING = 4.0
+
+export function ratingShade(rating: number): string {
+  if (rating >= 4.9) return '#0d5c3c'   // ★5.0 — darkest
+  if (rating >= 4.7) return '#1b7048'
+  if (rating >= 4.5) return '#2a8656'   // mid
+  if (rating >= 4.3) return '#3d9b6e'
+  return '#55ab80'                      // ★4.0–4.2 — lightest
+}
+
 export function StarOnPhoto({ rating, top = 4, left = 4, bottom }: { rating?: number; top?: number; left?: number; bottom?: number }) {
   if (!rating) return null
   return (
     <span style={{
       position: 'absolute', ...(bottom !== undefined ? { bottom } : { top }), left, zIndex: 5,
-      background: 'rgba(22,110,72,0.92)', color: '#fff',
+      background: ratingShade(rating), color: '#fff',
       fontSize: 8.5, fontWeight: 800, padding: '2px 6px', borderRadius: 999,
       lineHeight: 1.4, letterSpacing: '0.01em',
     }}>

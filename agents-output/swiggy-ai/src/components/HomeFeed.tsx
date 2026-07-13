@@ -8,7 +8,7 @@ import TrendingNearYou from './TrendingNearYou'
 import FoodImg from './FoodImg'
 import { assignVenuePhotos } from '@/lib/foodPhotos'
 import { getRestaurantVisual } from './CategoryPage'
-import { StarOnPhoto, EtaOnPhoto } from './CardBadges'
+import { StarOnPhoto, EtaOnPhoto, MIN_UPFRONT_RATING } from './CardBadges'
 import { useDragScroll } from '@/hooks/useDragScroll'
 import { useCart } from '@/contexts/CartContext'
 import type { HomepageJSON, UserProfile, MoodType, HomepageItem } from '@/types'
@@ -53,10 +53,16 @@ function dedupeBy<T>(arr: T[], key: (t: T) => string): T[] {
   })
 }
 
+// Upfront quality gate: discovery cards only carry ratings ≥ 4.0. Lower-rated
+// dishes still exist INSIDE a restaurant's own menu page — just never upfront.
+function goodOnly(items: HomepageItem[]): HomepageItem[] {
+  return items.filter(i => (i.rating ?? MIN_UPFRONT_RATING) >= MIN_UPFRONT_RATING)
+}
+
 // 2A hero: dishes at the favourite restaurant only — never padded with other
 // restaurants' dishes (the AI is asked for 8; a short row beats a wrong row).
 function heroDishes(homepage: HomepageJSON): HomepageItem[] {
-  return dedupeBy(homepage.hero.items ?? [], i => i.name).slice(0, 8)
+  return goodOnly(dedupeBy(homepage.hero.items ?? [], i => i.name)).slice(0, 8)
 }
 
 // 2B hero: RESTAURANTS. One card per restaurant, padded from the page's other
@@ -68,7 +74,7 @@ function heroRestaurants(homepage: HomepageJSON): HomepageItem[] {
     homepage.slot_top_rated.items,
     homepage.mood_banner.items,
   ].flatMap(p => p ?? [])
-  return dedupeBy(pools, i => i.restaurant).slice(0, 8)
+  return goodOnly(dedupeBy(pools, i => i.restaurant)).slice(0, 8)
 }
 
 // Top Rated: 8 restaurants that do NOT already appear in the hero.
@@ -79,7 +85,7 @@ function topRatedItems(homepage: HomepageJSON, excludeRestaurants: Set<string>):
     homepage.mood_banner.items,
     homepage.hero.items,
   ].flatMap(p => p ?? [])
-  const unique = dedupeBy(pools, i => i.restaurant)
+  const unique = goodOnly(dedupeBy(pools, i => i.restaurant))
   const excluded = new Set([...excludeRestaurants].map(r => r.toLowerCase()))
   const fresh = unique.filter(i => !excluded.has(i.restaurant.toLowerCase()))
   // Prefer non-repeating; relax only if there genuinely isn't enough data
@@ -468,7 +474,7 @@ function TopRatedSection({ items: rawItems, excludeRestaurants, profile, onResta
       .then(r => r.json())
       .then(d => {
         const fill: HomepageItem[] = (d.restaurants ?? [])
-          .filter((r: { name: string }) => !taken.has(r.name.toLowerCase()))
+          .filter((r: { name: string; avg_rating: number }) => !taken.has(r.name.toLowerCase()) && r.avg_rating >= MIN_UPFRONT_RATING)
           .slice(0, 8 - rawItems.length)
           .map((r: { name: string; avg_rating: number; delivery_time_min: number }) => ({
             name: r.name, restaurant: r.name, reason: '',

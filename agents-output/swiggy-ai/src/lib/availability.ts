@@ -47,6 +47,7 @@ export async function matchTrendingToMenus(
   const seen = new Set<string>()
 
   for (const restaurant of data as any[]) {
+    if ((restaurant.avg_rating ?? 0) < 4.0) continue // upfront quality gate
     for (const menuItem of restaurant.menu_items ?? []) {
       const key = `${menuItem.dish}::${restaurant.name}`
       if (seen.has(key)) continue

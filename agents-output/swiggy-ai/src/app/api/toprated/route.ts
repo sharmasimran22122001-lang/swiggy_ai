@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
       .from('restaurants')
       .select('name, avg_rating, delivery_time_min')
       .eq('city', city)
+      .gte('avg_rating', 4.0) // upfront quality gate
       .order('avg_rating', { ascending: false })
       .limit(24)
     if (error) throw new Error(error.message)
