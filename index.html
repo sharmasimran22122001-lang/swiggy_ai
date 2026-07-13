@@ -569,7 +569,7 @@
           <h4>Homepage strategy</h4>
           <p><strong>Hero = her favourite restaurant, minus what she's tried.</strong> The AI leads with dishes she hasn't ordered at Ss Hyderabad Biryani — loyalty first, curiosity second. Her usual reorder stays one tap away.</p>
         </div>
-        <a class="try-live" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">See it live — log in as Kavitha Rajan in the phone →</a>
+        <a class="try-live" href="https://swiggy-ai-one.vercel.app/?as=u07" target="_blank" rel="noopener">Open Kavitha's homepage full-screen ↗</a>
       </div>
       </div>
     </div>
@@ -591,7 +591,7 @@
           <h4>Homepage strategy</h4>
           <p><strong>Hero = new restaurants, proven cuisines.</strong> The AI reads her top cuisines from history and surfaces highly-rated places she's never ordered from that match that taste profile.</p>
         </div>
-        <a class="try-live" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">See it live — log in as Priya Nair in the phone →</a>
+        <a class="try-live" href="https://swiggy-ai-one.vercel.app/?as=u05" target="_blank" rel="noopener">Open Priya's homepage full-screen ↗</a>
       </div>
       </div>
     </div>
@@ -613,29 +613,35 @@
           <h4>Homepage strategy</h4>
           <p><strong>Hero = the best of right now.</strong> Slot-aware discovery (the best dinner options at dinner time) plus a trending section powered by a search-grounded agent — every trending dish verified as actually orderable in his city.</p>
         </div>
-        <a class="try-live" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">See it live — log in as Vikram Bose in the phone →</a>
+        <a class="try-live" href="https://swiggy-ai-one.vercel.app/?as=u06" target="_blank" rel="noopener">Open Vikram's homepage full-screen ↗</a>
       </div>
       </div>
     </div>
     </div>
     <div class="phone-side">
-      <div class="phone"><div class="screen"><iframe src="https://swiggy-ai-one.vercel.app" title="Swiggy AI — the live product" loading="lazy" allow="geolocation"></iframe></div></div>
-      <p class="scroll-hint">not a mockup — <strong>the deployed product itself</strong>, running live in this frame<br><a href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">open it full-screen ↗</a></p>
+      <div class="phone"><div class="screen"><iframe id="livePhone" src="https://swiggy-ai-one.vercel.app/?as=u07" title="Swiggy AI — the live product" loading="lazy" allow="geolocation"></iframe></div></div>
+      <p class="scroll-hint">not a mockup — <strong>the deployed product</strong>, already logged in as the selected persona<br>
+      <a id="livePhoneLink" href="https://swiggy-ai-one.vercel.app/?as=u07" target="_blank" rel="noopener">open this homepage full-screen ↗</a><br>
+      <span style="font-size:10.5px">(phone blank? your viewer blocks embeds — use the link above)</span></p>
     </div>
   </div>
   </section>
 
-  <!-- ── LIVE BUILD ───────────────────────── -->
+  <!-- ── THE DIFFERENTIATOR ───────────────── -->
   <section>
-    <p class="kicker">In the live build</p>
-    <h2>Small details, real product feel</h2>
+    <p class="kicker">The differentiator</p>
+    <h2>One AI brain, three homepage strategies</h2>
+    <p>
+      This is what no rules engine does: the same LLM receives a different <strong>strategy contract</strong>
+      per persona and assembles a genuinely different personalised homepage for each.
+    </p>
     <div class="grid3">
-      <div class="cell"><h3><b>Search that remembers</b></h3><p>Live search across 86,800 real menu items, with recently-searched memory and a popular-dishes photo grid.</p></div>
-      <div class="cell"><h3><b>Real food photography</b></h3><p>Every dish, restaurant, and category tile carries a real photo — matched by keyword, deterministic per dish.</p></div>
-      <div class="cell"><h3><b>Draggable everything</b></h3><p>The glass nav pill slides under your finger; every carousel drags with mouse or touch.</p></div>
-      <div class="cell"><h3><b>Multi-restaurant cart</b></h3><p>Mix dishes from several places; the cart groups and labels them cleanly.</p></div>
-      <div class="cell"><h3><b>Micro-delight</b></h3><p>Spring-physics add-to-cart, confetti on order success, staggered card reveals.</p></div>
-      <div class="cell"><h3><b>Honest demo edges</b></h3><p>Unbuilt sections are visibly disabled — no dead ends, no fake doors.</p></div>
+      <div class="cell"><h3><b>For the Loyalist (2A)</b></h3><p>The prompt hands the AI her favourite restaurant and the dishes she's <em>already tried</em> — it must recommend from that same kitchen, minus those. Trust deepened, habit expanded.</p></div>
+      <div class="cell"><h3><b>For the Explorer (2B)</b></h3><p>The AI gets her top cuisines and a hard rule: only restaurants she's <em>never ordered from</em> that match that taste. Exploration, anchored to proof.</p></div>
+      <div class="cell"><h3><b>For the Variety Seeker (2C)</b></h3><p>The AI gets the meal slot and quality signals — taste history is demoted to a minor factor. The best of right now, breadth over familiarity.</p></div>
+      <div class="cell"><h3><b>Outstanding performance</b></h3><p>Login measured at <strong>~0.7s</strong> — stale-while-revalidate serves the last AI page instantly while a fresh one generates in the background.</p></div>
+      <div class="cell"><h3><b>Grounded, always</b></h3><p>The AI picks only from 15 retrieved real restaurants and returns strict JSON; every rating and ETA is overwritten from the database.</p></div>
+      <div class="cell"><h3><b>Unbreakable by design</b></h3><p>Model waterfall → last AI page → static fallback. Even with the AI quota fully exhausted, no visitor ever sees an error.</p></div>
     </div>
   </section>
 
@@ -693,11 +699,8 @@
       <tr><td>Footer easter egg</td><td>Waiting delivery scooter</td><td>The momo chase 🥟💨</td><td>The craving roulette 🎯</td></tr>
     </table></div>
     <div class="dd-note">
-      <strong>The end goal — why these three:</strong> segments were sized by profit (returning regulars ≈ 80%), and the
-      product's north star is migrating users up the exploration ladder <strong>2A → 2B → 2C</strong>, because exploration
-      drives incremental orders. Every homepage is a nudge one rung up: the Loyalist sees one new dish at a trusted place;
-      the Explorer sees one new restaurant in a trusted cuisine; the Variety Seeker gets the whole world, curated.
-      A reliability guard applies throughout — behaviour scores need ~8–10 orders before they're trusted.
+      <strong>The end goal:</strong> every homepage nudges the user one rung up the exploration ladder
+      <strong>2A → 2B → 2C</strong> — exploration drives incremental orders. Scores need ~8–10 orders before they're trusted.
     </div>
   </section>
 
@@ -706,27 +709,19 @@
     <p class="kicker">Deep dive · 02</p>
     <h2>Quantifying quality on every card</h2>
     <p>
-      Every number a user sees follows three rules: it must be <strong>real</strong> (re-verified from the database, never
-      the model's word), it must be <strong>readable</strong> ("25–30 min", never "28m"), and it must be
-      <strong>worth showing</strong> — the homepage carries nothing rated below ★4.0.
+      Three rules for every visible number: <strong>real</strong> (re-verified from the database, never the model's word),
+      <strong>readable</strong> ("25–30 min", not "28m"), and <strong>worth showing</strong> — nothing below ★4.0 gets
+      homepage real estate. The badge's green deepens with quality, so a row is scannable without reading a number:
     </p>
-    <div class="ux-item">
-      <h3><i>—</i>The green tells you how safe the bet is</h3>
-      <p>Rating badges deepen with quality — a five-step ramp from lightest green at ★4.0 to darkest at ★5.0,
-      consistent on every card, list, and page. A row becomes scannable without reading a single number:</p>
-      <div class="swatches">
-        <span class="sw" style="background:#55ab80">★ 4.0</span>
-        <span class="sw" style="background:#3d9b6e">★ 4.3</span>
-        <span class="sw" style="background:#2a8656">★ 4.5</span>
-        <span class="sw" style="background:#1b7048">★ 4.7</span>
-        <span class="sw" style="background:#0d5c3c">★ 5.0</span>
-      </div>
+    <div class="swatches">
+      <span class="sw" style="background:#55ab80">★ 4.0</span>
+      <span class="sw" style="background:#3d9b6e">★ 4.3</span>
+      <span class="sw" style="background:#2a8656">★ 4.5</span>
+      <span class="sw" style="background:#1b7048">★ 4.7</span>
+      <span class="sw" style="background:#0d5c3c">★ 5.0</span>
     </div>
-    <div class="ux-item">
-      <h3><i>—</i>The gate has one honest exception</h3>
-      <p>Sub-4.0 restaurants aren't erased — they live behind search and inside their own pages. And a dish with
-      an ordinary rating still appears <em>inside</em> its restaurant's menu; it just never gets homepage real estate.
-      The homepage is a showcase, not a directory.</p>
+    <div class="dd-note">
+      Sub-4.0 places aren't erased — they live behind search and inside their own menus. The homepage is a showcase, not a directory.
     </div>
   </section>
 
@@ -741,11 +736,9 @@
       <div class="stepc"><div class="n">4</div><h3>Gate &amp; show</h3><p>The section renders only when ≥4 trending dishes are genuinely orderable nearby. No inventory, no section.</p></div>
     </div>
     <div class="dd-note">
-      <strong>The multi-restaurant answer:</strong> when Chicken Biryani is served at five places, the card carries the
-      <strong>best-rated match's</strong> rating and ETA — a real restaurant's numbers, never an average — and says
-      <strong>"At 5 places →"</strong>. Tapping opens all five, best first. And there are no "#1 / #2" ranks: the visible
-      list is availability-filtered, so numbering it would imply a national order that isn't true. One uniform
-      🔥 badge; the red pulse marks genuinely viral search signals.
+      <strong>Multi-restaurant dishes:</strong> the card carries the <strong>best-rated match's</strong> numbers and says
+      <strong>"At 5 places →"</strong> — all options one tap deeper, best first. No "#1/#2" ranks: an availability-filtered
+      list can't honestly claim a national order.
     </div>
   </section>
 
@@ -775,9 +768,8 @@ Next.js app (Vercel)                                                 <span class
       <tr><td>Cost by design</td><td>AI cost scales with distinct users per slot, not with traffic — thousands of views ≈ a handful of generations</td></tr>
     </table></div>
     <div class="dd-note">
-      <strong>The performance story:</strong> login originally waited 5–10s for live generation. Switching to
-      stale-while-revalidate — serve the last page instantly, refresh silently in the background — brought measured
-      login time to <strong>~0.7s</strong>, while pages still stay at most one visit old.
+      <strong>Performance:</strong> login went from 5–10s (live generation) to a measured <strong>~0.7s</strong> via
+      stale-while-revalidate — pages stay at most one visit old.
     </div>
   </section>
 
@@ -789,51 +781,40 @@ Next.js app (Vercel)                                                 <span class
 
     <div class="ux-item">
       <h3><i>01</i>If it looks like a slider, it must slide</h3>
-      <p>The Food · Instamart · Dineout · Scenes control is a pill in a track — visually, that's a slider, and
-      users' fingers treat it as one. Tap-only handling broke that expectation. So the pill genuinely
-      <strong>drags under the finger</strong> and snaps to the nearest tab. Affordance honoured, no manual needed.</p>
+      <p>The verticals control is a pill in a track — fingers read that as a slider, so it genuinely
+      <strong>drags under the finger</strong> and snaps to the nearest tab. Slide into an unbuilt vertical and there's no dead
+      screen: the feed blurs below the nav, a "still being cooked 🧑‍🍳" sheet appears, and after 5 idle seconds the pill glides home.</p>
       <div class="minitog"><i></i><span>Food</span><span>Instamart</span><span>Dineout</span><span>Scenes</span></div>
-      <p style="margin-top:10px">And when a user slides into an unbuilt vertical, there's no dead screen: the feed blurs
-      <em>below the nav</em> (the toggle stays sharp and usable), a friendly "still being cooked 🧑‍🍳" sheet appears with
-      per-vertical copy, hopping between verticals restarts the message, and after 5 idle seconds the pill glides home on its own.</p>
     </div>
 
     <div class="ux-item">
       <h3><i>02</i>Identity is sacred: a restaurant is not a dish</h3>
-      <p>Cards never mix identities. A restaurant card shows a <strong>venue photo</strong> (interior/storefront — unique
-      within its row), the restaurant's rating, and <strong>no + button</strong> — you can't add a restaurant to a cart.
-      A dish card shows the dish's photo and its + button. Prices appear only where a purchase is one tap away
-      (the Loyalist hero). Ratings always belong to the thing that was rated.</p>
+      <p>Restaurant cards: venue photo, restaurant rating, <strong>no + button</strong> (you can't cart a restaurant).
+      Dish cards: dish photo, + button. Prices only where purchase is one tap away. Ratings always belong to the thing rated.</p>
     </div>
 
     <div class="ux-item">
       <h3><i>03</i>A scroll must never die halfway</h3>
-      <p>Users flick a row expecting momentum; four items kill it. Every carousel carries <strong>8 items</strong>, a
-      right-edge fade whispers "there's more", every section's <strong>View all</strong> sits in the same top-right spot and
-      opens <em>that section's own list</em> — never a keyword dump. AI-written blurbs are capped at
-      <strong>4 words</strong>: decision info, not paragraphs.</p>
+      <p>Every carousel carries <strong>8 items</strong>, an edge-fade whispers "there's more", View all always opens
+      <em>that section's own list</em>, and AI blurbs are capped at <strong>4 words</strong> — decision info, not paragraphs.</p>
     </div>
 
     <div class="ux-item">
       <h3><i>04</i>No dead ends, no fake doors</h3>
-      <p>Unbuilt things look unbuilt: bottom tabs and the bell are visibly disabled, not booby-trapped. The back button
-      always returns <strong>exactly where you came from</strong> — home, a list, search, or a dish page — never through a screen
-      you didn't visit. An empty cart isn't a dead grey button; it's a warm state with an "Explore food →" way forward.</p>
+      <p>Unbuilt things look unbuilt (disabled tabs, disabled bell). Back always returns <strong>exactly where you came
+      from</strong>. An empty cart offers "Explore food →", not a dead grey button.</p>
     </div>
 
     <div class="ux-item">
-      <h3><i>05</i>Delight in small doses — and personalised too</h3>
-      <p>Even the easter eggs follow the persona thesis: the Loyalist's footer has a delivery scooter waiting at the kerb;
-      the Explorer's has a runner forever chasing a bouncing momo; the Variety Seeker gets a craving roulette that spins,
-      lands ("Pizza it is! 🍕"), and spins again. Place an order and everyone gets the scooter —
-      riding toward the house over the <strong>real 30-minute ETA</strong>, its caption counting down. Peak-end rule, applied.</p>
+      <h3><i>05</i>Delight, personalised too</h3>
+      <p>Even the footer easter eggs follow the persona thesis — the Loyalist's waiting scooter, the Explorer's momo chase,
+      the Variety Seeker's craving roulette ("Pizza it is! 🍕"). After an order, everyone's scooter rides home over the
+      <strong>real 30-minute ETA</strong>. Peak-end rule, applied.</p>
     </div>
 
     <div class="dd-note">
-      <strong>Shipped like a product, not a prototype:</strong> the build went through <strong>10 rounds of user-review
-      iteration</strong>. Reviews caught real flaws — "#4 Trending" implying a false national rank, prices cluttering discovery,
-      dish photos on restaurant cards — and each fix became one of the rules above. The process is the point:
-      decisions here are argued from user psychology, tested on a live build, and revised on evidence.
+      <strong>Shipped like a product:</strong> 10 rounds of user-review iteration. Reviews caught real flaws — fake trending
+      ranks, price clutter, identity mixing — and every fix became one of the rules above.
     </div>
   </section>
 
@@ -883,13 +864,22 @@ Next.js app (Vercel)                                                 <span class
         if (on) { panel.removeAttribute('hidden'); } else { panel.setAttribute('hidden', ''); }
       });
     }
+    // The embedded phone follows the selected persona — no manual login needed
+    var PERSONA_USER = { 'panel-2a': 'u07', 'panel-2b': 'u05', 'panel-2c': 'u06' };
+    function syncPhone(tab) {
+      var uid = PERSONA_USER[tab.getAttribute('aria-controls')];
+      var frame = document.getElementById('livePhone');
+      var link = document.getElementById('livePhoneLink');
+      if (uid && frame) frame.src = 'https://swiggy-ai-one.vercel.app/?as=' + uid;
+      if (uid && link) link.href = 'https://swiggy-ai-one.vercel.app/?as=' + uid;
+    }
     tabs.forEach(function (t, i) {
-      t.addEventListener('click', function () { select(t); });
+      t.addEventListener('click', function () { select(t); syncPhone(t); });
       t.addEventListener('keydown', function (e) {
         var next = null;
         if (e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
         if (e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
-        if (next) { next.focus(); select(next); e.preventDefault(); }
+        if (next) { next.focus(); select(next); syncPhone(next); e.preventDefault(); }
       });
     });
 
