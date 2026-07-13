@@ -58,10 +58,10 @@ export default function CartPage({ onBack, onPlaceOrder, onExplore }: Props) {
           <div className="text-center" style={{ padding: '48px 20px 52px' }}>
             <div style={{ fontSize: 44, lineHeight: 1 }}>🛒</div>
             <p className="font-bold" style={{ fontSize: 15, color: '#3d4152', marginTop: 14 }}>
-              Your cart is craving something
+              Nothing in your cart yet
             </p>
             <p style={{ fontSize: 12, color: '#93959f', marginTop: 5 }}>
-              Nothing here yet — let&apos;s fix that
+              Good food is just a few taps away
             </p>
             <button
               onClick={onExplore ?? onBack}
