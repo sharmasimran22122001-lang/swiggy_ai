@@ -1,5 +1,5 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import LoginScreen from '@/components/LoginScreen'
 import SwiggyTopNav from '@/components/SwiggyTopNav'
@@ -19,6 +19,14 @@ import type { HomepageJSON, UserProfile, TimeSlot, TrendMatch } from '@/types'
 import type { RestaurantInfo } from '@/components/RestaurantPage'
 
 interface Session { userId: string; userName: string }
+
+// Deep-link auto-login: ?as=u07 opens Kavitha's personalised homepage directly.
+// Used by the case study's embedded phone so each persona tab shows its own page.
+const DEEP_LINK_USERS: Record<string, string> = {
+  u01: 'Meera Sharma', u02: 'Arjun Mehta', u03: 'Neha Verma',
+  u05: 'Priya Nair', u06: 'Vikram Bose', u07: 'Kavitha Rajan',
+  u08: 'Sanjay Reddy', u09: 'Ananya Das',
+}
 
 interface PipelineResult {
   homepage: HomepageJSON
@@ -111,6 +119,13 @@ function AppInner() {
     setSession({ userId, userName })
     fetchHomepage(userId)
   }
+
+  // ?as=<userId> → skip the login screen and open that persona's homepage
+  useEffect(() => {
+    const as = new URLSearchParams(window.location.search).get('as')
+    if (as && DEEP_LINK_USERS[as]) handleLogin(as, DEEP_LINK_USERS[as])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function handleLogout() {
     setSession(null)
