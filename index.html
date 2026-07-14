@@ -846,5 +846,19 @@
   })();
 </script>
 
+<script>
+  // Anonymous visit log: page + referrer only, no personal data. Fails silently.
+  (function () {
+    try {
+      var payload = JSON.stringify({
+        source: 'case_study', event: 'visit',
+        path: location.pathname, referrer: document.referrer || null,
+      });
+      if (navigator.sendBeacon) navigator.sendBeacon('https://swiggy-ai-one.vercel.app/api/track', payload);
+      else fetch('https://swiggy-ai-one.vercel.app/api/track', { method: 'POST', body: payload, keepalive: true }).catch(function () {});
+    } catch (e) { /* ignore */ }
+  })();
+</script>
+
 </body>
 </html>
