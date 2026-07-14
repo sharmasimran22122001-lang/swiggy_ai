@@ -113,11 +113,10 @@ function Slide({ slide, onExplore }: { slide: SlideConfig; onExplore?: (theme: s
         </button>
       </div>
 
-      {/* Right: photo */}
-      <div style={{ width: 140, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        <div style={{ position: 'absolute', width: 110, height: 110, borderRadius: '50%', background: `radial-gradient(circle, ${slide.accentColor}35 0%, transparent 70%)`, pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', width: 90, height: 90, borderRadius: '50%', border: '1.5px solid rgba(255,255,255,0.1)', top: -20, right: -20, pointerEvents: 'none' }} />
-        <div className="rounded-full overflow-hidden" style={{ width: 104, height: 104, border: '2.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 24px rgba(0,0,0,0.35)' }}>
+      {/* Right: photo — sized relative to the display so narrow screens never clip it */}
+      <div style={{ width: 'min(140px, 36%)', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', width: '80%', aspectRatio: '1', borderRadius: '50%', background: `radial-gradient(circle, ${slide.accentColor}35 0%, transparent 70%)`, pointerEvents: 'none' }} />
+        <div className="rounded-full overflow-hidden" style={{ width: 'min(104px, 78%)', aspectRatio: '1', border: '2.5px solid rgba(255,255,255,0.35)', boxShadow: '0 8px 24px rgba(0,0,0,0.35)' }}>
           <FoodImg name={slide.title} extra={slide.eyebrow} emoji={slide.emoji} gradA={slide.gradA} gradB={slide.gradB} />
         </div>
       </div>
