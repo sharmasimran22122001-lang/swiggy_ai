@@ -4,7 +4,16 @@ import { fetchTrendingFoods } from '@/lib/trend-agent'
 
 const CACHE_HOURS = 24
 
+// Admin/cron only — the app itself uses /api/trending/available.
+// Left open this route would let anyone trigger paid Gemini search calls.
+function unauthorized(req: NextRequest) {
+  return req.headers.get('x-seed-secret') !== process.env.SUPABASE_SERVICE_ROLE_KEY
+}
+
 export async function GET(req: NextRequest) {
+  if (unauthorized(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
   const city = req.nextUrl.searchParams.get('city') ?? 'Bangalore'
 
   // Return cached results if < 24 hours old
@@ -44,6 +53,9 @@ export async function GET(req: NextRequest) {
 
 // POST — force refresh (daily cron or admin trigger)
 export async function POST(req: NextRequest) {
+  if (unauthorized(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
   try {
     const trending = await fetchTrendingFoods()
 

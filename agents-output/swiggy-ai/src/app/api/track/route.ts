@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
   try {
     // sendBeacon posts text/plain — parse manually so no preflight is needed
     const raw = await req.text()
+    if (raw.length > 2000) return new NextResponse(null, { status: 204, headers: CORS })
     let body: Record<string, unknown> = {}
     try { body = JSON.parse(raw) } catch { /* ignore malformed */ }
 

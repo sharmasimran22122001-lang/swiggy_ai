@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
 const NEW_USERS = [
@@ -88,7 +88,10 @@ const NEW_ORDERS = [
   { user_id:'u09', restaurant_id:357455, restaurant_name:'Chaitown',             dish:'Adrak Chai',            veg:true,  price:60,  cuisine:'Beverages',   days_ago:27 },
 ]
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (req.headers.get('x-seed-secret') !== process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
   try {
     const demoIds = NEW_USERS.map(u => u.id)
 

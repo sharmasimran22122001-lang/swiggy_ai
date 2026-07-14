@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
 // ─── Dish pool by cuisine category ───────────────────────────────────────────
@@ -155,8 +155,11 @@ function pickCategory(name: string): string {
   return 'northIndian'
 }
 
-// GET /api/seed-menus  — call this once from the browser to seed all restaurants
-export async function GET() {
+// GET /api/seed-menus — one-time seeding, requires the x-seed-secret header
+export async function GET(req: NextRequest) {
+  if (req.headers.get('x-seed-secret') !== process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
   try {
     // 1. Get all restaurants
     const { data: restaurants, error: rErr } = await supabaseAdmin
