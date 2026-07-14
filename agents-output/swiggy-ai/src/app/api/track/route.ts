@@ -3,7 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 // Lightweight visit logging: which persona entered the prototype, and visits
 // to the case study (which beacons here from GitHub Pages).
-// Anonymous by design — no names/emails, just event, persona, referrer, device.
+// Anonymous by design — just event, persona, and referrer. No personal data.
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -27,9 +27,8 @@ export async function POST(req: NextRequest) {
     const persona = body.persona ? String(body.persona).slice(0, 40) : null
     const path = body.path ? String(body.path).slice(0, 200) : null
     const referrer = body.referrer ? String(body.referrer).slice(0, 300) : null
-    const ua = (req.headers.get('user-agent') ?? '').slice(0, 300)
 
-    await supabaseAdmin.from('visit_logs').insert({ source, event, persona, path, referrer, ua })
+    await supabaseAdmin.from('visit_logs').insert({ source, event, persona, path, referrer })
     return new NextResponse(null, { status: 204, headers: CORS })
   } catch {
     // Logging must never break the product
