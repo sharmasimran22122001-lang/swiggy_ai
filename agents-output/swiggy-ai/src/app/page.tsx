@@ -20,6 +20,19 @@ import type { RestaurantInfo } from '@/components/RestaurantPage'
 
 interface Session { userId: string; userName: string }
 
+// Fire-and-forget visit logging — never blocks or breaks the UI
+function track(event: string, persona?: string) {
+  try {
+    const payload = JSON.stringify({
+      source: 'app', event, persona: persona ?? null,
+      path: window.location.pathname + window.location.search,
+      referrer: document.referrer || null,
+    })
+    if (navigator.sendBeacon) navigator.sendBeacon('/api/track', payload)
+    else fetch('/api/track', { method: 'POST', body: payload, keepalive: true }).catch(() => {})
+  } catch { /* ignore */ }
+}
+
 // Deep-link auto-login: ?as=u07 opens Kavitha's personalised homepage directly.
 // Used by the case study's embedded phone so each persona tab shows its own page.
 const DEEP_LINK_USERS: Record<string, string> = {
@@ -117,11 +130,13 @@ function AppInner() {
 
   function handleLogin(userId: string, userName: string) {
     setSession({ userId, userName })
+    track('login', `${userId} · ${userName}`)
     fetchHomepage(userId)
   }
 
   // ?as=<userId> → skip the login screen and open that persona's homepage
   useEffect(() => {
+    track('visit')
     const as = new URLSearchParams(window.location.search).get('as')
     if (as && DEEP_LINK_USERS[as]) handleLogin(as, DEEP_LINK_USERS[as])
     // eslint-disable-next-line react-hooks/exhaustive-deps
