@@ -58,7 +58,7 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
     line-height: 1.6; margin: 0; -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; overflow-x: clip; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
   a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
@@ -166,7 +166,7 @@
   .panel.on { display: block; }
   .persona-grid { display: grid; grid-template-columns: 1fr 320px; gap: 42px; align-items: start; margin-top: 0; }
   .phone-side { position: sticky; top: 20px; width: 300px; max-width: 100%; justify-self: end; }
-  @media (max-width: 820px) { .persona-grid { grid-template-columns: 1fr; } .phone-side { position: static; margin: 0 auto; justify-self: center; } }
+  @media (max-width: 820px) { .persona-grid { grid-template-columns: 1fr; } .phone-side { display: none; } }
   .screen iframe { width: 100%; height: 100%; border: 0; display: block; border-radius: 30px; background: #fff; }
 
   .p-info h3 { font-size: 21px; font-weight: 800; letter-spacing: -.02em; margin: 4px 0 10px; }
@@ -495,7 +495,7 @@
       <a class="btn btn-primary" href="https://swiggy-ai-one.vercel.app" target="_blank" rel="noopener">Open the live demo ↗</a>
       <a class="btn btn-ghost" href="https://github.com/sharmasimran22122001-lang/swiggy_ai" target="_blank" rel="noopener">Source on GitHub</a>
     </div>
-    <p class="cta-note rise d3">Best on a phone or a narrow window · log in as any demo profile to feel the difference</p>
+    <p class="cta-note rise d3">Best on a phone · log in as any demo profile to feel the difference</p>
   </div>
 
   <!-- ── WHY ──────────────────────────────── -->
@@ -520,9 +520,9 @@
       </div>
       <div class="why-side">
         <h3>One segment, three personalities</h3>
-        <p>That 80% isn't one kind of user — order histories reveal three distinct eating personalities, and each deserves a different homepage. That's the whole product.</p>
+        <p>That 80% isn't one kind of user — order histories reveal three distinct eating personalities, and each deserves a different homepage.</p>
         <h3>The growth thesis</h3>
-        <p>Exploration drives incremental orders. So the north star is moving people up the exploration ladder:</p>
+        <p>Exploration drives incremental orders. The north star:</p>
         <div class="ladder" aria-label="North star: from Loyalist to Explorer to Variety Seeker">
           <span class="rung">Loyalist</span><span class="arrow">→</span>
           <span class="rung">Explorer</span><span class="arrow">→</span>
@@ -532,85 +532,7 @@
     </div>
   </section>
 
-  <!-- ── PERSONA TABS ─────────────────────── -->
-  <section>
-    <p class="kicker">Meet the three eaters</p>
-    <h2>Pick a persona — see their personalised homepage</h2>
-    <p>
-      <strong>The business goal behind all three:</strong> move users up the ladder
-      <strong>Loyalist → Explorer → Variety Seeker</strong>, because exploration drives incremental orders.
-      Now pick a persona:
-    </p>
-
-    <div class="persona-grid">
-    <div class="persona-left">
-    <div class="tabs" role="tablist" aria-label="Personas">
-      <button class="tab" id="tab-2a" role="tab" aria-selected="true" aria-controls="panel-2a">
-        <span class="t-code">2A</span><span class="t-name">The Loyalist</span><span class="t-sub">same dish, same place, always</span>
-      </button>
-      <button class="tab" id="tab-2b" role="tab" aria-selected="false" aria-controls="panel-2b">
-        <span class="t-code">2B</span><span class="t-name">The Explorer</span><span class="t-sub">trusted places, new dishes</span>
-      </button>
-      <button class="tab" id="tab-2c" role="tab" aria-selected="false" aria-controls="panel-2c">
-        <span class="t-code">2C</span><span class="t-name">The Variety Seeker</span><span class="t-sub">never the same place twice</span>
-      </button>
-    </div>
-
-    <!-- 2A -->
-    <div class="panel on" id="panel-2a" role="tabpanel" aria-labelledby="tab-2a">
-      <div class="p-info">
-        <h3>2A — The Loyalist</h3>
-        <div class="p-block">
-          <p><strong>Who:</strong> orders the same dish from the same place, again and again.</p>
-          <p style="margin-top:8px"><strong>Their homepage:</strong> <em>their</em> restaurant first, showing dishes there they haven't tried.</p>
-          <p style="margin-top:8px"><strong>Goal:</strong> deepen trust, widen the order.</p>
-        </div>
-        <p style="font-size:14px; color:var(--muted); margin:0 0 16px;">📱 The phone alongside is live — this is <strong>Kavitha's</strong> personalised homepage, generated from her order history.</p>
-        <a class="try-live" href="https://swiggy-ai-one.vercel.app/?as=u07" target="_blank" rel="noopener">Open Kavitha's homepage full-screen ↗</a>
-      </div>
-      </div>
-    </div>
-
-    <!-- 2B -->
-    <div class="panel" id="panel-2b" role="tabpanel" aria-labelledby="tab-2b" hidden>
-      <div class="p-info">
-        <h3>2B — The Explorer</h3>
-        <div class="p-block">
-          <p><strong>Who:</strong> two or three trusted restaurants, but a new dish every time.</p>
-          <p style="margin-top:8px"><strong>Their homepage:</strong> <em>new</em> restaurants that match their proven cuisines.</p>
-          <p style="margin-top:8px"><strong>Goal:</strong> same taste, new places.</p>
-        </div>
-        <p style="font-size:14px; color:var(--muted); margin:0 0 16px;">📱 The phone alongside is live — this is <strong>Priya's</strong> personalised homepage, generated from her order history.</p>
-        <a class="try-live" href="https://swiggy-ai-one.vercel.app/?as=u05" target="_blank" rel="noopener">Open Priya's homepage full-screen ↗</a>
-      </div>
-      </div>
-    </div>
-
-    <!-- 2C -->
-    <div class="panel" id="panel-2c" role="tabpanel" aria-labelledby="tab-2c" hidden>
-      <div class="p-info">
-        <h3>2C — The Variety Seeker</h3>
-        <div class="p-block">
-          <p><strong>Who:</strong> a different restaurant nearly every order.</p>
-          <p style="margin-top:8px"><strong>Their homepage:</strong> the best of right now — meal-slot aware, taste barely a factor.</p>
-          <p style="margin-top:8px"><strong>Goal:</strong> pure discovery.</p>
-        </div>
-        <p style="font-size:14px; color:var(--muted); margin:0 0 16px;">📱 The phone alongside is live — this is <strong>Vikram's</strong> personalised homepage, generated from his order history.</p>
-        <a class="try-live" href="https://swiggy-ai-one.vercel.app/?as=u06" target="_blank" rel="noopener">Open Vikram's homepage full-screen ↗</a>
-      </div>
-      </div>
-    </div>
-    </div>
-    <div class="phone-side">
-      <div class="phone"><div class="screen"><iframe id="livePhone" src="https://swiggy-ai-one.vercel.app/?as=u07" title="Swiggy AI — the live product" loading="lazy" allow="geolocation"></iframe></div></div>
-      <p class="scroll-hint">not a mockup — <strong>the deployed product</strong>, already logged in as the selected persona<br>
-      <a id="livePhoneLink" href="https://swiggy-ai-one.vercel.app/?as=u07" target="_blank" rel="noopener">open this homepage full-screen ↗</a><br>
-      <span style="font-size:10.5px">(phone blank? your viewer blocks embeds — use the link above)</span></p>
-    </div>
-  </div>
-  </section>
-
-  <!-- ── HOW WE BUILT IT ─────────────────── -->
+  <!-- ── HOW WE BUILT IT ──────────────────── -->
   <section>
     <p class="kicker">The build</p>
     <h2>How we built it — end to end</h2>
@@ -631,48 +553,120 @@
     <p>Whichever number is highest names the personality. No AI involved in this step — pure arithmetic anyone can verify.</p>
   </section>
 
-  <!-- ── PERSONA 2A WALKTHROUGH ───────────── -->
+  <!-- ── PERSONAS: tab shows ONLY that persona's full story ── -->
   <section>
-    <p class="kicker">Persona 2A · walked through</p>
-    <h2>The Loyalist — Kavitha's homepage</h2>
-    <p>Take Kavitha: 8 of her 10 orders are Chicken Biryani from Ss Hyderabad Biryani. Her <strong>Repeat</strong> number towers over the other two — she's a Loyalist.</p>
-    <p>So the engine finds her favourite restaurant (the one she's ordered from most), notes every dish she's already tried there, and asks Gemini one focused question: <em>from this restaurant's real menu, recommend the highest-rated dishes she hasn't tried yet.</em></p>
-    <p>That becomes the first thing she sees: her trusted place, with something new inside it.</p>
+    <p class="kicker">Meet the three eaters</p>
+    <h2>Pick a persona — see their personalised homepage</h2>
+    <p>
+      <strong>The business goal behind all three:</strong> move users up the ladder
+      <strong>Loyalist → Explorer → Variety Seeker</strong>, because exploration drives incremental orders.
+      Now pick a persona — everything below the tabs belongs to your selection:
+    </p>
 
-    <div class="ux-item"><h3><i>—</i>Beyond the hero — the rest of her homepage</h3></div>
-    <p><strong>Top Rated Near You</strong> — eight well-rated places around her, each card showing its rating badge and delivery time upfront. Tap <strong>View all</strong> and the full list opens with two one-tap sorts: <strong>★ Top Rated</strong> and <strong>⚡ Fastest</strong> — the two moods a hungry person actually has.</p>
-    <p><strong>A clean canvas for quick decisions</strong> — the home stays white and uncluttered, so photos, ratings, and delivery times do the talking. Every row carries <strong>8 cards</strong>, so a scroll never gets stuck halfway.</p>
-    <p><strong>Controls that behave the way they look</strong> — the <strong>VEG toggle</strong> flips the page's mode in one tap; the <strong>Food · Instamart · Dineout · Scenes</strong> control looks like a slider, so it <em>is</em> one — drag the pill and it follows your finger.</p>
-    <p><strong>No dead ends</strong> — slide over to Instamart and instead of a blank page, a playful <em>"Instamart is still being cooked 🧑‍🍳"</em> note appears and guides you back — the user stays engaged, never lost.</p>
-    <p><strong>A persona signature</strong> — every homepage ends with a small touch unique to its persona. Kavitha's: a delivery scooter waiting at the kerb. The moment she orders, it starts riding toward her home — timed to her order's actual delivery ETA, arriving when the food does.</p>
+  <div class="persona-grid">
+    <div class="persona-left">
+    <div class="tabs" role="tablist" aria-label="Personas">
+      <button class="tab" id="tab-2a" role="tab" aria-selected="true" aria-controls="panel-2a">
+        <span class="t-code">2A</span><span class="t-name">The Loyalist</span><span class="t-sub">same dish, same place, always</span>
+      </button>
+      <button class="tab" id="tab-2b" role="tab" aria-selected="false" aria-controls="panel-2b">
+        <span class="t-code">2B</span><span class="t-name">The Explorer</span><span class="t-sub">trusted places, new dishes</span>
+      </button>
+      <button class="tab" id="tab-2c" role="tab" aria-selected="false" aria-controls="panel-2c">
+        <span class="t-code">2C</span><span class="t-name">The Variety Seeker</span><span class="t-sub">never the same place twice</span>
+      </button>
+    </div>
+
+    <!-- 2A -->
+    <div class="panel on" id="panel-2a" role="tabpanel" aria-labelledby="tab-2a">
+      <div class="p-info">
+        <h3>2A — The Loyalist, walked through</h3>
+        <div class="p-block">
+          <p><strong>Who:</strong> orders the same dish from the same place, again and again.</p>
+          <p style="margin-top:8px"><strong>Their homepage:</strong> <em>their</em> restaurant first, showing dishes there they haven't tried.</p>
+          <p style="margin-top:8px"><strong>Goal:</strong> deepen trust, widen the order.</p>
+        </div>
+        <div class="p-block">
+          <p>Take Kavitha: 8 of her 10 orders are Chicken Biryani from Ss Hyderabad Biryani. Her <strong>Repeat</strong> number towers over the other two — she's a Loyalist.</p>
+          <p style="margin-top:8px">The engine finds her favourite restaurant, notes every dish she's already tried there, and asks Gemini one focused question: <em>from this restaurant's real menu, recommend the highest-rated dishes she hasn't tried yet.</em></p>
+          <p style="margin-top:8px">That becomes the first thing she sees: her trusted place, with something new inside it.</p>
+        </div>
+        <div class="p-block">
+          <h4>The rest of her homepage</h4>
+          <p><strong>Top Rated Near You</strong> — eight well-rated places around her, rating badge and delivery time on every card; View all sorts by <strong>★ Top Rated</strong> or <strong>⚡ Fastest</strong>.</p>
+          <p style="margin-top:8px"><strong>Her persona signature</strong> — a delivery scooter waiting at the kerb. The moment she orders, it rides toward her home, timed to her order's actual delivery ETA.</p>
+        </div>
+        <p style="font-size:14px; color:var(--muted); margin:0 0 16px;">📱 The phone alongside is live — <strong>Kavitha's</strong> real homepage, generated from her order history.</p>
+        <a class="try-live" href="https://swiggy-ai-one.vercel.app/?as=u07" target="_blank" rel="noopener">Open Kavitha's homepage ↗</a>
+      </div>
+    </div>
+
+    <!-- 2B -->
+    <div class="panel" id="panel-2b" role="tabpanel" aria-labelledby="tab-2b" hidden>
+      <div class="p-info">
+        <h3>2B — The Explorer, walked through</h3>
+        <div class="p-block">
+          <p><strong>Who:</strong> two or three trusted restaurants, but a new dish every time.</p>
+          <p style="margin-top:8px"><strong>Their homepage:</strong> <em>new</em> restaurants that match their proven cuisines.</p>
+          <p style="margin-top:8px"><strong>Goal:</strong> same taste, new places.</p>
+        </div>
+        <div class="p-block">
+          <p>Take Priya: 12 orders, but only 3 restaurants — and <strong>never the same dish twice</strong>. Her <strong>Variety</strong> number wins — she's an Explorer. Her loyalty is to a <em>taste</em>, not a menu item.</p>
+          <p style="margin-top:8px">The engine reads her top cuisines — Fast Food, North Indian, Chinese — and asks Gemini: <em>from well-rated places she has <strong>never</strong> ordered from, recommend the ones matching these cuisines.</em></p>
+          <p style="margin-top:8px">That becomes the first thing she sees: new places, proven taste.</p>
+        </div>
+        <div class="p-block">
+          <h4>The rest of her homepage</h4>
+          <p><strong>Trending Near You</strong> — a section Loyalists don't get. A second AI agent searches the live web for what India is eating right now, then verifies every dish is actually orderable in <em>her</em> city at a well-rated place. Cards carry the <strong>best-rated</strong> option's numbers; <strong>"At 5 places →"</strong> opens them all, best first.</p>
+          <p style="margin-top:8px"><strong>Top Rated Near You</strong> — as on every homepage: eight well-rated places, numbers upfront.</p>
+          <p style="margin-top:8px"><strong>Her persona signature</strong> — a hungry runner forever chasing a bouncing momo 🥟 — always after the next great bite. When she orders, the scooter takes over, timed to her ETA.</p>
+        </div>
+        <p style="font-size:14px; color:var(--muted); margin:0 0 16px;">📱 The phone alongside is live — <strong>Priya's</strong> real homepage, generated from her order history.</p>
+        <a class="try-live" href="https://swiggy-ai-one.vercel.app/?as=u05" target="_blank" rel="noopener">Open Priya's homepage ↗</a>
+      </div>
+    </div>
+
+    <!-- 2C -->
+    <div class="panel" id="panel-2c" role="tabpanel" aria-labelledby="tab-2c" hidden>
+      <div class="p-info">
+        <h3>2C — The Variety Seeker, walked through</h3>
+        <div class="p-block">
+          <p><strong>Who:</strong> a different restaurant nearly every order.</p>
+          <p style="margin-top:8px"><strong>Their homepage:</strong> the best of right now — meal-slot aware, taste barely a factor.</p>
+          <p style="margin-top:8px"><strong>Goal:</strong> pure discovery.</p>
+        </div>
+        <div class="p-block">
+          <p>Take Vikram: 12 orders, <strong>12 different restaurants</strong>. His <strong>Explore</strong> number is a perfect 1.0 — a Variety Seeker. Loyal to the platform, not to any kitchen.</p>
+          <p style="margin-top:8px">For him the engine barely reads taste history. It reads the <strong>clock</strong>: it's dinner time, so it asks Gemini — <em>what are the best dinner options in this city right now?</em> Quality first, breadth over familiarity.</p>
+          <p style="margin-top:8px">He sees tonight's cravings — Biryani, Pizza, Kebabs and more — and <strong>View all</strong> opens a grid of ~20 food items for the current meal slot. At breakfast, it rebuilds around dosas and chai.</p>
+        </div>
+        <div class="p-block">
+          <h4>The rest of his homepage</h4>
+          <p><strong>Trending Near You</strong> — same live engine as the Explorer's: web-trending dishes, verified orderable in his city at well-rated places.</p>
+          <p style="margin-top:8px"><strong>Top Rated Near You</strong> — as on every homepage: eight well-rated places, numbers upfront.</p>
+          <p style="margin-top:8px"><strong>His persona signature</strong> — a craving roulette: a wheel of cuisines spins, lands, announces <em>"Pizza it is! 🍕"</em>, rests, and spins again. When he orders, the scooter takes over, timed to his ETA.</p>
+        </div>
+        <p style="font-size:14px; color:var(--muted); margin:0 0 16px;">📱 The phone alongside is live — <strong>Vikram's</strong> real homepage, generated from his order history.</p>
+        <a class="try-live" href="https://swiggy-ai-one.vercel.app/?as=u06" target="_blank" rel="noopener">Open Vikram's homepage ↗</a>
+      </div>
+    </div>
+    </div>
+    <div class="phone-side">
+      <div class="phone"><div class="screen"><iframe id="livePhone" src="https://swiggy-ai-one.vercel.app/?as=u07" title="Swiggy AI — the live product" loading="lazy" allow="geolocation"></iframe></div></div>
+      <p class="scroll-hint">not a mockup — <strong>the deployed product</strong>, already logged in as the selected persona<br>
+      <a id="livePhoneLink" href="https://swiggy-ai-one.vercel.app/?as=u07" target="_blank" rel="noopener">open this homepage full-screen ↗</a></p>
+    </div>
+  </div>
   </section>
 
-  <!-- ── PERSONA 2B WALKTHROUGH ───────────── -->
+  <!-- ── UX JOURNEY ───────────────────────── -->
   <section>
-    <p class="kicker">Persona 2B · walked through</p>
-    <h2>The Explorer — Priya's homepage</h2>
-    <p>Take Priya: 12 orders, but only 3 restaurants — and <strong>never the same dish twice</strong>. Her <strong>Variety</strong> number towers over the other two — she's an Explorer. Her loyalty is to a <em>taste</em>, not to a menu item.</p>
-    <p>So the engine reads her top cuisines from her history — Fast Food, North Indian, Chinese — and asks Gemini one focused question: <em>from well-rated places she has <strong>never</strong> ordered from, recommend the ones that match these cuisines.</em></p>
-    <p>That becomes the first thing she sees: new places, proven taste.</p>
-
-    <div class="ux-item"><h3><i>—</i>Beyond the hero — the rest of her homepage</h3></div>
-    <p><strong>Trending Near You</strong> — explorers get a section Loyalists don't. A second AI agent searches the live web for what India is eating right now, then checks every trending dish against our database: is it actually orderable in <em>her</em> city, at a well-rated place? Only then does it appear. Each card carries the <strong>best-rated</strong> option's rating and delivery time, and <strong>"At 5 places →"</strong> opens every restaurant serving it, best first.</p>
-    <p><strong>Top Rated Near You</strong> — as on every homepage: eight well-rated places, ratings and delivery times upfront, View all with <strong>★ Top Rated / ⚡ Fastest</strong> sorts.</p>
-    <p><strong>A persona signature</strong> — Priya's page ends with a hungry runner forever chasing a bouncing momo 🥟 — the explorer's spirit, always after the next great bite. The moment she orders, the delivery scooter takes over, timed to her order's actual ETA.</p>
-  </section>
-
-  <!-- ── PERSONA 2C WALKTHROUGH ───────────── -->
-  <section>
-    <p class="kicker">Persona 2C · walked through</p>
-    <h2>The Variety Seeker — Vikram's homepage</h2>
-    <p>Take Vikram: 12 orders, <strong>12 different restaurants</strong>. His <strong>Explore</strong> number is a perfect 1.0 — a Variety Seeker. He's loyal to the platform, not to any kitchen.</p>
-    <p>For him, the engine barely looks at taste history at all. It looks at the <strong>clock</strong> instead: it's dinner time, so it asks Gemini: <em>what are the best dinner options in this city right now?</em> Quality first, breadth over familiarity.</p>
-    <p>That becomes the first thing he sees: tonight's cravings — Biryani, Pizza, Kebabs and more — and <strong>View all</strong> opens a full grid of ~20 food items for the current meal slot. At breakfast, the same section rebuilds itself around dosas and chai.</p>
-
-    <div class="ux-item"><h3><i>—</i>Beyond the hero — the rest of his homepage</h3></div>
-    <p><strong>Trending Near You</strong> — same live engine as the Explorer's: web-trending dishes, verified orderable in his city at well-rated places, the best option's numbers on the card.</p>
-    <p><strong>Top Rated Near You</strong> — as on every homepage: eight well-rated places, ratings and delivery times upfront.</p>
-    <p><strong>A persona signature</strong> — Vikram's page ends with a craving roulette: a wheel of cuisines spins, lands, and announces <em>"Pizza it is! 🍕"</em> — rests a moment, then spins again. Indecision, turned into play. When he orders, the scooter takes over, timed to his delivery ETA.</p>
+    <p class="kicker">The UX journey</p>
+    <h2>Interface decisions, from user psychology</h2>
+    <p><strong>A clean canvas for quick decisions</strong> — the home stays white and uncluttered, so photos, ratings, and delivery times do the talking.</p>
+    <p><strong>Controls that behave the way they look</strong> — the <strong>Food · Instamart · Dineout · Scenes</strong> control looks like a slider, so it <em>is</em> one: drag the pill and it follows your finger. The <strong>VEG toggle</strong> flips the page's mode in one tap.</p>
+    <p><strong>A scroll never gets stuck</strong> — every row carries <strong>8 cards</strong>, with a soft edge-fade hinting there's more, and a consistent <strong>View all</strong> in every section's corner.</p>
+    <p><strong>No dead ends</strong> — slide to Instamart and instead of a blank page, a playful <em>"still being cooked 🧑‍🍳"</em> note appears and guides you back. Unbuilt tabs look disabled; the back button always returns exactly where you came from; an empty cart offers <em>"Explore food →"</em>.</p>
   </section>
 
   <!-- ── TOOLS ────────────────────────────── -->
@@ -688,7 +682,16 @@
     </div>
   </section>
 
-  <!-- ── STACK ────────────────────────────── -->
+  <!-- ── WHAT'S NEXT ──────────────────────── -->
+  <section>
+    <p class="kicker">What's next</p>
+    <h2>Where this goes from here</h2>
+    <p><strong>Learn from taps, not just orders</strong> — today the persona comes from order history; next, what users browse but don't order refines it.</p>
+    <p><strong>Personas that migrate</strong> — as a Loyalist starts exploring, their homepage should notice and shift with them.</p>
+    <p><strong>Prove the ladder</strong> — A/B test the core thesis: do personalised homepages actually move people up Loyalist → Explorer → Variety Seeker?</p>
+  </section>
+
+  <!-- ── CANDOUR ──────────────────────────── -->
   <section>
     <p class="kicker">Candour</p>
     <h2>What's real, what's simulated</h2>
